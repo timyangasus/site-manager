@@ -1126,10 +1126,10 @@ body {
 .pin-code-signup-fineprint { font-size: 11.5px; color: #999; line-height: 1.7; margin: 16px 0 4px; padding-top: 12px; border-top: 1px solid #eee; }
 .pin-code-signup-submit {
   display: block; margin: 20px auto 0; width: 240px; text-align: center;
-  background: #BBD6F2; color: #fff; border: none; border-radius: 8px;
+  background: #1565C0; color: #fff; border: none; border-radius: 8px;
   padding: 13px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
 }
-.pin-code-signup-submit:hover { background: #9CC3EA; }
+.pin-code-signup-submit:hover { background: #0D47A1; }
 .landing-view.active { display: block; }
 .landing-view { display: none; }
 .signin-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 28px; text-align: center; }
@@ -1674,14 +1674,14 @@ body {
 
       <div class="signin-field">
         <label class="signin-label"><span class="pin-code-signup-required">*</span> 帳號</label>
-        <input class="signin-input" type="text">
+        <input class="signin-input" type="text" value="demo_user@asus.com">
         <div class="pin-code-signup-hint">請輸入電子郵件或電話號碼</div>
       </div>
 
       <div class="signin-field">
         <label class="signin-label"><span class="pin-code-signup-required">*</span> 密碼</label>
         <div style="position:relative;">
-          <input class="signin-input" type="password" style="padding-right:40px;">
+          <input class="signin-input" type="password" value="Demo1234!" style="padding-right:40px;">
           <button class="pin-code-signup-eye" type="button" onclick="return false;">&#128065;</button>
         </div>
         <div class="pin-code-signup-hint">密碼需包括8至25位大小寫字母、數字及符號，且不能包含空格。<br><a href="#" onclick="return false;">設定密碼規範</a></div>
@@ -1690,7 +1690,7 @@ body {
       <div class="signin-field">
         <label class="signin-label"><span class="pin-code-signup-required">*</span> 確認密碼:</label>
         <div style="position:relative;">
-          <input class="signin-input" type="password" style="padding-right:40px;">
+          <input class="signin-input" type="password" value="Demo1234!" style="padding-right:40px;">
           <button class="pin-code-signup-eye" type="button" onclick="return false;">&#128065;</button>
         </div>
         <div class="pin-code-signup-hint">請再次輸入密碼</div>
@@ -1698,16 +1698,25 @@ body {
 
       <div class="pin-code-signup-birthday-label">生日:</div>
       <div class="pin-code-signup-birthday-row">
-        <select class="pin-code-signup-select"><option>年</option></select>
-        <select class="pin-code-signup-select"><option>月</option></select>
-        <select class="pin-code-signup-select"><option>日</option></select>
+        <select class="pin-code-signup-select">
+          <option>年</option>
+          <option>1988</option><option>1989</option><option selected>1990</option><option>1991</option><option>1992</option>
+        </select>
+        <select class="pin-code-signup-select">
+          <option>月</option>
+          <option>03</option><option>04</option><option selected>05</option><option>06</option><option>07</option>
+        </select>
+        <select class="pin-code-signup-select">
+          <option>日</option>
+          <option>13</option><option>14</option><option selected>15</option><option>16</option><option>17</option>
+        </select>
       </div>
 
-      <label class="pin-code-signup-check pin-code-signup-check-main"><input type="checkbox"> 我同意全部選項和隱私權政策</label>
-      <label class="pin-code-signup-check"><input type="checkbox"> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩「<a href="#" onclick="return false;">隱私權政策</a>」</label>
-      <label class="pin-code-signup-check"><input type="checkbox"> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩雲端「<a href="#" onclick="return false;">隱私權政策</a>」</label>
-      <label class="pin-code-signup-check"><input type="checkbox"> 我願意收到華碩相關新聞、產品及服務更新之訊息或行銷廣告。</label>
-      <label class="pin-code-signup-check"><input type="checkbox"> 我願意收到華碩雲端的相關新聞、產品及服務更新之訊息或行銷廣告。</label>
+      <label class="pin-code-signup-check pin-code-signup-check-main"><input type="checkbox" checked> 我同意全部選項和隱私權政策</label>
+      <label class="pin-code-signup-check"><input type="checkbox" checked> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩「<a href="#" onclick="return false;">隱私權政策</a>」</label>
+      <label class="pin-code-signup-check"><input type="checkbox" checked> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩雲端「<a href="#" onclick="return false;">隱私權政策</a>」</label>
+      <label class="pin-code-signup-check"><input type="checkbox" checked> 我願意收到華碩相關新聞、產品及服務更新之訊息或行銷廣告。</label>
+      <label class="pin-code-signup-check"><input type="checkbox" checked> 我願意收到華碩雲端的相關新聞、產品及服務更新之訊息或行銷廣告。</label>
 
       <div class="pin-code-signup-fineprint">*請放心，收集的信息將只用於註冊和管理您的帳號。<br>在您成功註冊為會員後，我們還將協助您註冊成為ASUS Cloud會員（ASUS Cloud由ASUS Cloud公司所有），帳號和密碼不變。</div>
 
@@ -1832,10 +1841,10 @@ body {
 <div class="pin-flow-decision" id="pin-binding-login-overlay">
   <button class="pin-flow-decision-close" onclick="closeLoginStateSelector()">&times;</button>
   <span class="pin-flow-decision-tag">DEMO 流程判斷</span>
-  <div class="pin-flow-decision-title">選擇 ASUS Site Manager 登入狀態</div>
+  <div class="pin-flow-decision-title">選擇 ASUS Site Manager 帳號綁定狀態</div>
   <div class="pin-flow-decision-options">
-    <button class="pin-flow-decision-option" onclick="chooseLoginState(true)">已登入</button>
-    <button class="pin-flow-decision-option" onclick="chooseLoginState(false)">尚未登入</button>
+    <button class="pin-flow-decision-option" onclick="chooseLoginState(true)">已綁定</button>
+    <button class="pin-flow-decision-option" onclick="chooseLoginState(false)">未綁定</button>
   </div>
 </div>
 
@@ -2675,7 +2684,7 @@ let pinCodeSignupTransitionTimer = null;
 
 function chooseLoginState(isLoggedIn) {
   closeAllPinBindingPopups();
-  pushDemoPathStep(isLoggedIn ? '已登入' : '尚未登入');
+  pushDemoPathStep(isLoggedIn ? '已綁定' : '未綁定');
   hidePinCodePage();
   showPinCodeWelcomePage();
   if (isLoggedIn) {
@@ -2699,7 +2708,10 @@ function startPinCodeSignupFlow() {
 }
 
 function finishPinCodeSignup() {
-  goLanding();
+  // Skip the landing screen -- go straight to the account sign-in view
+  ['view-landing', 'view-thirdparty', 'view-pincode-signup'].forEach(id =>
+    document.getElementById(id).classList.remove('active'));
+  document.getElementById('view-signin').classList.add('active');
 }
 
 function openPinCodeExpiryDecision() {
