@@ -16,9 +16,30 @@ body {
   line-height: 1.35;
 }
 
+/* ── Demo control bar (meta layer, not part of the product UI) ── */
+.demo-bar {
+  position: fixed; top: 0; left: 0; right: 0; height: 32px;
+  background: #0d1117;
+  border-bottom: 1px solid #30363d;
+  display: flex; align-items: center; gap: 10px;
+  padding: 0 14px;
+  font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 10px;
+  z-index: 1000;
+}
+.demo-bar-label { color: #7ee787; letter-spacing: 0.5px; }
+.demo-bar-select {
+  font-family: inherit; font-size: 10px;
+  background: #161b22; color: #c9d1d9;
+  border: 1px solid #30363d; border-radius: 4px;
+  padding: 3px 8px; cursor: pointer;
+}
+.demo-bar-select:hover { border-color: #7ee787; }
+.demo-bar-path { color: #8b949e; margin-left: auto; }
+
 /* ── Title bar ── */
 .titlebar {
-  position: fixed; top: 0; left: 0; right: 0; height: 29px;
+  position: fixed; top: 32px; left: 0; right: 0; height: 29px;
   background: #1c1c1c;
   display: flex; align-items: center; justify-content: center;
   z-index: 100;
@@ -32,7 +53,7 @@ body {
 
 /* ── Sidebar ── */
 .sidebar {
-  position: fixed; top: 29px; left: 0; bottom: 0; width: 48px;
+  position: fixed; top: 61px; left: 0; bottom: 0; width: 48px;
   background: #1565C0;
   display: flex; flex-direction: column; align-items: center;
   padding: 0; z-index: 50;
@@ -54,7 +75,7 @@ body {
 
 /* ── Main ── */
 .main {
-  margin-top: 29px; margin-left: 48px; flex: 1;
+  margin-top: 61px; margin-left: 48px; flex: 1;
   display: flex; flex-direction: column;
   background: #f0f0f0; overflow: hidden;
 }
@@ -798,7 +819,7 @@ body {
 
 /* ── Login / Landing pages ── */
 #page-login {
-  position: fixed; inset: 0; z-index: 500;
+  position: fixed; top: 32px; left: 0; right: 0; bottom: 0; z-index: 500;
   display: flex; background: #fff;
 }
 #page-login.hidden { display: none; }
@@ -1269,6 +1290,14 @@ body {
 </head>
 <body>
 
+<!-- ── Demo control bar (meta layer for internal discussion, not product UI) ── -->
+<div class="demo-bar">
+  <span class="demo-bar-label">FLOW://</span>
+  <select class="demo-bar-select" id="demo-flow-select" onchange="switchDemoFlow(this.value)">
+    <option value="main">MAIN_FLOW</option>
+  </select>
+  <span class="demo-bar-path" id="demo-bar-path"></span>
+</div>
 
 <!-- ── Login / Landing page ── -->
 <div id="page-login">
@@ -2037,6 +2066,12 @@ body {
     </div>
 
 <script>
+// ── Demo flow switcher (meta layer; each future flow registers itself here) ──
+function switchDemoFlow(flow) {
+  document.getElementById('demo-bar-path').textContent = '';
+  // TODO: hide/show each flow's root container as flows are added (e.g. pinbind)
+}
+
 // ── Page navigation ──────────────────────────────────────────────────────────
 const pageMap = {
   sitelist: 'Routers',
