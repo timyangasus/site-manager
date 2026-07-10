@@ -1560,8 +1560,7 @@ body {
 <div class="demo-bar">
   <span class="demo-bar-label">FLOW://</span>
   <select class="demo-bar-select" id="demo-flow-select" onchange="switchDemoFlow(this.value)">
-    <option value="main">MAIN_FLOW</option>
-    <option value="pincode">PIN_CODE_BINDING</option>
+    <!-- options are populated by registerFlow() calls in the script below -->
   </select>
   <span class="demo-bar-path" id="demo-bar-path"></span>
   <button class="demo-bar-reset" onclick="resetCurrentDemoFlow()" title="重置目前流程回到起點">&#8634; RESET</button>
@@ -2565,21 +2564,31 @@ function pushDemoPathStep(label) {
   document.getElementById('demo-bar-path').textContent = demoPathSteps.join(' > ');
 }
 
+// ── Flow registry ─────────────────────────────────────────────────────────────
+// Adding flow #11 should never mean growing an if/else chain here. Instead, call
+// registerFlow(key, label, show, teardown) once for that flow:
+//   - key/label: the <option> added to the FLOW:// dropdown
+//   - show(): renders that flow's starting screen (must fully reset its own state,
+//     e.g. restart timers/countdowns -- see showPinCodePage/resetPinCodeState)
+//   - teardown() [optional]: cleans up anything that flow leaves outside its own
+//     container (global flags, timers, classes on shared elements like .content).
+//     Called on EVERY switch regardless of which flow is being left, so make it
+//     idempotent (safe to call even if this flow was never active).
+// Convention: prefix this flow's own CSS classes/JS functions/globals with its key
+// (e.g. pinCode*, .pin-code-*) so two flows can never collide by accident.
+const FLOWS = {};
+function registerFlow(key, label, show, teardown) {
+  FLOWS[key] = { label, show, teardown };
+  const opt = document.createElement('option');
+  opt.value = key; opt.textContent = label;
+  document.getElementById('demo-flow-select').appendChild(opt);
+}
+
 function switchDemoFlow(flow) {
   clearDemoPath();
-  closeAllPinBindingPopups();
-  pinCodeSigninPending = false;
-  document.getElementById('pin-code-sitelist-empty').classList.remove('show');
-  document.querySelector('.content').classList.remove('pin-code-lock-scroll');
-  hidePinCodeWelcomePage();
-  if (pinCodeSignupTransitionTimer) { clearTimeout(pinCodeSignupTransitionTimer); pinCodeSignupTransitionTimer = null; }
-  if (flow === 'pincode') {
-    showPinCodePage();
-  } else {
-    hidePinCodePage();
-    document.getElementById('page-login').classList.remove('hidden');
-    goLanding();
-  }
+  closeAllFlowPopups();
+  Object.values(FLOWS).forEach(f => f.teardown && f.teardown());
+  if (FLOWS[flow]) FLOWS[flow].show();
 }
 
 // Re-picking the currently-selected <option> doesn't fire onchange (no value change),
@@ -2589,6 +2598,11 @@ function switchDemoFlow(flow) {
 function resetCurrentDemoFlow() {
   switchDemoFlow(document.getElementById('demo-flow-select').value);
 }
+
+registerFlow('main', 'MAIN_FLOW', function () {
+  document.getElementById('page-login').classList.remove('hidden');
+  goLanding();
+});
 
 // ── Pin Code Device Binding flow ──────────────────────────────────────────────
 const PIN_CODE_RAIL_ITEMS = ['Quick Internet\nSetup','Dashboard','AiMesh','Self-defined\nNetwork','VPN Server','VPN Fusion','Traffic\nAnalyzer','USB\nApplication','IPv6','AiProtection','Firewall','Administration','System Log','Network Tools'];
@@ -2615,7 +2629,7 @@ function showPinCodePage() {
 
 function hidePinCodePage() {
   if (pinCodeCountdownTimer) clearInterval(pinCodeCountdownTimer);
-  closeAllPinBindingPopups();
+  closeAllFlowPopups();
   document.getElementById('page-pincode-router').classList.remove('show');
 }
 
@@ -2625,7 +2639,7 @@ function resetPinCodeState() {
   const stopBtn = document.getElementById('pin-code-stop-btn');
   stopBtn.classList.remove('stopped');
   stopBtn.textContent = 'Stop sharing PIN Code';
-  closeAllPinBindingPopups();
+  closeAllFlowPopups();
   if (pinCodeCountdownTimer) clearInterval(pinCodeCountdownTimer);
   pinCodeCountdownTimer = setInterval(tickPinCodeCountdown, 1000);
 }
@@ -2647,16 +2661,17 @@ function renderPinCodeCountdown() {
   document.getElementById('pin-code-seconds').textContent = String(pinCodeRemaining.s).padStart(2, '0');
 }
 
-function closeAllPinBindingPopups() {
-  document.getElementById('pin-binding-intro-overlay').classList.remove('show');
-  document.getElementById('pin-binding-login-overlay').classList.remove('show');
-  document.getElementById('pin-binding-expiry-overlay').classList.remove('show');
-  document.getElementById('pin-binding-loading-overlay').classList.remove('show');
-  document.getElementById('pin-binding-failed-overlay').classList.remove('show');
+// Closes every popup/decision-panel across every flow, automatically -- new flows
+// don't need to add themselves to a list here. To join this sweep, a popup's root
+// element just needs the .pin-binding-overlay (real in-product popup) or
+// .pin-flow-decision (demo-only decision panel) class already established for this.
+function closeAllFlowPopups() {
+  document.querySelectorAll('.pin-binding-overlay.show, .pin-flow-decision.show')
+    .forEach(el => el.classList.remove('show'));
 }
 
 function openBindingIntroductionPopup() {
-  closeAllPinBindingPopups();
+  closeAllFlowPopups();
   document.getElementById('pin-binding-intro-overlay').classList.add('show');
 }
 
@@ -2670,7 +2685,7 @@ function goToBindingLoginStep() {
 }
 
 function openLoginStateSelector() {
-  closeAllPinBindingPopups();
+  closeAllFlowPopups();
   document.getElementById('pin-binding-login-overlay').classList.add('show');
 }
 
@@ -2683,7 +2698,7 @@ let pinCodeSigninPending = false;
 let pinCodeSignupTransitionTimer = null;
 
 function chooseLoginState(isLoggedIn) {
-  closeAllPinBindingPopups();
+  closeAllFlowPopups();
   pushDemoPathStep(isLoggedIn ? '已綁定' : '未綁定');
   hidePinCodePage();
   showPinCodeWelcomePage();
@@ -2715,7 +2730,7 @@ function finishPinCodeSignup() {
 }
 
 function openPinCodeExpiryDecision() {
-  closeAllPinBindingPopups();
+  closeAllFlowPopups();
   document.getElementById('pin-binding-expiry-overlay').classList.add('show');
 }
 
@@ -2724,7 +2739,7 @@ function closePinCodeExpiryDecision() {
 }
 
 function choosePinCodeExpiry(isExpired) {
-  closeAllPinBindingPopups();
+  closeAllFlowPopups();
   pushDemoPathStep(isExpired ? '過期' : '未過期');
   if (isExpired) {
     document.getElementById('pin-binding-failed-overlay').classList.add('show');
@@ -2757,6 +2772,18 @@ function showPinCodeWelcomePage() {
 function hidePinCodeWelcomePage() {
   document.getElementById('page-pincode-welcome').classList.remove('show');
 }
+
+registerFlow('pincode', 'PIN_CODE_BINDING',
+  function () { showPinCodePage(); },
+  function () {
+    hidePinCodePage();
+    hidePinCodeWelcomePage();
+    pinCodeSigninPending = false;
+    document.getElementById('pin-code-sitelist-empty').classList.remove('show');
+    document.querySelector('.content').classList.remove('pin-code-lock-scroll');
+    if (pinCodeSignupTransitionTimer) { clearTimeout(pinCodeSignupTransitionTimer); pinCodeSignupTransitionTimer = null; }
+  }
+);
 
 // ── Page navigation ──────────────────────────────────────────────────────────
 const pageMap = {
