@@ -996,29 +996,31 @@ body {
 .pin-binding-primary-btn:hover { background: #0D47A1; }
 
 /* ── Demo-only decision panel: small corner widget, NOT a full dark overlay,
-   so it reads as a presenter control rather than real in-product UI ── */
+   so it reads as a presenter control rather than real in-product UI.
+   Dark themed (same palette as the FLOW:// bar) to make that even clearer. ── */
 .pin-flow-decision {
   display: none; position: fixed; right: 20px; bottom: 20px; z-index: 900;
-  background: #fff; border-radius: 10px; width: 260px; padding: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+  background: #0d1117; border: 1px solid #30363d; border-radius: 10px; width: 260px; padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3);
 }
 .pin-flow-decision.show { display: block; }
 .pin-flow-decision-tag {
   display: inline-block; font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
-  font-size: 9.5px; letter-spacing: 0.5px; color: #7ee787; background: #0d1117;
-  padding: 2px 6px; border-radius: 4px; margin-bottom: 10px;
+  font-size: 9.5px; letter-spacing: 0.5px; color: #7ee787; background: #161b22;
+  border: 1px solid #30363d; padding: 2px 6px; border-radius: 4px; margin-bottom: 10px;
 }
 .pin-flow-decision-close {
   position: absolute; top: 10px; right: 12px; border: none; background: none;
-  cursor: pointer; font-size: 16px; color: #999; line-height: 1; font-family: inherit;
+  cursor: pointer; font-size: 16px; color: #8b949e; line-height: 1; font-family: inherit;
 }
-.pin-flow-decision-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; padding-right: 14px; }
+.pin-flow-decision-close:hover { color: #c9d1d9; }
+.pin-flow-decision-title { font-size: 14px; font-weight: 600; color: #c9d1d9; margin-bottom: 12px; padding-right: 14px; }
 .pin-flow-decision-options { display: flex; flex-direction: column; gap: 8px; }
 .pin-flow-decision-option {
-  border: 1px solid #ddd; border-radius: 6px; padding: 10px; font-size: 13px; color: #1a1a1a;
-  background: #fff; cursor: pointer; text-align: center; font-family: inherit;
+  border: 1px solid #30363d; border-radius: 6px; padding: 10px; font-size: 13px; color: #c9d1d9;
+  background: #161b22; cursor: pointer; text-align: center; font-family: inherit;
 }
-.pin-flow-decision-option:hover { border-color: #1565C0; background: #F5F9FF; color: #1565C0; }
+.pin-flow-decision-option:hover { border-color: #7ee787; background: #1c2129; color: #7ee787; }
 
 .login-left {
   flex: 1; display: flex; flex-direction: column;
