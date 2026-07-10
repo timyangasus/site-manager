@@ -928,6 +928,15 @@ body {
 }
 .pin-code-stop-btn.stopped { background: #bbb; }
 
+.pin-code-toast {
+  position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%) translateY(12px);
+  background: #1a1a1a; color: #fff; font-size: 13px;
+  padding: 10px 24px; border-radius: 6px;
+  opacity: 0; transition: opacity 0.3s, transform 0.3s;
+  z-index: 950; pointer-events: none; white-space: nowrap;
+}
+.pin-code-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
 /* ── ASUS Site Manager welcome / loading page ── */
 #page-pincode-welcome {
   position: fixed; top: 32px; left: 0; right: 0; bottom: 0; z-index: 480;
@@ -2512,6 +2521,7 @@ body {
 
 <!-- Toast -->
 <div class="fw-toast" id="fw-toast">✓ Firmware upgrade complete</div>
+<div class="pin-code-toast" id="pin-code-toast"></div>
 
 <!-- Account Panel -->
 <div class="account-overlay" id="account-overlay" onclick="closeAccountPanel()"></div>
@@ -2751,6 +2761,7 @@ function choosePinCodeExpiry(isExpired) {
       document.getElementById('pin-binding-loading-overlay').classList.remove('show');
       hidePinCodeWelcomePage();
       openIndexSiteList(false);
+      showPinCodeToast('ExpertWiFi EBM68 已成功加入 ASUS Site Manager');
     }, 1400);
   }
 }
@@ -2766,6 +2777,15 @@ function openIndexSiteList(empty) {
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.toggle('show', empty);
   document.querySelector('.content').classList.toggle('pin-code-lock-scroll', empty);
+}
+
+let pinCodeToastTimer = null;
+function showPinCodeToast(message) {
+  const toast = document.getElementById('pin-code-toast');
+  toast.textContent = message;
+  toast.classList.add('show');
+  if (pinCodeToastTimer) clearTimeout(pinCodeToastTimer);
+  pinCodeToastTimer = setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
 function showPinCodeWelcomePage() {
@@ -2784,6 +2804,8 @@ registerFlow('pincode', 'PIN_CODE_BINDING',
     document.getElementById('pin-code-sitelist-empty').classList.remove('show');
     document.querySelector('.content').classList.remove('pin-code-lock-scroll');
     if (pinCodeSignupTransitionTimer) { clearTimeout(pinCodeSignupTransitionTimer); pinCodeSignupTransitionTimer = null; }
+    if (pinCodeToastTimer) { clearTimeout(pinCodeToastTimer); pinCodeToastTimer = null; }
+    document.getElementById('pin-code-toast').classList.remove('show');
   }
 );
 
