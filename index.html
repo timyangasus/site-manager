@@ -973,7 +973,8 @@ body {
 /* ── Pin Code binding popups ── */
 .pin-binding-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 700;
-  background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center;
+  background: rgba(0,0,0,0.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  display: none; align-items: center; justify-content: center;
   padding: 20px;
 }
 .pin-binding-overlay.show { display: flex; }
@@ -1004,11 +1005,11 @@ body {
 }
 .pin-binding-primary-btn:hover { background: #0D47A1; }
 
-/* ── Demo-only decision panel: small corner widget, NOT a full dark overlay,
-   so it reads as a presenter control rather than real in-product UI.
+/* ── Demo-only decision panel: small widget anchored bottom-center, NOT a full
+   dark overlay, so it reads as a presenter control rather than real in-product UI.
    Dark themed (same palette as the FLOW:// bar) to make that even clearer. ── */
 .pin-flow-decision {
-  display: none; position: fixed; right: 20px; bottom: 20px; z-index: 900;
+  display: none; position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 900;
   background: #0d1117; border: 1px solid #30363d; border-radius: 10px; width: 260px; padding: 16px;
   box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3);
 }
