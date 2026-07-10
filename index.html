@@ -104,12 +104,15 @@ body {
 }
 .topbar-btn:hover { background: rgba(0,0,0,0.07); }
 .content { flex: 1; overflow-y: auto; padding: 20px 24px; }
+.content.pin-code-lock-scroll { overflow: hidden; }
 
 /* ── Site List page ── */
 #page-firmware { display: none; }
 #page-sitelist { display: block; position: relative; }
 .pin-code-sitelist-empty {
-  display: none; position: absolute; inset: -20px -24px; z-index: 20;
+  /* fixed to the actual content viewport (below titlebar+demo-bar+topbar, right of sidebar)
+     rather than absolute within #page-sitelist, whose real (hidden) content is much taller */
+  display: none; position: fixed; top: 109px; left: 48px; right: 0; bottom: 0; z-index: 20;
   background: #f0f0f0; flex-direction: column; align-items: center; justify-content: center; text-align: center;
 }
 .pin-code-sitelist-empty.show { display: flex; }
@@ -1019,8 +1022,9 @@ body {
 
 .login-left {
   flex: 1; display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
+  align-items: center; justify-content: safe center;
   padding: 48px 64px; position: relative;
+  overflow-y: auto;
 }
 .login-right {
   width: 480px; flex-shrink: 0;
@@ -1033,6 +1037,9 @@ body {
 .login-earth { width: 240px; object-fit: contain; }
 .login-version { position: absolute; bottom: 24px; right: 32px; font-size: 12px; color: #999; }
 .login-footer { position: absolute; bottom: 24px; left: 64px; font-size: 11px; color: #aaa; max-width: 500px; }
+/* The sign-up view already has its own equivalent legal fine print further down, so hide the
+   generic fixed-position footer here to avoid it overlapping form fields when scrolled. */
+#view-pincode-signup.active ~ .login-footer { display: none; }
 
 /* Landing view */
 .landing-view { width: 100%; max-width: 420px; }
@@ -1058,8 +1065,71 @@ body {
 .signin-view { width: 100%; max-width: 420px; display: none; margin-top: -60px; }
 .signin-view.active { display: block; }
 .pin-code-signup-view.active { display: block; }
-.pin-code-signup-view { max-width: 420px; margin-top: 0; }
-.pin-code-signup-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 24px; text-align: center; }
+.pin-code-signup-view { max-width: 680px; margin: 24px 0; }
+.pin-code-signup-title { font-size: 28px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; text-align: center; }
+.pin-code-signup-subtitle { font-size: 13px; color: #444; text-align: center; line-height: 1.7; margin-bottom: 4px; }
+.pin-code-signup-subtitle a { color: #1565C0; text-decoration: underline; }
+.pin-code-signup-warn { color: #D93025; margin-bottom: 16px; }
+.pin-code-signup-notice {
+  background: #f2f2f2; border-radius: 4px; padding: 14px 18px; margin: 16px 0 24px;
+  font-size: 12.5px; color: #555; line-height: 1.7; text-align: center;
+}
+.pin-code-signup-social-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
+.pin-code-signup-social-btn {
+  flex: 1 1 140px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  border: 1.5px solid #1565C0; border-radius: 8px; background: #fff; color: #1565C0;
+  padding: 10px 14px; font-size: 13px; font-family: inherit; cursor: pointer;
+}
+.pin-code-signup-social-btn:hover { background: #F5F9FF; }
+.pin-code-signup-social-icon {
+  width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 700; color: #fff; background: #333;
+}
+.pin-code-signup-social-apple { background: #000; font-size: 15px; }
+.pin-code-signup-social-fb { background: #1877F2; }
+.pin-code-signup-social-google { background: #EA4335; }
+.pin-code-signup-social-line { background: #06C755; }
+.pin-code-signup-social-ms {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: transparent; padding: 3px;
+}
+.pin-code-signup-social-ms i { display: block; width: 100%; height: 100%; }
+.pin-code-signup-social-ms i:nth-child(1) { background: #F35325; }
+.pin-code-signup-social-ms i:nth-child(2) { background: #81BC06; }
+.pin-code-signup-social-ms i:nth-child(3) { background: #05A6F0; }
+.pin-code-signup-social-ms i:nth-child(4) { background: #FFBA08; }
+.pin-code-signup-divider {
+  display: flex; align-items: center; text-align: center; color: #888; font-size: 13px;
+  margin: 8px 0 20px; gap: 14px;
+}
+.pin-code-signup-divider::before, .pin-code-signup-divider::after { content: ''; flex: 1; height: 1px; background: #ddd; }
+.pin-code-signup-required { color: #D93025; }
+.pin-code-signup-hint { font-size: 11.5px; color: #999; margin-top: 6px; line-height: 1.6; }
+.pin-code-signup-hint a { color: #1565C0; text-decoration: none; }
+.pin-code-signup-eye {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  border: none; background: none; cursor: pointer; font-size: 15px; opacity: 0.5;
+}
+.pin-code-signup-birthday-label { font-size: 13px; font-weight: 500; color: #444; margin-bottom: 6px; }
+.pin-code-signup-birthday-row { display: flex; gap: 10px; margin-bottom: 20px; }
+.pin-code-signup-select {
+  flex: 1; height: 44px; padding: 0 12px; border: 1.5px solid #ddd; border-radius: 8px;
+  font-size: 14px; font-family: inherit; color: #1a1a1a; background: #fff;
+}
+.pin-code-signup-check {
+  display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: #444;
+  line-height: 1.6; margin-bottom: 8px; cursor: pointer;
+}
+.pin-code-signup-check input { margin-top: 3px; flex-shrink: 0; }
+.pin-code-signup-check-main { font-size: 13.5px; color: #1a1a1a; font-weight: 500; margin: 4px 0 12px; padding-top: 10px; border-top: 1px solid #eee; }
+.pin-code-signup-check a { color: #1565C0; text-decoration: underline; }
+.pin-code-signup-fineprint { font-size: 11.5px; color: #999; line-height: 1.7; margin: 16px 0 4px; padding-top: 12px; border-top: 1px solid #eee; }
+.pin-code-signup-submit {
+  display: block; margin: 20px auto 0; width: 240px; text-align: center;
+  background: #BBD6F2; color: #fff; border: none; border-radius: 8px;
+  padding: 13px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
+}
+.pin-code-signup-submit:hover { background: #9CC3EA; }
 .landing-view.active { display: block; }
 .landing-view { display: none; }
 .signin-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 28px; text-align: center; }
@@ -1586,20 +1656,62 @@ body {
 
     <!-- Pin Code binding: not-logged-in -> sign up (mock form; account.asus.com blocks iframe embedding) -->
     <div class="signin-view pin-code-signup-view" id="view-pincode-signup">
-      <div class="pin-code-signup-title">註冊 ASUS 帳號</div>
-      <div class="signin-field">
-        <label class="signin-label">Email</label>
-        <input class="signin-input" type="email" placeholder="you@example.com">
+      <div class="pin-code-signup-title">馬上加入</div>
+      <div class="pin-code-signup-subtitle">請注意，ASUS帳號與ROG帳號相同。若您有其中一個帳號，可以直接<a href="#" onclick="return false;">登入</a>，無需註冊新帳號。</div>
+      <div class="pin-code-signup-subtitle pin-code-signup-warn">*若申請教育商店會員，需用學校郵件申請</div>
+
+      <div class="pin-code-signup-notice">*提醒：當您選擇使用Apple ID或Facebook帳號進行做會員註冊時，若選擇「隱藏我的電子郵件」選項，可能會導致錯過無法正常接收重要更新通知及會員帳戶概況。</div>
+
+      <div class="pin-code-signup-social-row">
+        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-apple">&#63743;</span></button>
+        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-fb">f</span></button>
+        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-google">G</span></button>
+        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-line">L</span></button>
+        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-ms"><i></i><i></i><i></i><i></i></span></button>
       </div>
+
+      <div class="pin-code-signup-divider"><span>或選擇其他方式登入</span></div>
+
       <div class="signin-field">
-        <label class="signin-label">Password</label>
-        <input class="signin-input" type="password" placeholder="">
+        <label class="signin-label"><span class="pin-code-signup-required">*</span> 帳號</label>
+        <input class="signin-input" type="text">
+        <div class="pin-code-signup-hint">請輸入電子郵件或電話號碼</div>
       </div>
+
       <div class="signin-field">
-        <label class="signin-label">Confirm Password</label>
-        <input class="signin-input" type="password" placeholder="">
+        <label class="signin-label"><span class="pin-code-signup-required">*</span> 密碼</label>
+        <div style="position:relative;">
+          <input class="signin-input" type="password" style="padding-right:40px;">
+          <button class="pin-code-signup-eye" type="button" onclick="return false;">&#128065;</button>
+        </div>
+        <div class="pin-code-signup-hint">密碼需包括8至25位大小寫字母、數字及符號，且不能包含空格。<br><a href="#" onclick="return false;">設定密碼規範</a></div>
       </div>
-      <button class="signin-btn" onclick="finishPinCodeSignup()">註冊完成</button>
+
+      <div class="signin-field">
+        <label class="signin-label"><span class="pin-code-signup-required">*</span> 確認密碼:</label>
+        <div style="position:relative;">
+          <input class="signin-input" type="password" style="padding-right:40px;">
+          <button class="pin-code-signup-eye" type="button" onclick="return false;">&#128065;</button>
+        </div>
+        <div class="pin-code-signup-hint">請再次輸入密碼</div>
+      </div>
+
+      <div class="pin-code-signup-birthday-label">生日:</div>
+      <div class="pin-code-signup-birthday-row">
+        <select class="pin-code-signup-select"><option>年</option></select>
+        <select class="pin-code-signup-select"><option>月</option></select>
+        <select class="pin-code-signup-select"><option>日</option></select>
+      </div>
+
+      <label class="pin-code-signup-check pin-code-signup-check-main"><input type="checkbox"> 我同意全部選項和隱私權政策</label>
+      <label class="pin-code-signup-check"><input type="checkbox"> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩「<a href="#" onclick="return false;">隱私權政策</a>」</label>
+      <label class="pin-code-signup-check"><input type="checkbox"> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩雲端「<a href="#" onclick="return false;">隱私權政策</a>」</label>
+      <label class="pin-code-signup-check"><input type="checkbox"> 我願意收到華碩相關新聞、產品及服務更新之訊息或行銷廣告。</label>
+      <label class="pin-code-signup-check"><input type="checkbox"> 我願意收到華碩雲端的相關新聞、產品及服務更新之訊息或行銷廣告。</label>
+
+      <div class="pin-code-signup-fineprint">*請放心，收集的信息將只用於註冊和管理您的帳號。<br>在您成功註冊為會員後，我們還將協助您註冊成為ASUS Cloud會員（ASUS Cloud由ASUS Cloud公司所有），帳號和密碼不變。</div>
+
+      <button class="pin-code-signup-submit" onclick="finishPinCodeSignup()">加入帳號</button>
     </div>
 
     <div class="login-footer">By continuing, you agree to ASUS's Terms of Use and acknowledge you've read our Privacy Policy.</div>
@@ -2449,7 +2561,9 @@ function switchDemoFlow(flow) {
   closeAllPinBindingPopups();
   pinCodeSigninPending = false;
   document.getElementById('pin-code-sitelist-empty').classList.remove('show');
+  document.querySelector('.content').classList.remove('pin-code-lock-scroll');
   hidePinCodeWelcomePage();
+  if (pinCodeSignupTransitionTimer) { clearTimeout(pinCodeSignupTransitionTimer); pinCodeSignupTransitionTimer = null; }
   if (flow === 'pincode') {
     showPinCodePage();
   } else {
@@ -2557,22 +2671,27 @@ function closeLoginStateSelector() {
 
 // 已登入 -> straight into the PIN-expiry decision; 尚未登入 -> embedded sign-up first
 let pinCodeSigninPending = false;
+let pinCodeSignupTransitionTimer = null;
 
 function chooseLoginState(isLoggedIn) {
   closeAllPinBindingPopups();
   pushDemoPathStep(isLoggedIn ? '已登入' : '尚未登入');
+  hidePinCodePage();
+  showPinCodeWelcomePage();
   if (isLoggedIn) {
-    hidePinCodePage();
-    showPinCodeWelcomePage();
     openPinCodeExpiryDecision();
   } else {
-    startPinCodeSignupFlow();
+    // Brief loading transition into Site Manager before landing on the sign-up screen
+    pinCodeSignupTransitionTimer = setTimeout(() => {
+      pinCodeSignupTransitionTimer = null;
+      hidePinCodeWelcomePage();
+      startPinCodeSignupFlow();
+    }, 1200);
   }
 }
 
 function startPinCodeSignupFlow() {
   pinCodeSigninPending = true;
-  hidePinCodePage();
   document.getElementById('page-login').classList.remove('hidden');
   ['view-landing', 'view-signin', 'view-thirdparty', 'view-pincode-signup'].forEach(id =>
     document.getElementById(id).classList.remove('active'));
@@ -2617,6 +2736,7 @@ function openIndexSiteList(empty) {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.toggle('show', empty);
+  document.querySelector('.content').classList.toggle('pin-code-lock-scroll', empty);
 }
 
 function showPinCodeWelcomePage() {
