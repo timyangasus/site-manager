@@ -35,6 +35,13 @@ body {
   padding: 3px 8px; cursor: pointer;
 }
 .demo-bar-select:hover { border-color: #7ee787; }
+.demo-bar-reset {
+  font-family: inherit; font-size: 11px;
+  background: #161b22; color: #8b949e;
+  border: 1px solid #30363d; border-radius: 4px;
+  padding: 3px 8px; cursor: pointer;
+}
+.demo-bar-reset:hover { border-color: #7ee787; color: #7ee787; }
 .demo-bar-path { color: #8b949e; margin-left: auto; }
 
 /* ── Title bar ── */
@@ -1415,6 +1422,7 @@ body {
     <option value="main">MAIN_FLOW</option>
     <option value="pincode">PIN_CODE_BINDING</option>
   </select>
+  <button class="demo-bar-reset" onclick="resetCurrentDemoFlow()" title="重置目前流程回到起點">&#8634; RESET</button>
   <span class="demo-bar-path" id="demo-bar-path"></span>
 </div>
 
@@ -2299,6 +2307,12 @@ function switchDemoFlow(flow) {
     document.getElementById('page-login').classList.remove('hidden');
     goLanding();
   }
+}
+
+// Re-picking the currently-selected <option> doesn't fire onchange (no value change),
+// so this button gives an explicit way to restart whichever flow is active right now.
+function resetCurrentDemoFlow() {
+  switchDemoFlow(document.getElementById('demo-flow-select').value);
 }
 
 // ── Pin Code Device Binding flow ──────────────────────────────────────────────
