@@ -42,7 +42,8 @@ body {
   padding: 3px 8px; cursor: pointer;
 }
 .demo-bar-reset:hover { border-color: #7ee787; color: #7ee787; }
-.demo-bar-path { color: #8b949e; margin-left: auto; }
+.demo-bar-path { color: #8b949e; margin-left: 4px; }
+.demo-bar-reset { margin-left: auto; }
 
 /* ── Title bar ── */
 .titlebar {
@@ -924,6 +925,39 @@ body {
 }
 .pin-code-stop-btn.stopped { background: #bbb; }
 
+/* ── ASUS Site Manager welcome / loading page ── */
+#page-pincode-welcome {
+  position: fixed; top: 32px; left: 0; right: 0; bottom: 0; z-index: 480;
+  display: none; align-items: center; justify-content: center; flex-direction: column;
+  background: #f2f2f3;
+  background-image: radial-gradient(rgba(0,0,0,0.09) 1px, transparent 1px);
+  background-size: 18px 18px;
+  overflow: hidden;
+}
+#page-pincode-welcome.show { display: flex; }
+.pin-code-welcome-decor {
+  position: absolute; width: 52px; height: 52px; border-radius: 14px;
+  background: rgba(255,255,255,0.85); box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+  display: flex; align-items: center; justify-content: center;
+}
+.pin-code-welcome-logo {
+  width: 96px; height: 96px; border-radius: 22px; background: #fff;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.14);
+  display: flex; align-items: center; justify-content: center; margin-bottom: 26px;
+  position: relative; z-index: 2;
+}
+.pin-code-welcome-logo img { width: 52px; height: auto; }
+.pin-code-welcome-status {
+  display: flex; align-items: center; gap: 10px;
+  background: #fff; border-radius: 24px; padding: 12px 28px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.1); font-size: 14px; color: #444;
+  position: relative; z-index: 2;
+}
+.pin-code-welcome-spinner {
+  width: 16px; height: 16px; border: 2.5px solid #dce6f5; border-top-color: #1565C0;
+  border-radius: 50%; animation: pin-binding-spin 0.8s linear infinite; flex-shrink: 0;
+}
+
 /* ── Pin Code binding popups ── */
 .pin-binding-overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 700;
@@ -958,13 +992,30 @@ body {
 }
 .pin-binding-primary-btn:hover { background: #0D47A1; }
 
-.pin-binding-login-title { font-size: 15px; font-weight: 600; margin-bottom: 18px; }
-.pin-binding-login-options { display: flex; flex-direction: column; gap: 10px; }
-.pin-binding-login-option {
-  border: 1px solid #ddd; border-radius: 6px; padding: 12px; font-size: 14px; color: #1a1a1a;
+/* ── Demo-only decision panel: small corner widget, NOT a full dark overlay,
+   so it reads as a presenter control rather than real in-product UI ── */
+.pin-flow-decision {
+  display: none; position: fixed; right: 20px; bottom: 20px; z-index: 900;
+  background: #fff; border-radius: 10px; width: 260px; padding: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.22), 0 2px 8px rgba(0,0,0,0.12);
+}
+.pin-flow-decision.show { display: block; }
+.pin-flow-decision-tag {
+  display: inline-block; font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
+  font-size: 9.5px; letter-spacing: 0.5px; color: #7ee787; background: #0d1117;
+  padding: 2px 6px; border-radius: 4px; margin-bottom: 10px;
+}
+.pin-flow-decision-close {
+  position: absolute; top: 10px; right: 12px; border: none; background: none;
+  cursor: pointer; font-size: 16px; color: #999; line-height: 1; font-family: inherit;
+}
+.pin-flow-decision-title { font-size: 14px; font-weight: 600; color: #1a1a1a; margin-bottom: 12px; padding-right: 14px; }
+.pin-flow-decision-options { display: flex; flex-direction: column; gap: 8px; }
+.pin-flow-decision-option {
+  border: 1px solid #ddd; border-radius: 6px; padding: 10px; font-size: 13px; color: #1a1a1a;
   background: #fff; cursor: pointer; text-align: center; font-family: inherit;
 }
-.pin-binding-login-option:hover { border-color: #1565C0; background: #F5F9FF; color: #1565C0; }
+.pin-flow-decision-option:hover { border-color: #1565C0; background: #F5F9FF; color: #1565C0; }
 
 .login-left {
   flex: 1; display: flex; flex-direction: column;
@@ -1442,8 +1493,8 @@ body {
     <option value="main">MAIN_FLOW</option>
     <option value="pincode">PIN_CODE_BINDING</option>
   </select>
-  <button class="demo-bar-reset" onclick="resetCurrentDemoFlow()" title="重置目前流程回到起點">&#8634; RESET</button>
   <span class="demo-bar-path" id="demo-bar-path"></span>
+  <button class="demo-bar-reset" onclick="resetCurrentDemoFlow()" title="重置目前流程回到起點">&#8634; RESET</button>
 </div>
 
 <!-- ── Login / Landing page ── -->
@@ -1637,6 +1688,19 @@ body {
   </div>
 </div>
 
+<!-- ── ASUS Site Manager welcome / loading page ── -->
+<div id="page-pincode-welcome">
+  <div class="pin-code-welcome-decor" style="top:20%; left:30%;"><svg width="22" height="22" viewBox="0 -960 960 960"><path fill="#bbb" d="M240-160q-66 0-113-47t-47-113q0-59 34.5-104.5T200-486q7-77 65-129t135-52q75 0 127.5 52.5T580-489q77 6 128.5 62T760-300q0 58-41 99t-99 41H240Z"/></svg></div>
+  <div class="pin-code-welcome-decor" style="top:22%; right:24%;"><svg width="22" height="22" viewBox="0 -960 960 960"><path fill="#bbb" d="m370-80-16-128q-13-5-24.5-12T307-235l-119 50L78-375l103-78q-1-7-1-13.5v-27q0-6.5 1-13.5L78-585l110-190 119 50q11-8 23-15t24-12l16-128h220l16 128q13 5 24.5 12t22.5 15l119-50 110 190-103 78q1 7 1 13.5v27q0 6.5-2 13.5l103 78-110 190-118-50q-11 8-23 15t-24 12L590-80H370Z"/></svg></div>
+  <div class="pin-code-welcome-decor" style="top:38%; right:12%;"><svg width="22" height="22" viewBox="0 -960 960 960"><path fill="#bbb" d="M120-400v-160h80v160h-80Zm160 80v-320h80v320h-80Zm160 160v-640h80v640h-80Zm160-160v-320h80v320h-80Zm160-80v-160h80v160h-80Z"/></svg></div>
+  <div class="pin-code-welcome-decor" style="bottom:26%; right:16%;"><svg width="22" height="22" viewBox="0 -960 960 960"><path fill="#bbb" d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Zm240-160q33 0 56.5-23.5T560-320q0-33-23.5-56.5T480-400q-33 0-56.5 23.5T400-320q0 33 23.5 56.5T480-240ZM360-640h240v-80q0-50-35-85t-85-35q-50 0-85 35t-35 85v80Z"/></svg></div>
+  <div class="pin-code-welcome-decor" style="bottom:22%; left:30%;"><svg width="22" height="22" viewBox="0 -960 960 960"><path fill="#bbb" d="M667-100q-45 0-77-32t-32-77q0-6 3-31L273-405q-15 14-33.5 22t-39.5 8q-45 0-77-32t-32-77q0-45 32-77t77-32q21 0 39.5 8t33.5 22l288-165q-2-6-2.5-14.5T558-758q0-45 32-77t77-32q45 0 77 32t32 77q0 45-32 77t-77 32q-21 0-39.5-8T625-680L337-515q2 6 2.5 14.5t.5 12.5q0 6-.5 14.5T337-459l288 165q15-14 33.5-22t38.5-8q45 0 77 32t32 77q0 45-32 77t-77 32Z"/></svg></div>
+  <div class="pin-code-welcome-decor" style="top:48%; left:16%;"><svg width="22" height="22" viewBox="0 -960 960 960"><path fill="#bbb" d="M480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-82q26-36 45-75t31-83H404q12 44 31 83t45 75Zm-104-16q-18-33-31.5-68.5T322-320H204q29 50 72.5 87t99.5 55Zm208 0q56-18 99.5-55t72.5-87H638q-9 38-22.5 73.5T584-178ZM170-400h136q-3-20-4.5-39.5T300-480q0-21 1.5-40.5T306-560H170q-5 20-7.5 39.5T160-480q0 21 2.5 40.5T170-400Zm216 0h188q3-20 4.5-39.5T580-480q0-21-1.5-40.5T574-560H386q-3 20-4.5 39.5T380-480q0 21 1.5 40.5T386-400Zm268 0h136q5-20 7.5-39.5T800-480q0-21-2.5-40.5T790-560H654q3 20 4.5 39.5T660-480q0 21-1.5 40.5T654-400Zm-16-240h118q-29-50-72.5-87T584-782q18 33 31.5 68.5T638-640Zm-234 0h152q-12-44-31-83t-45-75q-26 36-45 75t-31 83Zm-200 0h118q9-38 22.5-73.5T376-782q-56 18-99.5 55T204-640Z"/></svg></div>
+
+  <div class="pin-code-welcome-logo"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAA2CAYAAABeFWCFAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAABUVJREFUeAG1mU9oHFUYwL/vbYglwfoXRXpJNluhh2Y3ngTJdmuk4KW2HoSeaiEeBEsaPJlS2h5K25MGzE1I1EMvitGTHko3TUSK0EzXFApJNuMt5mLAxCZ053393mx2d3ay8+fNvP4umXkzO/PL2+/P2xmEZ8Cb+XcP1dCZAaLHYAqStwQYxhWF2vdA8CqYgkWrlYVbXWCQpijAIb6DAATB0hLSQHBbiapNYzOby71/sCXqIvniqWYXEarVyt3Jxr4xWadn+ztoibpIgl5Izkav3LzoHTAim80Xb/AsHOlw6ACPJwm1DXJ2L1YqlW3vYGrZ/vzwef5zOuCwiteDoIcrurZ07x//gVSyShQBPws7hwhfhJjwtbaDRBWJZQcKxbNRonUoEzcUhHQCRd3jkIDs0dJ7RDAR83RVvrojzyKaXP5roRp+IU0Ov1U8Ahl5HfR4OfSoW/Tnb0MEWrKq6DsOTPFMaSUNAfYEH6x3J4hBbNn27qQLcdjS8/tuTvRLXFH3/DgnpROt459dtr+3Upn/BjSIlFVt9AnVpiCFqAIRX2ltQ5W701egSaSs7N2eCOhOWhCRw9dRsb4ha7vX/d0pDqH1LztYvMzz8BEYgsvdf+TshNbSMAJlXVGEKyraTJFB8eFyQlFFxzBg0bG6qEGQxpetsgUpQP9ArlAqSZJ3wCQIV6vW3SuQkjbZvkKpT5Bc5M3Yi48Yd5hk0Qv+YXdSwCkgibzaJ6S/BYjyilUuB1/KQzZ/bI0/1gfmTK3qg7kh8ElyZbhMQKWAD9mIdHXVmp/xH2jG7ECh9LFZUbAl4nHvgMoFFWIhooo+XlZO1ytRO60EI/oAzGF3ozhuW+XNxgBPxin+HuM3Ak5wv3BTNuK/1WFTiT6yynZj4HChVCCS06ALC6uwaey6spxYKqGMJBWiOOcVVUnrEP2U9Po8iWcb22YfcnCJWrXKs43denWhO2lygZPxVGPbld2LrU1IQ4daKtwZTZ20zW9EeG72LSSEV1SzflFOji9ZtAAGacpKECpTE8wuWg7gOe/I3rriAhgBmy26KcuhwMVYjIMeXKLwtLdEGV9XIM01NtsSjJNjhoX5gQXaEH0Vq1OJ0qqlMeiuf+MuGf/Bf9ftRy+80f8z/0cv8XOBTiVtk4VuShSfch9fbwyqzOcff3/w5gEwBSftsjU329qNwC3oe8K8+LW9M+kVTVui9nkilletubZ2HSkbhWooLLpofl0hhry5oEjdFDJE06ZF/euKBqmefPfni5/vrSnSNZQWW/6k9ZI4DHJDxZOS8DwvUIw96heZzCer98srQccT3Sg3+M7bUsKo+97AELwGuBkmqtB/MHd0JEvYNba3u83vOFLPLHGrtysLv0adpyU7MHjiNZmpfcFx2nxXwGWtBilwRTv8hOlEbFklCmL3Gn9dr3vH+SnLE0jOj3FFFbFkg0RdiHb4hZd+1yL8fe3B/Nc6H4mUHRw80QtiZ6KjaOO+HLugA4mVHkfcAE0iZbfEzig/o8qGnoSwCzHhhFyn5/DSw4flLdAkVDZXGB7laRuBKAgc9eMr6jQlKrtx3P6ztQDSIfAG2aFjZ7jon4SYIIVXhbSiis4P5liU32WeAS0oUJZFtzCDl9KIKvYV9OzQ8Ii+qDJCh2eXw5v2tXBJzpR9f2EFUtI2s6o7gcQxSIIbBtTd4Q5TcbpTHFrPulR3ErVrkAJuEG2hoLrT2uL8D2AIV7ZZ9D1tNAn8RuZ//ink/lTSaaNxEaHdSRcVCqjiFn8zLarooszuCF9+iW+yBCaQ2GNX5rS7UxyeAt83Pz5e5SReAAAAAElFTkSuQmCC" alt=""></div>
+  <div class="pin-code-welcome-status"><span class="pin-code-welcome-spinner"></span>請稍候...</div>
+</div>
+
 <!-- Pin Code binding introduction popup -->
 <div class="pin-binding-overlay" id="pin-binding-intro-overlay">
   <div class="pin-binding-dialog">
@@ -1651,27 +1715,26 @@ body {
   </div>
 </div>
 
-<!-- Pin Code login-state selector -->
-<div class="pin-binding-overlay" id="pin-binding-login-overlay">
-  <div class="pin-binding-dialog">
-    <button class="pin-binding-close" onclick="closeLoginStateSelector()">&times;</button>
-    <div class="pin-binding-login-title">選擇 ASUS Site Manager 登入狀態</div>
-    <div class="pin-binding-login-options">
-      <button class="pin-binding-login-option" onclick="chooseLoginState(true)">已登入</button>
-      <button class="pin-binding-login-option" onclick="chooseLoginState(false)">尚未登入</button>
-    </div>
+<!-- Pin Code login-state selector: a demo-only decision, kept as a small corner
+     panel (not a full dark overlay) so it doesn't read as real in-product UI -->
+<div class="pin-flow-decision" id="pin-binding-login-overlay">
+  <button class="pin-flow-decision-close" onclick="closeLoginStateSelector()">&times;</button>
+  <span class="pin-flow-decision-tag">DEMO 流程判斷</span>
+  <div class="pin-flow-decision-title">選擇 ASUS Site Manager 登入狀態</div>
+  <div class="pin-flow-decision-options">
+    <button class="pin-flow-decision-option" onclick="chooseLoginState(true)">已登入</button>
+    <button class="pin-flow-decision-option" onclick="chooseLoginState(false)">尚未登入</button>
   </div>
 </div>
 
-<!-- Pin Code expiry decision -->
-<div class="pin-binding-overlay" id="pin-binding-expiry-overlay">
-  <div class="pin-binding-dialog">
-    <button class="pin-binding-close" onclick="closePinCodeExpiryDecision()">&times;</button>
-    <div class="pin-binding-login-title">PIN Code 是否過期</div>
-    <div class="pin-binding-login-options">
-      <button class="pin-binding-login-option" onclick="choosePinCodeExpiry(false)">未過期</button>
-      <button class="pin-binding-login-option" onclick="choosePinCodeExpiry(true)">過期</button>
-    </div>
+<!-- Pin Code expiry decision: same demo-only corner-panel treatment -->
+<div class="pin-flow-decision" id="pin-binding-expiry-overlay">
+  <button class="pin-flow-decision-close" onclick="closePinCodeExpiryDecision()">&times;</button>
+  <span class="pin-flow-decision-tag">DEMO 流程判斷</span>
+  <div class="pin-flow-decision-title">PIN Code 是否過期</div>
+  <div class="pin-flow-decision-options">
+    <button class="pin-flow-decision-option" onclick="choosePinCodeExpiry(false)">未過期</button>
+    <button class="pin-flow-decision-option" onclick="choosePinCodeExpiry(true)">過期</button>
   </div>
 </div>
 
@@ -2370,11 +2433,23 @@ body {
 
 <script>
 // ── Demo flow switcher (meta layer; each future flow registers itself here) ──
-function switchDemoFlow(flow) {
+// Breadcrumb of decision choices made so far, shown in the demo bar (e.g. "已登入 > 過期")
+let demoPathSteps = [];
+function clearDemoPath() {
+  demoPathSteps = [];
   document.getElementById('demo-bar-path').textContent = '';
+}
+function pushDemoPathStep(label) {
+  demoPathSteps.push(label);
+  document.getElementById('demo-bar-path').textContent = demoPathSteps.join(' > ');
+}
+
+function switchDemoFlow(flow) {
+  clearDemoPath();
   closeAllPinBindingPopups();
   pinCodeSigninPending = false;
   document.getElementById('pin-code-sitelist-empty').classList.remove('show');
+  hidePinCodeWelcomePage();
   if (flow === 'pincode') {
     showPinCodePage();
   } else {
@@ -2386,6 +2461,8 @@ function switchDemoFlow(flow) {
 
 // Re-picking the currently-selected <option> doesn't fire onchange (no value change),
 // so this button gives an explicit way to restart whichever flow is active right now.
+// Note: the dropdown's value is never changed mid-flow (see chooseLoginState/doSignin),
+// so this always restarts the flow you're actually still inside of, even from its last step.
 function resetCurrentDemoFlow() {
   switchDemoFlow(document.getElementById('demo-flow-select').value);
 }
@@ -2483,9 +2560,10 @@ let pinCodeSigninPending = false;
 
 function chooseLoginState(isLoggedIn) {
   closeAllPinBindingPopups();
-  document.getElementById('demo-flow-select').value = 'main';
+  pushDemoPathStep(isLoggedIn ? '已登入' : '尚未登入');
   if (isLoggedIn) {
     hidePinCodePage();
+    showPinCodeWelcomePage();
     openPinCodeExpiryDecision();
   } else {
     startPinCodeSignupFlow();
@@ -2516,12 +2594,14 @@ function closePinCodeExpiryDecision() {
 
 function choosePinCodeExpiry(isExpired) {
   closeAllPinBindingPopups();
+  pushDemoPathStep(isExpired ? '過期' : '未過期');
   if (isExpired) {
     document.getElementById('pin-binding-failed-overlay').classList.add('show');
   } else {
     document.getElementById('pin-binding-loading-overlay').classList.add('show');
     setTimeout(() => {
       document.getElementById('pin-binding-loading-overlay').classList.remove('show');
+      hidePinCodeWelcomePage();
       openIndexSiteList(false);
     }, 1400);
   }
@@ -2529,6 +2609,7 @@ function choosePinCodeExpiry(isExpired) {
 
 function closePinCodeBindingFailedPopup() {
   document.getElementById('pin-binding-failed-overlay').classList.remove('show');
+  hidePinCodeWelcomePage();
   openIndexSiteList(true);
 }
 
@@ -2536,6 +2617,13 @@ function openIndexSiteList(empty) {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.toggle('show', empty);
+}
+
+function showPinCodeWelcomePage() {
+  document.getElementById('page-pincode-welcome').classList.add('show');
+}
+function hidePinCodeWelcomePage() {
+  document.getElementById('page-pincode-welcome').classList.remove('show');
 }
 
 // ── Page navigation ──────────────────────────────────────────────────────────
@@ -3814,6 +3902,7 @@ function doSignin() {
   if (pinCodeSigninPending) {
     pinCodeSigninPending = false;
     document.getElementById('page-login').classList.add('hidden');
+    showPinCodeWelcomePage();
     openPinCodeExpiryDecision();
     return;
   }
