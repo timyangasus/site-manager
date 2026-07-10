@@ -106,7 +106,17 @@ body {
 
 /* ── Site List page ── */
 #page-firmware { display: none; }
-#page-sitelist { display: block; }
+#page-sitelist { display: block; position: relative; }
+.pin-code-sitelist-empty {
+  display: none; position: absolute; inset: -20px -24px; z-index: 20;
+  background: #f0f0f0; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+}
+.pin-code-sitelist-empty.show { display: flex; }
+.pin-code-sitelist-empty-title { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 20px; }
+.pin-code-sitelist-empty-btn {
+  background: #1565C0; color: #fff; border: none; border-radius: 8px;
+  padding: 10px 24px; font-size: 14px; font-weight: 600; font-family: inherit;
+}
 
 .page-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -934,6 +944,13 @@ body {
   width: 44px; height: 44px; border-radius: 50%; background: #EEF3FB;
   display: flex; align-items: center; justify-content: center;
 }
+.pin-binding-icon-circle-error { background: #FDECEA; }
+.pin-binding-spinner {
+  width: 40px; height: 40px; margin: 4px auto 18px;
+  border: 4px solid #EEF3FB; border-top-color: #1565C0; border-radius: 50%;
+  animation: pin-binding-spin 0.8s linear infinite;
+}
+@keyframes pin-binding-spin { to { transform: rotate(360deg); } }
 .pin-binding-text { font-size: 13.5px; color: #333; line-height: 1.75; margin-bottom: 22px; }
 .pin-binding-primary-btn {
   width: 100%; background: #1565C0; color: #fff; border: none; border-radius: 6px;
@@ -989,6 +1006,9 @@ body {
 /* Sign in view */
 .signin-view { width: 100%; max-width: 420px; display: none; margin-top: -60px; }
 .signin-view.active { display: block; }
+.pin-code-signup-view.active { display: block; }
+.pin-code-signup-view { max-width: 420px; margin-top: 0; }
+.pin-code-signup-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 24px; text-align: center; }
 .landing-view.active { display: block; }
 .landing-view { display: none; }
 .signin-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 28px; text-align: center; }
@@ -1513,6 +1533,24 @@ body {
       </div>
     </div>
 
+    <!-- Pin Code binding: not-logged-in -> sign up (mock form; account.asus.com blocks iframe embedding) -->
+    <div class="signin-view pin-code-signup-view" id="view-pincode-signup">
+      <div class="pin-code-signup-title">註冊 ASUS 帳號</div>
+      <div class="signin-field">
+        <label class="signin-label">Email</label>
+        <input class="signin-input" type="email" placeholder="you@example.com">
+      </div>
+      <div class="signin-field">
+        <label class="signin-label">Password</label>
+        <input class="signin-input" type="password" placeholder="">
+      </div>
+      <div class="signin-field">
+        <label class="signin-label">Confirm Password</label>
+        <input class="signin-input" type="password" placeholder="">
+      </div>
+      <button class="signin-btn" onclick="finishPinCodeSignup()">註冊完成</button>
+    </div>
+
     <div class="login-footer">By continuing, you agree to ASUS's Terms of Use and acknowledge you've read our Privacy Policy.</div>
   </div>
 
@@ -1617,11 +1655,42 @@ body {
 <div class="pin-binding-overlay" id="pin-binding-login-overlay">
   <div class="pin-binding-dialog">
     <button class="pin-binding-close" onclick="closeLoginStateSelector()">&times;</button>
-    <div class="pin-binding-login-title">選擇登入狀態</div>
+    <div class="pin-binding-login-title">選擇 ASUS Site Manager 登入狀態</div>
     <div class="pin-binding-login-options">
       <button class="pin-binding-login-option" onclick="chooseLoginState(true)">已登入</button>
       <button class="pin-binding-login-option" onclick="chooseLoginState(false)">尚未登入</button>
     </div>
+  </div>
+</div>
+
+<!-- Pin Code expiry decision -->
+<div class="pin-binding-overlay" id="pin-binding-expiry-overlay">
+  <div class="pin-binding-dialog">
+    <button class="pin-binding-close" onclick="closePinCodeExpiryDecision()">&times;</button>
+    <div class="pin-binding-login-title">PIN Code 是否過期</div>
+    <div class="pin-binding-login-options">
+      <button class="pin-binding-login-option" onclick="choosePinCodeExpiry(false)">未過期</button>
+      <button class="pin-binding-login-option" onclick="choosePinCodeExpiry(true)">過期</button>
+    </div>
+  </div>
+</div>
+
+<!-- Pin Code binding loading -->
+<div class="pin-binding-overlay" id="pin-binding-loading-overlay">
+  <div class="pin-binding-dialog">
+    <div class="pin-binding-spinner"></div>
+    <div class="pin-binding-text" style="margin-bottom:0;">綁定中...</div>
+  </div>
+</div>
+
+<!-- Pin Code binding failed -->
+<div class="pin-binding-overlay" id="pin-binding-failed-overlay">
+  <div class="pin-binding-dialog">
+    <div class="pin-binding-icons">
+      <span class="pin-binding-icon-circle pin-binding-icon-circle-error"><svg width="20" height="20" viewBox="0 -960 960 960"><path fill="#D93025" d="m336-280 144-144 144 144 56-56-144-144 144-144-56-56-144 144-144-144-56 56 144 144-144 144 56 56ZM480-80q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Z"/></svg></span>
+    </div>
+    <div class="pin-binding-text">此 PIN 碼已逾期失效，無法完成裝置綁定。</div>
+    <button class="pin-binding-primary-btn" onclick="closePinCodeBindingFailedPopup()">確定</button>
   </div>
 </div>
 
@@ -1657,6 +1726,10 @@ body {
 
     <!-- ── Site List ── -->
     <div id="page-sitelist">
+      <div class="pin-code-sitelist-empty" id="pin-code-sitelist-empty">
+        <div class="pin-code-sitelist-empty-title">尚無加入 site</div>
+        <button class="pin-code-sitelist-empty-btn">+ Add Site</button>
+      </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <div style="display:flex;align-items:center;gap:20px;font-size:13px;color:#666;">
           <span style="font-weight:500;color:#1a1a1a;">Site List</span>
@@ -2300,6 +2373,8 @@ body {
 function switchDemoFlow(flow) {
   document.getElementById('demo-bar-path').textContent = '';
   closeAllPinBindingPopups();
+  pinCodeSigninPending = false;
+  document.getElementById('pin-code-sitelist-empty').classList.remove('show');
   if (flow === 'pincode') {
     showPinCodePage();
   } else {
@@ -2375,6 +2450,9 @@ function renderPinCodeCountdown() {
 function closeAllPinBindingPopups() {
   document.getElementById('pin-binding-intro-overlay').classList.remove('show');
   document.getElementById('pin-binding-login-overlay').classList.remove('show');
+  document.getElementById('pin-binding-expiry-overlay').classList.remove('show');
+  document.getElementById('pin-binding-loading-overlay').classList.remove('show');
+  document.getElementById('pin-binding-failed-overlay').classList.remove('show');
 }
 
 function openBindingIntroductionPopup() {
@@ -2400,21 +2478,64 @@ function closeLoginStateSelector() {
   document.getElementById('pin-binding-login-overlay').classList.remove('show');
 }
 
+// 已登入 -> straight into the PIN-expiry decision; 尚未登入 -> embedded sign-up first
+let pinCodeSigninPending = false;
+
 function chooseLoginState(isLoggedIn) {
   closeAllPinBindingPopups();
-  hidePinCodePage();
-  openIndexPage(isLoggedIn ? 'list' : 'login');
+  document.getElementById('demo-flow-select').value = 'main';
+  if (isLoggedIn) {
+    hidePinCodePage();
+    openPinCodeExpiryDecision();
+  } else {
+    startPinCodeSignupFlow();
+  }
 }
 
-function openIndexPage(target) {
-  document.getElementById('demo-flow-select').value = 'main';
-  if (target === 'list') {
-    document.getElementById('page-login').classList.add('hidden');
-    goPage('sitelist');
+function startPinCodeSignupFlow() {
+  pinCodeSigninPending = true;
+  hidePinCodePage();
+  document.getElementById('page-login').classList.remove('hidden');
+  ['view-landing', 'view-signin', 'view-thirdparty', 'view-pincode-signup'].forEach(id =>
+    document.getElementById(id).classList.remove('active'));
+  document.getElementById('view-pincode-signup').classList.add('active');
+}
+
+function finishPinCodeSignup() {
+  goLanding();
+}
+
+function openPinCodeExpiryDecision() {
+  closeAllPinBindingPopups();
+  document.getElementById('pin-binding-expiry-overlay').classList.add('show');
+}
+
+function closePinCodeExpiryDecision() {
+  document.getElementById('pin-binding-expiry-overlay').classList.remove('show');
+}
+
+function choosePinCodeExpiry(isExpired) {
+  closeAllPinBindingPopups();
+  if (isExpired) {
+    document.getElementById('pin-binding-failed-overlay').classList.add('show');
   } else {
-    document.getElementById('page-login').classList.remove('hidden');
-    goLanding();
+    document.getElementById('pin-binding-loading-overlay').classList.add('show');
+    setTimeout(() => {
+      document.getElementById('pin-binding-loading-overlay').classList.remove('show');
+      openIndexSiteList(false);
+    }, 1400);
   }
+}
+
+function closePinCodeBindingFailedPopup() {
+  document.getElementById('pin-binding-failed-overlay').classList.remove('show');
+  openIndexSiteList(true);
+}
+
+function openIndexSiteList(empty) {
+  document.getElementById('page-login').classList.add('hidden');
+  goPage('sitelist');
+  document.getElementById('pin-code-sitelist-empty').classList.toggle('show', empty);
 }
 
 // ── Page navigation ──────────────────────────────────────────────────────────
@@ -3266,6 +3387,7 @@ function goSignin() {
 function goLanding() {
   document.getElementById('view-signin').classList.remove('active');
   document.getElementById('view-thirdparty').classList.remove('active');
+  document.getElementById('view-pincode-signup').classList.remove('active');
   document.getElementById('view-landing').classList.add('active');
 }
 
@@ -3689,6 +3811,12 @@ function closeAccountPanel() {
 }
 
 function doSignin() {
+  if (pinCodeSigninPending) {
+    pinCodeSigninPending = false;
+    document.getElementById('page-login').classList.add('hidden');
+    openPinCodeExpiryDecision();
+    return;
+  }
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
 }
