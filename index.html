@@ -2961,6 +2961,9 @@ function openIndexSiteList(empty) {
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.toggle('show', empty);
   document.querySelector('.content').classList.toggle('pin-code-lock-scroll', empty);
+  // goPage('sitelist') just marked the badge 1_020 (populated) unconditionally --
+  // correct it to 1_021 when this is actually the empty state.
+  if (empty) markCurrentPage('page:sitelist-empty');
 }
 
 let pinCodeToastTimer = null;
