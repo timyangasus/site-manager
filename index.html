@@ -28,6 +28,10 @@ body {
   z-index: 1000;
 }
 .demo-bar-label { color: #7ee787; letter-spacing: 0.5px; }
+.demo-bar-pagenum {
+  color: #ffb454; background: #161b22; border: 1px solid #30363d;
+  border-radius: 4px; padding: 2px 6px; font-weight: 700;
+}
 .demo-bar-select {
   font-family: inherit; font-size: 10px;
   background: #161b22; color: #c9d1d9;
@@ -1586,6 +1590,7 @@ body {
 
 <!-- ── Demo control bar (meta layer for internal discussion, not product UI) ── -->
 <div class="demo-bar">
+  <span class="demo-bar-pagenum" id="demo-bar-pagenum" title="目前頁面編號">--</span>
   <span class="demo-bar-label">FLOW://</span>
   <select class="demo-bar-select" id="demo-flow-select" onchange="switchDemoFlow(this.value)">
     <!-- options are populated by registerFlow() calls in the script below -->
@@ -2646,13 +2651,21 @@ function resetCurrentDemoFlow() {
 //   220  Site Manager 歡迎頁
 //   230  註冊頁「馬上加入」
 //
-// registerPage(number, label, flow, activate?): flow is reset via switchDemoFlow()
-// first (so leftover state from wherever you were is cleared the same way
-// switching flows already does), then activate() drills into the specific
-// screen. Omit activate when the page IS that flow's default show() screen.
+// registerPage(number, label, flow, activate?, signature?): flow is reset via
+// switchDemoFlow() first (so leftover state from wherever you were is cleared
+// the same way switching flows already does), then activate() drills into the
+// specific screen. Omit activate when the page IS that flow's default show().
+//
+// signature is an optional tag shared with markCurrentPage(signature) calls
+// placed inside the underlying nav functions (goPage, goLanding, showPinCodePage,
+// etc.) -- so the little page-number badge in the FLOW:// bar updates correctly
+// whether a screen was reached via gotoPage() or by just clicking through the
+// demo normally, not only when gotoPage() itself was used.
 const PAGES = {};
-function registerPage(number, label, flow, activate) {
+const PAGE_SIGNATURES = {};
+function registerPage(number, label, flow, activate, signature) {
   PAGES[number] = { label, flow, activate };
+  if (signature) PAGE_SIGNATURES[signature] = number;
 }
 function gotoPage(number) {
   const p = PAGES[number];
@@ -2661,41 +2674,51 @@ function gotoPage(number) {
   switchDemoFlow(p.flow);
   if (p.activate) p.activate();
 }
+function markCurrentPage(signature) {
+  const num = PAGE_SIGNATURES[signature];
+  document.getElementById('demo-bar-pagenum').textContent = num ? String(num) : '--';
+}
 
 registerFlow('main', 'MAIN_FLOW', function () {
   document.getElementById('page-login').classList.remove('hidden');
   goLanding();
 });
 
-registerPage(110, '登入首頁 Landing', 'main');
-registerPage(111, '第三方帳號登入', 'main', function () { goThirdParty(); });
-registerPage(112, 'Sign in 頁', 'main', function () { goSignin(); });
+registerPage(110, '登入首頁 Landing', 'main', null, 'view:landing');
+registerPage(111, '第三方帳號登入', 'main', function () { goThirdParty(); }, 'view:thirdparty');
+registerPage(112, 'Sign in 頁', 'main', function () { goSignin(); }, 'view:signin');
 registerPage(120, 'Sites 列表（有資料）', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
-});
+}, 'page:sitelist');
 registerPage(121, 'Sites 列表（空白）', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.add('show');
   document.querySelector('.content').classList.add('pin-code-lock-scroll');
-});
+  markCurrentPage('page:sitelist-empty');
+}, 'page:sitelist-empty');
 registerPage(130, 'Firmware Update', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('firmware');
-});
+}, 'page:firmware');
 registerPage(140, 'History / Schedule', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('schedule');
-});
+}, 'page:schedule');
 registerPage(150, 'Site to Site', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitetosite');
-});
+}, 'page:sitetosite');
 registerPage(160, 'Notifications', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('notifications');
-});
+}, 'page:notifications');
+
+// The page loads directly into the landing view (it's the default .active
+// element in the markup) without going through goLanding(), so sync the
+// badge once here to match reality instead of showing "--" until the first click.
+markCurrentPage('view:landing');
 
 // ── Pin Code Device Binding flow ──────────────────────────────────────────────
 const PIN_CODE_RAIL_ITEMS = ['Quick Internet\nSetup','Dashboard','AiMesh','Self-defined\nNetwork','VPN Server','VPN Fusion','Traffic\nAnalyzer','USB\nApplication','IPv6','AiProtection','Firewall','Administration','System Log','Network Tools'];
@@ -2718,6 +2741,7 @@ function showPinCodePage() {
   document.getElementById('page-login').classList.add('hidden');
   document.getElementById('page-pincode-router').classList.add('show');
   resetPinCodeState();
+  markCurrentPage('pincode:router');
 }
 
 function hidePinCodePage() {
@@ -2815,6 +2839,7 @@ function startPinCodeSignupFlow() {
   ['view-landing', 'view-signin', 'view-thirdparty', 'view-pincode-signup'].forEach(id =>
     document.getElementById(id).classList.remove('active'));
   document.getElementById('view-pincode-signup').classList.add('active');
+  markCurrentPage('pincode:signup');
 }
 
 function finishPinCodeSignup() {
@@ -2875,6 +2900,7 @@ function showPinCodeToast(message) {
 
 function showPinCodeWelcomePage() {
   document.getElementById('page-pincode-welcome').classList.add('show');
+  markCurrentPage('pincode:welcome');
 }
 function hidePinCodeWelcomePage() {
   document.getElementById('page-pincode-welcome').classList.remove('show');
@@ -2894,15 +2920,15 @@ registerFlow('pincode', 'PIN_CODE_BINDING',
   }
 );
 
-registerPage(210, 'Pin Code 路由器頁', 'pincode');
+registerPage(210, 'Pin Code 路由器頁', 'pincode', null, 'pincode:router');
 registerPage(220, 'Site Manager 歡迎頁', 'pincode', function () {
   hidePinCodePage();
   showPinCodeWelcomePage();
-});
+}, 'pincode:welcome');
 registerPage(230, '註冊頁「馬上加入」', 'pincode', function () {
   hidePinCodePage();
   startPinCodeSignupFlow();
-});
+}, 'pincode:signup');
 
 // ── Page navigation ──────────────────────────────────────────────────────────
 const pageMap = {
@@ -2917,6 +2943,7 @@ const pageMap = {
 function goPage(page) {
   const _titles = { sitelist:'Sites', firmware:'Firmware Upgrade', notifications:'Notification', schedule:'Schedule', home:'Home', history:'History', settings:'Settings', sitetosite:'Site to Site' };
   document.getElementById('topbar-title').textContent = _titles[page] || '';
+  markCurrentPage('page:' + page);
   document.getElementById('page-sitelist').style.display = page === 'sitelist' ? 'block' : 'none';
   document.getElementById('page-firmware').style.display = page === 'firmware' ? 'block' : 'none';
   document.getElementById('page-notifications').style.display = page === 'notifications' ? 'block' : 'none';
@@ -3748,6 +3775,7 @@ function inlineTopoToggle2(btn, idx) {
 function goSignin() {
   document.getElementById('view-landing').classList.remove('active');
   document.getElementById('view-signin').classList.add('active');
+  markCurrentPage('view:signin');
 }
 
 function goLanding() {
@@ -3755,6 +3783,7 @@ function goLanding() {
   document.getElementById('view-thirdparty').classList.remove('active');
   document.getElementById('view-pincode-signup').classList.remove('active');
   document.getElementById('view-landing').classList.add('active');
+  markCurrentPage('view:landing');
 }
 
 function goRegister() {
@@ -4146,6 +4175,7 @@ function goThirdParty() {
   document.getElementById('view-landing').classList.remove('active');
   document.getElementById('view-signin').classList.remove('active');
   document.getElementById('view-thirdparty').classList.add('active');
+  markCurrentPage('view:thirdparty');
 }
 
 function toggleThirdParty(btn) {
