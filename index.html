@@ -1028,11 +1028,12 @@ body {
 .pin-flow-decision-tag {
   display: inline-block; font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
   font-size: 8.5px; letter-spacing: 0.5px; border: 1px solid #30363d; padding: 2px 5px; border-radius: 4px; margin-bottom: 8px;
+  background: #161b22;
   animation: pin-flow-tag-breathe 1.8s ease-in-out infinite;
 }
 @keyframes pin-flow-tag-breathe {
-  0%, 100% { background: #161b22; color: #7ee787; box-shadow: 0 0 0 rgba(126,231,135,0); }
-  50% { background: #7ee787; color: #0d1117; box-shadow: 0 0 10px rgba(126,231,135,0.7); }
+  0%, 100% { color: #3d6b45; }
+  50% { color: #7ee787; }
 }
 .pin-flow-decision-close {
   position: absolute; top: 8px; right: 10px; border: none; background: none;
@@ -2709,7 +2710,9 @@ function closeBindingIntroductionPopup() {
 
 function goToBindingLoginStep() {
   document.getElementById('pin-binding-intro-overlay').classList.remove('show');
-  openLoginStateSelector();
+  // Small gap before the next panel pops in -- back-to-back with zero gap reads
+  // as "the same thing," not as a new decision appearing.
+  setTimeout(openLoginStateSelector, 200);
 }
 
 function openLoginStateSelector() {
@@ -2731,7 +2734,7 @@ function chooseLoginState(isLoggedIn) {
   hidePinCodePage();
   showPinCodeWelcomePage();
   if (isLoggedIn) {
-    openPinCodeExpiryDecision();
+    setTimeout(openPinCodeExpiryDecision, 200);
   } else {
     // Brief loading transition into Site Manager before landing on the sign-up screen
     pinCodeSignupTransitionTimer = setTimeout(() => {
@@ -2769,17 +2772,19 @@ function closePinCodeExpiryDecision() {
 function choosePinCodeExpiry(isExpired) {
   closeAllFlowPopups();
   pushDemoPathStep(isExpired ? '過期' : '未過期');
-  if (isExpired) {
-    document.getElementById('pin-binding-failed-overlay').classList.add('show');
-  } else {
-    document.getElementById('pin-binding-loading-overlay').classList.add('show');
-    setTimeout(() => {
-      document.getElementById('pin-binding-loading-overlay').classList.remove('show');
-      hidePinCodeWelcomePage();
-      openIndexSiteList(false);
-      showPinCodeToast('ExpertWiFi EBM68 已成功加入 ASUS Site Manager');
-    }, 1400);
-  }
+  setTimeout(() => {
+    if (isExpired) {
+      document.getElementById('pin-binding-failed-overlay').classList.add('show');
+    } else {
+      document.getElementById('pin-binding-loading-overlay').classList.add('show');
+      setTimeout(() => {
+        document.getElementById('pin-binding-loading-overlay').classList.remove('show');
+        hidePinCodeWelcomePage();
+        openIndexSiteList(false);
+        showPinCodeToast('ExpertWiFi EBM68 已成功加入 ASUS Site Manager');
+      }, 1400);
+    }
+  }, 200);
 }
 
 function closePinCodeBindingFailedPopup() {
