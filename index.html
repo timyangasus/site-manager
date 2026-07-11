@@ -2628,9 +2628,73 @@ function resetCurrentDemoFlow() {
   switchDemoFlow(document.getElementById('demo-flow-select').value);
 }
 
+// ── Page registry ──────────────────────────────────────────────────────────────
+// Every screen gets a short numeric code so it can be referenced directly
+// ("gotoPage(121)") instead of by description. Ranges are per-flow (100s =
+// MAIN_FLOW, 200s = PIN_CODE_BINDING, a future 3rd flow gets 300s, etc.), and
+// numbers within a range are spaced by 10 so a page can be inserted later
+// (e.g. 115) without renumbering anything else. Current map:
+//
+//   110  登入首頁 Landing            140  History / Schedule
+//   111  第三方帳號登入              150  Site to Site
+//   112  Sign in 頁                  160  Notifications
+//   120  Sites 列表（有資料）        170  Settings -- not built (pre-existing gap)
+//   121  Sites 列表（空白）
+//   130  Firmware Update
+//
+//   210  Pin Code 路由器頁
+//   220  Site Manager 歡迎頁
+//   230  註冊頁「馬上加入」
+//
+// registerPage(number, label, flow, activate?): flow is reset via switchDemoFlow()
+// first (so leftover state from wherever you were is cleared the same way
+// switching flows already does), then activate() drills into the specific
+// screen. Omit activate when the page IS that flow's default show() screen.
+const PAGES = {};
+function registerPage(number, label, flow, activate) {
+  PAGES[number] = { label, flow, activate };
+}
+function gotoPage(number) {
+  const p = PAGES[number];
+  if (!p) { console.warn('[gotoPage] unknown page number:', number); return; }
+  document.getElementById('demo-flow-select').value = p.flow;
+  switchDemoFlow(p.flow);
+  if (p.activate) p.activate();
+}
+
 registerFlow('main', 'MAIN_FLOW', function () {
   document.getElementById('page-login').classList.remove('hidden');
   goLanding();
+});
+
+registerPage(110, '登入首頁 Landing', 'main');
+registerPage(111, '第三方帳號登入', 'main', function () { goThirdParty(); });
+registerPage(112, 'Sign in 頁', 'main', function () { goSignin(); });
+registerPage(120, 'Sites 列表（有資料）', 'main', function () {
+  document.getElementById('page-login').classList.add('hidden');
+  goPage('sitelist');
+});
+registerPage(121, 'Sites 列表（空白）', 'main', function () {
+  document.getElementById('page-login').classList.add('hidden');
+  goPage('sitelist');
+  document.getElementById('pin-code-sitelist-empty').classList.add('show');
+  document.querySelector('.content').classList.add('pin-code-lock-scroll');
+});
+registerPage(130, 'Firmware Update', 'main', function () {
+  document.getElementById('page-login').classList.add('hidden');
+  goPage('firmware');
+});
+registerPage(140, 'History / Schedule', 'main', function () {
+  document.getElementById('page-login').classList.add('hidden');
+  goPage('schedule');
+});
+registerPage(150, 'Site to Site', 'main', function () {
+  document.getElementById('page-login').classList.add('hidden');
+  goPage('sitetosite');
+});
+registerPage(160, 'Notifications', 'main', function () {
+  document.getElementById('page-login').classList.add('hidden');
+  goPage('notifications');
 });
 
 // ── Pin Code Device Binding flow ──────────────────────────────────────────────
@@ -2829,6 +2893,16 @@ registerFlow('pincode', 'PIN_CODE_BINDING',
     document.getElementById('pin-code-toast').classList.remove('show');
   }
 );
+
+registerPage(210, 'Pin Code 路由器頁', 'pincode');
+registerPage(220, 'Site Manager 歡迎頁', 'pincode', function () {
+  hidePinCodePage();
+  showPinCodeWelcomePage();
+});
+registerPage(230, '註冊頁「馬上加入」', 'pincode', function () {
+  hidePinCodePage();
+  startPinCodeSignupFlow();
+});
 
 // ── Page navigation ──────────────────────────────────────────────────────────
 const pageMap = {
