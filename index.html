@@ -2665,58 +2665,63 @@ function resetCurrentDemoFlow() {
 }
 
 // ── Page registry ──────────────────────────────────────────────────────────────
-// Every screen gets a short numeric code so it can be referenced directly
-// ("gotoPage(121)") instead of by description. Ranges are per-flow (100s =
-// MAIN_FLOW, 200s = PIN_CODE_BINDING, a future 3rd flow gets 300s, etc.), and
-// numbers within a range are spaced by 10 so a page can be inserted later
-// (e.g. 115) without renumbering anything else. Current map:
+// Every screen gets a short code "<flow number>_<seq>" so it can be referenced
+// directly ("gotoPage('1_021')") instead of by description, AND so the flow it
+// belongs to is legible from the code itself (no memorizing "1xx = which flow").
+// Flow numbers are assigned in registration order (1 = MAIN_FLOW, 2 =
+// PIN_CODE_BINDING, a future 3rd flow is 3_xxx, ...) -- this scales past 9 flows
+// cleanly, unlike a hundreds-digit scheme. seq is always 3 digits, spaced by 10
+// within a flow so a page can be inserted later (e.g. 1_015) without renumbering
+// anything else; a same-family variant gets the next digit (1_021 is a variant
+// of 1_020). Current map:
 //
-//   110  登入首頁 Landing            140  History / Schedule
-//   111  第三方帳號登入              150  Site to Site
-//   112  Sign in 頁                  160  Notifications
-//   120  Sites 列表（有資料）        170  Settings -- not built (pre-existing gap)
-//   121  Sites 列表（空白）
-//   130  Firmware Update
+//   1_010  登入首頁 Landing            1_040  History / Schedule
+//   1_011  第三方帳號登入              1_050  Site to Site
+//   1_012  Sign in 頁                  1_060  Notifications
+//   1_020  Sites 列表（有資料）        1_070  Settings -- not built (pre-existing gap)
+//   1_021  Sites 列表（空白）
+//   1_030  Firmware Update
 //
-//   210  Pin Code 路由器頁
-//   220  Site Manager 歡迎頁
-//   230  註冊頁「馬上加入」
+//   2_010  Pin Code 路由器頁
+//   2_020  Site Manager 歡迎頁
+//   2_030  註冊頁「馬上加入」
 //
-// registerPage(number, label, flow, activate?, signature?): flow is reset via
+// registerPage(code, label, flow, activate?, signature?): flow is reset via
 // switchDemoFlow() first (so leftover state from wherever you were is cleared
 // the same way switching flows already does), then activate() drills into the
 // specific screen. Omit activate when the page IS that flow's default show().
 //
 // signature is an optional tag shared with markCurrentPage(signature) calls
 // placed inside the underlying nav functions (goPage, goLanding, showPinCodePage,
-// etc.) -- so the little page-number badge in the FLOW:// bar updates correctly
+// etc.) -- so the little page-code badge in the FLOW:// bar updates correctly
 // whether a screen was reached via gotoPage() or by just clicking through the
 // demo normally, not only when gotoPage() itself was used.
 // description is a short plain-language line (for non-technical viewers) shown
-// in the page-number dropdown list next to the number.
+// in the page-code dropdown list next to the code.
 const PAGES = {};
 const PAGE_SIGNATURES = {};
-function registerPage(number, label, flow, activate, signature, description) {
-  PAGES[number] = { label, flow, activate, description: description || label };
-  if (signature) PAGE_SIGNATURES[signature] = number;
+function registerPage(code, label, flow, activate, signature, description) {
+  PAGES[code] = { label, flow, activate, description: description || label };
+  if (signature) PAGE_SIGNATURES[signature] = code;
 }
-function gotoPage(number) {
-  const p = PAGES[number];
-  if (!p) { console.warn('[gotoPage] unknown page number:', number); return; }
+function gotoPage(code) {
+  const p = PAGES[code];
+  if (!p) { console.warn('[gotoPage] unknown page code:', code); return; }
   document.getElementById('demo-flow-select').value = p.flow;
   switchDemoFlow(p.flow);
   if (p.activate) p.activate();
 }
 function markCurrentPage(signature) {
-  const num = PAGE_SIGNATURES[signature];
-  document.getElementById('demo-bar-pagenum').textContent = num ? String(num) : '--';
+  const code = PAGE_SIGNATURES[signature];
+  document.getElementById('demo-bar-pagenum').textContent = code || '--';
 }
 
-// ── Page-number dropdown: lists every registered page (sorted, with its plain-
-// language description) so anyone in the room can point at a number and jump
-// straight to it regardless of which flow is currently active. To get back to
-// the flow you were actually demoing, just re-pick it from the FLOW:// dropdown
-// (or RESET) -- this menu is a one-way "go look at this page," not a history stack.
+// ── Page-code dropdown: lists every registered page (sorted numerically by
+// <flow>_<seq>, with its plain-language description) so anyone in the room can
+// point at a code and jump straight to it regardless of which flow is currently
+// active. To get back to the flow you were actually demoing, just re-pick it
+// from the FLOW:// dropdown (or RESET) -- this menu is a one-way "go look at
+// this page," not a history stack.
 function togglePageList() {
   const panel = document.getElementById('demo-bar-pagelist');
   if (panel.classList.contains('show')) { closePageList(); return; }
@@ -2728,10 +2733,14 @@ function closePageList() {
 }
 function renderPageList() {
   const panel = document.getElementById('demo-bar-pagelist');
-  const numbers = Object.keys(PAGES).map(Number).sort((a, b) => a - b);
-  panel.innerHTML = numbers.map(n => {
+  const codes = Object.keys(PAGES).sort((a, b) => {
+    const [aFlow, aSeq] = a.split('_').map(Number);
+    const [bFlow, bSeq] = b.split('_').map(Number);
+    return aFlow - bFlow || aSeq - bSeq;
+  });
+  panel.innerHTML = codes.map(n => {
     const p = PAGES[n];
-    return `<div class="demo-bar-pagelist-item" onclick="gotoPage(${n}); closePageList();">
+    return `<div class="demo-bar-pagelist-item" onclick="gotoPage('${n}'); closePageList();">
       <span class="demo-bar-pagelist-num">${n}</span>
       <span class="demo-bar-pagelist-desc">${p.description}</span>
     </div>`;
@@ -2741,41 +2750,41 @@ document.addEventListener('click', function (e) {
   if (!e.target.closest('.demo-bar-pagenum-wrap')) closePageList();
 });
 
-registerFlow('main', 'MAIN_FLOW', function () {
+registerFlow('main', '1_MAIN_FLOW', function () {
   document.getElementById('page-login').classList.remove('hidden');
   goLanding();
 });
 
-registerPage(110, '登入首頁 Landing', 'main', null, 'view:landing',
+registerPage('1_010', '登入首頁 Landing', 'main', null, 'view:landing',
   '登入首頁：尚未登入時的歡迎頁，可選擇用 ASUS VIP 帳號登入');
-registerPage(111, '第三方帳號登入', 'main', function () { goThirdParty(); }, 'view:thirdparty',
+registerPage('1_011', '第三方帳號登入', 'main', function () { goThirdParty(); }, 'view:thirdparty',
   '第三方帳號登入：可選 Google/Facebook/Apple 等外部帳號登入');
-registerPage(112, 'Sign in 頁', 'main', function () { goSignin(); }, 'view:signin',
+registerPage('1_012', 'Sign in 頁', 'main', function () { goSignin(); }, 'view:signin',
   'Sign in 頁：輸入帳號密碼登入 ASUS VIP');
-registerPage(120, 'Sites 列表（有資料）', 'main', function () {
+registerPage('1_020', 'Sites 列表（有資料）', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
 }, 'page:sitelist', 'Sites 列表（有資料）：登入後的站點總覽，列出所有管理中的站點');
-registerPage(121, 'Sites 列表（空白）', 'main', function () {
+registerPage('1_021', 'Sites 列表（空白）', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.add('show');
   document.querySelector('.content').classList.add('pin-code-lock-scroll');
   markCurrentPage('page:sitelist-empty');
 }, 'page:sitelist-empty', 'Sites 列表（空白）：尚未加入任何站點時的畫面');
-registerPage(130, 'Firmware Update', 'main', function () {
+registerPage('1_030', 'Firmware Update', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('firmware');
 }, 'page:firmware', 'Firmware Update：韌體更新頁面');
-registerPage(140, 'History / Schedule', 'main', function () {
+registerPage('1_040', 'History / Schedule', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('schedule');
 }, 'page:schedule', 'History / Schedule：排程/歷史紀錄頁面');
-registerPage(150, 'Site to Site', 'main', function () {
+registerPage('1_050', 'Site to Site', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitetosite');
 }, 'page:sitetosite', 'Site to Site：站點對站點連線管理');
-registerPage(160, 'Notifications', 'main', function () {
+registerPage('1_060', 'Notifications', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('notifications');
 }, 'page:notifications', 'Notifications：通知列表');
@@ -2971,7 +2980,7 @@ function hidePinCodeWelcomePage() {
   document.getElementById('page-pincode-welcome').classList.remove('show');
 }
 
-registerFlow('pincode', 'PIN_CODE_BINDING',
+registerFlow('pincode', '2_PIN_CODE_BINDING',
   function () { showPinCodePage(); },
   function () {
     hidePinCodePage();
@@ -2985,13 +2994,13 @@ registerFlow('pincode', 'PIN_CODE_BINDING',
   }
 );
 
-registerPage(210, 'Pin Code 路由器頁', 'pincode', null, 'pincode:router',
+registerPage('2_010', 'Pin Code 路由器頁', 'pincode', null, 'pincode:router',
   'Pin Code 路由器頁：路由器本機管理介面，顯示綁定用 PIN Code');
-registerPage(220, 'Site Manager 歡迎頁', 'pincode', function () {
+registerPage('2_020', 'Site Manager 歡迎頁', 'pincode', function () {
   hidePinCodePage();
   showPinCodeWelcomePage();
 }, 'pincode:welcome', 'Site Manager 歡迎頁：綁定流程中的「連接中」過場畫面');
-registerPage(230, '註冊頁「馬上加入」', 'pincode', function () {
+registerPage('2_030', '註冊頁「馬上加入」', 'pincode', function () {
   hidePinCodePage();
   startPinCodeSignupFlow();
 }, 'pincode:signup', '註冊頁「馬上加入」：尚未有帳號時的註冊表單');
