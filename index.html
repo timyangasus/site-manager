@@ -1008,9 +1008,10 @@ body {
 /* ── Demo-only decision panel: small widget anchored bottom-right, NOT a full
    dark overlay, so it reads as a presenter control rather than real in-product UI.
    Dark themed (same palette as the FLOW:// bar) to make that even clearer.
-   Pops in fresh every time (even at the same spot as the last decision) and keeps
-   a slow breathing glow the whole time it's open, so it's hard to miss/mistake
-   for "the same panel still sitting there" between one decision and the next. ── */
+   Pops in fresh every time (even at the same spot as the last decision), and its
+   "DEMO 流程判斷" tag breathes continuously while open -- a small high-contrast
+   badge pulsing reads better than pulsing the whole panel's border/glow against
+   the mostly-white product screens behind it. ── */
 .pin-flow-decision {
   display: none; position: fixed; right: 16px; bottom: 16px; z-index: 900;
   background: #0d1117; border: 1px solid #30363d; border-radius: 8px; width: 220px; padding: 13px;
@@ -1018,20 +1019,20 @@ body {
 }
 .pin-flow-decision.show {
   display: block;
-  animation: pin-flow-decision-in 0.3s ease-out, pin-flow-decision-breathe 1.8s ease-in-out 0.3s infinite;
+  animation: pin-flow-decision-in 0.3s ease-out;
 }
 @keyframes pin-flow-decision-in {
   from { opacity: 0; transform: scale(0.88) translateY(6px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
 }
-@keyframes pin-flow-decision-breathe {
-  0%, 100% { border-color: #30363d; box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3), 0 0 0 rgba(126,231,135,0); }
-  50% { border-color: #7ee787; box-shadow: 0 10px 30px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.3), 0 0 16px rgba(126,231,135,0.55); }
-}
 .pin-flow-decision-tag {
   display: inline-block; font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
-  font-size: 8.5px; letter-spacing: 0.5px; color: #7ee787; background: #161b22;
-  border: 1px solid #30363d; padding: 2px 5px; border-radius: 4px; margin-bottom: 8px;
+  font-size: 8.5px; letter-spacing: 0.5px; border: 1px solid #30363d; padding: 2px 5px; border-radius: 4px; margin-bottom: 8px;
+  animation: pin-flow-tag-breathe 1.8s ease-in-out infinite;
+}
+@keyframes pin-flow-tag-breathe {
+  0%, 100% { background: #161b22; color: #7ee787; box-shadow: 0 0 0 rgba(126,231,135,0); }
+  50% { background: #7ee787; color: #0d1117; box-shadow: 0 0 10px rgba(126,231,135,0.7); }
 }
 .pin-flow-decision-close {
   position: absolute; top: 8px; right: 10px; border: none; background: none;
