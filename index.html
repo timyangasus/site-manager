@@ -970,6 +970,28 @@ body {
 .pin-code-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ── ASUS Site Manager welcome / loading page ── */
+/* ── Fake "new browser window" chrome: shown above the Site Manager welcome
+   page and the sign-up screen, since both represent a different website
+   (ASUS Site Manager) than the router's own local admin page (Pin Code page
+   / page-pincode-router), which has no such chrome. Shared by both since
+   only one of them is ever visible at a time. ── */
+.pin-code-browser-chrome {
+  display: none; position: fixed; top: 32px; left: 0; right: 0; height: 40px; z-index: 510;
+  background: #eceff1; border-bottom: 1px solid #d5d8db;
+  align-items: center; gap: 10px; padding: 0 16px;
+}
+.pin-code-browser-chrome.show { display: flex; }
+.pin-code-browser-dots { display: flex; gap: 6px; flex-shrink: 0; }
+.pin-code-browser-dots span { width: 11px; height: 11px; border-radius: 50%; display: block; }
+.pin-code-browser-dots .red { background: #FF5F57; }
+.pin-code-browser-dots .yellow { background: #FFBD2E; }
+.pin-code-browser-dots .green { background: #28C840; }
+.pin-code-browser-addressbar {
+  flex: 1; max-width: 460px; background: #fff; border: 1px solid #d5d8db; border-radius: 14px;
+  padding: 5px 14px; font-size: 12px; color: #555;
+  display: flex; align-items: center; gap: 6px;
+}
+
 #page-pincode-welcome {
   position: fixed; top: 32px; left: 0; right: 0; bottom: 0; z-index: 480;
   display: none; align-items: center; justify-content: center; flex-direction: column;
@@ -1873,6 +1895,12 @@ body {
       <button class="pin-code-stop-btn" id="pin-code-stop-btn">Stop sharing PIN Code</button>
     </div>
   </div>
+</div>
+
+<!-- Fake "new browser window opened" chrome, shown above the welcome page and the sign-up screen -->
+<div class="pin-code-browser-chrome" id="pin-code-browser-chrome">
+  <div class="pin-code-browser-dots"><span class="red"></span><span class="yellow"></span><span class="green"></span></div>
+  <div class="pin-code-browser-addressbar">&#128274; sitemanager.asus.com</div>
 </div>
 
 <!-- ── ASUS Site Manager welcome / loading page ── -->
@@ -2918,6 +2946,7 @@ function startPinCodeSignupFlow() {
   ['view-landing', 'view-signin', 'view-thirdparty', 'view-pincode-signup'].forEach(id =>
     document.getElementById(id).classList.remove('active'));
   document.getElementById('view-pincode-signup').classList.add('active');
+  showPinCodeBrowserChrome();
   markCurrentPage('pincode:signup');
 }
 
@@ -2926,6 +2955,9 @@ function finishPinCodeSignup() {
   ['view-landing', 'view-thirdparty', 'view-pincode-signup'].forEach(id =>
     document.getElementById(id).classList.remove('active'));
   document.getElementById('view-signin').classList.add('active');
+  markCurrentPage('view:signin');
+  // Sign-in isn't part of the "new window" per the current spec -- back to normal chrome.
+  hidePinCodeBrowserChrome();
 }
 
 function openPinCodeExpiryDecision() {
@@ -2966,6 +2998,7 @@ function openIndexSiteList(empty) {
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.toggle('show', empty);
   document.querySelector('.content').classList.toggle('pin-code-lock-scroll', empty);
+  hidePinCodeBrowserChrome();
   // goPage('sitelist') just marked the badge 1_020 (populated) unconditionally --
   // correct it to 1_021 when this is actually the empty state.
   if (empty) markCurrentPage('page:sitelist-empty');
@@ -2982,10 +3015,25 @@ function showPinCodeToast(message) {
 
 function showPinCodeWelcomePage() {
   document.getElementById('page-pincode-welcome').classList.add('show');
+  showPinCodeBrowserChrome();
   markCurrentPage('pincode:welcome');
 }
 function hidePinCodeWelcomePage() {
   document.getElementById('page-pincode-welcome').classList.remove('show');
+}
+
+// Fake "new browser window" chrome (traffic lights + address bar) shown above
+// the welcome page and sign-up screen, since both represent a different
+// website (ASUS Site Manager) than the router's own local admin page.
+function showPinCodeBrowserChrome() {
+  document.getElementById('pin-code-browser-chrome').classList.add('show');
+  document.getElementById('page-pincode-welcome').style.top = '72px';
+  document.getElementById('page-login').style.top = '72px';
+}
+function hidePinCodeBrowserChrome() {
+  document.getElementById('pin-code-browser-chrome').classList.remove('show');
+  document.getElementById('page-pincode-welcome').style.top = '';
+  document.getElementById('page-login').style.top = '';
 }
 
 registerFlow('pincode', '2_PIN_CODE_BINDING',
@@ -2999,6 +3047,7 @@ registerFlow('pincode', '2_PIN_CODE_BINDING',
     if (pinCodeSignupTransitionTimer) { clearTimeout(pinCodeSignupTransitionTimer); pinCodeSignupTransitionTimer = null; }
     if (pinCodeToastTimer) { clearTimeout(pinCodeToastTimer); pinCodeToastTimer = null; }
     document.getElementById('pin-code-toast').classList.remove('show');
+    hidePinCodeBrowserChrome();
   }
 );
 
@@ -3859,6 +3908,7 @@ function goSignin() {
   document.getElementById('view-landing').classList.remove('active');
   document.getElementById('view-signin').classList.add('active');
   markCurrentPage('view:signin');
+  hidePinCodeBrowserChrome();
 }
 
 function goLanding() {
@@ -3867,6 +3917,7 @@ function goLanding() {
   document.getElementById('view-pincode-signup').classList.remove('active');
   document.getElementById('view-landing').classList.add('active');
   markCurrentPage('view:landing');
+  hidePinCodeBrowserChrome();
 }
 
 function goRegister() {
@@ -4259,6 +4310,7 @@ function goThirdParty() {
   document.getElementById('view-signin').classList.remove('active');
   document.getElementById('view-thirdparty').classList.add('active');
   markCurrentPage('view:thirdparty');
+  hidePinCodeBrowserChrome();
 }
 
 function toggleThirdParty(btn) {
