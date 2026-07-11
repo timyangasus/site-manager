@@ -28,10 +28,35 @@ body {
   z-index: 1000;
 }
 .demo-bar-label { color: #7ee787; letter-spacing: 0.5px; }
-.demo-bar-pagenum {
-  color: #ffb454; background: #161b22; border: 1px solid #30363d;
-  border-radius: 4px; padding: 2px 6px; font-weight: 700;
+
+.demo-bar-pagenum-wrap { position: relative; }
+.demo-bar-pagenum-btn {
+  display: flex; align-items: center; gap: 4px;
+  background: #161b22; border: 1px solid #30363d; border-radius: 4px;
+  padding: 2px 6px; cursor: pointer; font-family: inherit;
 }
+.demo-bar-pagenum-btn:hover { border-color: #ffb454; }
+.demo-bar-pagenum { color: #ffb454; font-weight: 700; }
+.demo-bar-pagenum-arrow { color: #8b949e; font-size: 9px; }
+
+.demo-bar-pagelist {
+  display: none; position: absolute; top: 100%; left: 0; margin-top: 6px; z-index: 1001;
+  background: #0d1117; border: 1px solid #30363d; border-radius: 8px;
+  width: 380px; max-height: 420px; overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.45);
+}
+.demo-bar-pagelist.show { display: block; }
+.demo-bar-pagelist-item {
+  display: flex; gap: 10px; align-items: baseline; padding: 9px 12px;
+  cursor: pointer; border-bottom: 1px solid #21262d; font-size: 12px;
+}
+.demo-bar-pagelist-item:last-child { border-bottom: none; }
+.demo-bar-pagelist-item:hover { background: #161b22; }
+.demo-bar-pagelist-num {
+  flex-shrink: 0; width: 30px; color: #ffb454; font-weight: 700;
+  font-family: 'SF Mono', 'Consolas', 'Menlo', monospace;
+}
+.demo-bar-pagelist-desc { color: #c9d1d9; line-height: 1.55; }
 .demo-bar-select {
   font-family: inherit; font-size: 10px;
   background: #161b22; color: #c9d1d9;
@@ -1590,7 +1615,13 @@ body {
 
 <!-- ── Demo control bar (meta layer for internal discussion, not product UI) ── -->
 <div class="demo-bar">
-  <span class="demo-bar-pagenum" id="demo-bar-pagenum" title="目前頁面編號">--</span>
+  <div class="demo-bar-pagenum-wrap">
+    <button class="demo-bar-pagenum-btn" onclick="togglePageList()" title="跳到指定頁面編號">
+      <span class="demo-bar-pagenum" id="demo-bar-pagenum">--</span>
+      <span class="demo-bar-pagenum-arrow">&#9662;</span>
+    </button>
+    <div class="demo-bar-pagelist" id="demo-bar-pagelist"></div>
+  </div>
   <span class="demo-bar-label">FLOW://</span>
   <select class="demo-bar-select" id="demo-flow-select" onchange="switchDemoFlow(this.value)">
     <!-- options are populated by registerFlow() calls in the script below -->
@@ -2661,10 +2692,12 @@ function resetCurrentDemoFlow() {
 // etc.) -- so the little page-number badge in the FLOW:// bar updates correctly
 // whether a screen was reached via gotoPage() or by just clicking through the
 // demo normally, not only when gotoPage() itself was used.
+// description is a short plain-language line (for non-technical viewers) shown
+// in the page-number dropdown list next to the number.
 const PAGES = {};
 const PAGE_SIGNATURES = {};
-function registerPage(number, label, flow, activate, signature) {
-  PAGES[number] = { label, flow, activate };
+function registerPage(number, label, flow, activate, signature, description) {
+  PAGES[number] = { label, flow, activate, description: description || label };
   if (signature) PAGE_SIGNATURES[signature] = number;
 }
 function gotoPage(number) {
@@ -2679,41 +2712,73 @@ function markCurrentPage(signature) {
   document.getElementById('demo-bar-pagenum').textContent = num ? String(num) : '--';
 }
 
+// ── Page-number dropdown: lists every registered page (sorted, with its plain-
+// language description) so anyone in the room can point at a number and jump
+// straight to it regardless of which flow is currently active. To get back to
+// the flow you were actually demoing, just re-pick it from the FLOW:// dropdown
+// (or RESET) -- this menu is a one-way "go look at this page," not a history stack.
+function togglePageList() {
+  const panel = document.getElementById('demo-bar-pagelist');
+  if (panel.classList.contains('show')) { closePageList(); return; }
+  renderPageList();
+  panel.classList.add('show');
+}
+function closePageList() {
+  document.getElementById('demo-bar-pagelist').classList.remove('show');
+}
+function renderPageList() {
+  const panel = document.getElementById('demo-bar-pagelist');
+  const numbers = Object.keys(PAGES).map(Number).sort((a, b) => a - b);
+  panel.innerHTML = numbers.map(n => {
+    const p = PAGES[n];
+    return `<div class="demo-bar-pagelist-item" onclick="gotoPage(${n}); closePageList();">
+      <span class="demo-bar-pagelist-num">${n}</span>
+      <span class="demo-bar-pagelist-desc">${p.description}</span>
+    </div>`;
+  }).join('');
+}
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('.demo-bar-pagenum-wrap')) closePageList();
+});
+
 registerFlow('main', 'MAIN_FLOW', function () {
   document.getElementById('page-login').classList.remove('hidden');
   goLanding();
 });
 
-registerPage(110, '登入首頁 Landing', 'main', null, 'view:landing');
-registerPage(111, '第三方帳號登入', 'main', function () { goThirdParty(); }, 'view:thirdparty');
-registerPage(112, 'Sign in 頁', 'main', function () { goSignin(); }, 'view:signin');
+registerPage(110, '登入首頁 Landing', 'main', null, 'view:landing',
+  '登入首頁：尚未登入時的歡迎頁，可選擇用 ASUS VIP 帳號登入');
+registerPage(111, '第三方帳號登入', 'main', function () { goThirdParty(); }, 'view:thirdparty',
+  '第三方帳號登入：可選 Google/Facebook/Apple 等外部帳號登入');
+registerPage(112, 'Sign in 頁', 'main', function () { goSignin(); }, 'view:signin',
+  'Sign in 頁：輸入帳號密碼登入 ASUS VIP');
 registerPage(120, 'Sites 列表（有資料）', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
-}, 'page:sitelist');
+}, 'page:sitelist', 'Sites 列表（有資料）：登入後的站點總覽，列出所有管理中的站點');
 registerPage(121, 'Sites 列表（空白）', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.add('show');
   document.querySelector('.content').classList.add('pin-code-lock-scroll');
   markCurrentPage('page:sitelist-empty');
-}, 'page:sitelist-empty');
+}, 'page:sitelist-empty', 'Sites 列表（空白）：尚未加入任何站點時的畫面');
 registerPage(130, 'Firmware Update', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('firmware');
-}, 'page:firmware');
+}, 'page:firmware', 'Firmware Update：韌體更新頁面');
 registerPage(140, 'History / Schedule', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('schedule');
-}, 'page:schedule');
+}, 'page:schedule', 'History / Schedule：排程/歷史紀錄頁面');
 registerPage(150, 'Site to Site', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitetosite');
-}, 'page:sitetosite');
+}, 'page:sitetosite', 'Site to Site：站點對站點連線管理');
 registerPage(160, 'Notifications', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('notifications');
-}, 'page:notifications');
+}, 'page:notifications', 'Notifications：通知列表');
 
 // The page loads directly into the landing view (it's the default .active
 // element in the markup) without going through goLanding(), so sync the
@@ -2920,15 +2985,16 @@ registerFlow('pincode', 'PIN_CODE_BINDING',
   }
 );
 
-registerPage(210, 'Pin Code 路由器頁', 'pincode', null, 'pincode:router');
+registerPage(210, 'Pin Code 路由器頁', 'pincode', null, 'pincode:router',
+  'Pin Code 路由器頁：路由器本機管理介面，顯示綁定用 PIN Code');
 registerPage(220, 'Site Manager 歡迎頁', 'pincode', function () {
   hidePinCodePage();
   showPinCodeWelcomePage();
-}, 'pincode:welcome');
+}, 'pincode:welcome', 'Site Manager 歡迎頁：綁定流程中的「連接中」過場畫面');
 registerPage(230, '註冊頁「馬上加入」', 'pincode', function () {
   hidePinCodePage();
   startPinCodeSignupFlow();
-}, 'pincode:signup');
+}, 'pincode:signup', '註冊頁「馬上加入」：尚未有帳號時的註冊表單');
 
 // ── Page navigation ──────────────────────────────────────────────────────────
 const pageMap = {
