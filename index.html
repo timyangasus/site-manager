@@ -3012,6 +3012,27 @@ function closePinCodeExpiryDecision() {
   document.getElementById('pin-binding-expiry-overlay').classList.remove('show');
 }
 
+// choosePinCodeExpiry() normally assumes its correct backdrop (the Site Manager
+// welcome page for 已綁定, or the Sign in page for 未綁定) is already showing,
+// which is true when it's reached in sequence -- but re-picking this decision
+// from its bar dropdown after a full downstream path (e.g. the site list) was
+// already reached leaves that old page on screen instead. Re-derive the right
+// backdrop from decision 0's recorded answer before showing anything.
+function ensurePinCodeExpiryBackdrop() {
+  const loginDecision = demoDecisions[0];
+  const isLoggedIn = loginDecision ? loginDecision.value : true;
+  if (isLoggedIn) {
+    document.getElementById('page-login').classList.add('hidden');
+    showPinCodeWelcomePage();
+  } else {
+    hidePinCodeWelcomePage();
+    document.getElementById('page-login').classList.remove('hidden');
+    ['view-landing', 'view-thirdparty', 'view-pincode-signup'].forEach(id =>
+      document.getElementById(id).classList.remove('active'));
+    document.getElementById('view-signin').classList.add('active');
+  }
+}
+
 function choosePinCodeExpiry(isExpired) {
   closeAllFlowPopups();
   resetPinCodeDownstreamState();
@@ -3021,6 +3042,7 @@ function choosePinCodeExpiry(isExpired) {
     value: isExpired,
     resolve: choosePinCodeExpiry
   });
+  ensurePinCodeExpiryBackdrop();
   setTimeout(() => {
     if (isExpired) {
       document.getElementById('pin-binding-failed-overlay').classList.add('show');
