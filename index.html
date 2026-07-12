@@ -71,8 +71,24 @@ body {
   padding: 3px 8px; cursor: pointer;
 }
 .demo-bar-reset:hover { border-color: #7ee787; color: #7ee787; }
-.demo-bar-path { color: #8b949e; margin-left: 4px; }
 .demo-bar-reset { margin-left: auto; }
+
+/* Each decision actually reached so far in the current flow gets its own
+   re-selectable dropdown here (see recordDemoDecision/renderDemoDecisionBar).
+   Scrolls horizontally instead of wrapping/breaking the bar's fixed height
+   if a flow ever has enough decisions to overflow it. */
+.demo-bar-decisions {
+  display: flex; gap: 6px; margin-left: 4px; overflow-x: auto; min-width: 0;
+  scrollbar-width: none;
+}
+.demo-bar-decisions::-webkit-scrollbar { display: none; }
+.demo-bar-decision {
+  font-family: inherit; font-size: 10px;
+  background: #161b22; color: #ffb454;
+  border: 1px solid #30363d; border-radius: 4px;
+  padding: 3px 6px; cursor: pointer; flex-shrink: 0;
+}
+.demo-bar-decision:hover { border-color: #ffb454; }
 
 /* ── Title bar ── */
 .titlebar {
@@ -1639,7 +1655,7 @@ body {
   <select class="demo-bar-select" id="demo-flow-select" onchange="switchDemoFlow(this.value)">
     <!-- options are populated by registerFlow() calls in the script below -->
   </select>
-  <span class="demo-bar-path" id="demo-bar-path"></span>
+  <div class="demo-bar-decisions" id="demo-bar-decisions"></div>
   <button class="demo-bar-reset" onclick="resetCurrentDemoFlow()" title="重置目前流程回到起點">&#8634; RESET</button>
 </div>
 
@@ -2633,15 +2649,54 @@ body {
 
 <script>
 // ── Demo flow switcher (meta layer; each future flow registers itself here) ──
-// Breadcrumb of decision choices made so far, shown in the demo bar (e.g. "已登入 > 過期")
-let demoPathSteps = [];
+// ── Decision dropdowns ─────────────────────────────────────────────────────────
+// Each decision actually reached so far in the current flow gets a re-selectable
+// dropdown in the bar (replaces what used to be a plain-text breadcrumb). A
+// decision only appears here once it has actually been resolved at least once
+// (by clicking its real on-screen panel, or by using an earlier decision's
+// dropdown that leads back through it) -- there is no way to see or set a
+// decision before the one(s) before it have happened, by design: the whole
+// point is to force seeing the flow in order at least once, then allow quick
+// back-and-forth after that.
+//
+// To wire up a new decision point, at the top of its resolver function (the
+// same function its real popup buttons call) add:
+//   recordDemoDecision(N, { label, options: [{label, value}, ...], value, resolve: thisFunction });
+// where N is this decision's fixed position (0, 1, 2...) within its flow --
+// picking this decision (from its own dropdown, once it exists) re-invokes
+// `resolve` with the chosen option's value, exactly as if its real button had
+// been clicked, and clears (truncates) any decisions recorded after position N,
+// since they belonged to whatever the old answer led to.
+let demoDecisions = [];
 function clearDemoPath() {
-  demoPathSteps = [];
-  document.getElementById('demo-bar-path').textContent = '';
+  demoDecisions = [];
+  renderDemoDecisionBar();
 }
-function pushDemoPathStep(label) {
-  demoPathSteps.push(label);
-  document.getElementById('demo-bar-path').textContent = demoPathSteps.join(' > ');
+function recordDemoDecision(index, config) {
+  demoDecisions = demoDecisions.slice(0, index);
+  demoDecisions[index] = config;
+  renderDemoDecisionBar();
+}
+function renderDemoDecisionBar() {
+  const container = document.getElementById('demo-bar-decisions');
+  container.innerHTML = demoDecisions.map((d, i) => {
+    if (!d) return '';
+    const opts = d.options.map(o =>
+      `<option value="${o.value}"${String(o.value) === String(d.value) ? ' selected' : ''}>${o.label}</option>`
+    ).join('');
+    return `<select class="demo-bar-decision" onchange="onDemoDecisionChange(${i}, this.value)">${opts}</select>`;
+  }).join('');
+}
+function onDemoDecisionChange(index, rawValue) {
+  const config = demoDecisions[index];
+  if (!config) return;
+  // <option> values are always strings -- match back against the option list to
+  // recover the decision's real value type (e.g. boolean) instead of passing
+  // the raw string through (which would make resolve(false) never happen, since
+  // the string "false" is truthy in JS).
+  const opt = config.options.find(o => String(o.value) === rawValue);
+  if (!opt) return;
+  config.resolve(opt.value);
 }
 
 // ── Flow registry ─────────────────────────────────────────────────────────────
@@ -2907,7 +2962,13 @@ let pinCodeSignupTransitionTimer = null;
 
 function chooseLoginState(isLoggedIn) {
   closeAllFlowPopups();
-  pushDemoPathStep(isLoggedIn ? '已綁定' : '未綁定');
+  resetPinCodeDownstreamState();
+  recordDemoDecision(0, {
+    label: '登入狀態',
+    options: [{ label: '已綁定', value: true }, { label: '未綁定', value: false }],
+    value: isLoggedIn,
+    resolve: chooseLoginState
+  });
   hidePinCodePage();
   showPinCodeWelcomePage();
   if (isLoggedIn) {
@@ -2953,7 +3014,13 @@ function closePinCodeExpiryDecision() {
 
 function choosePinCodeExpiry(isExpired) {
   closeAllFlowPopups();
-  pushDemoPathStep(isExpired ? '過期' : '未過期');
+  resetPinCodeDownstreamState();
+  recordDemoDecision(1, {
+    label: 'PIN Code 過期',
+    options: [{ label: '未過期', value: false }, { label: '過期', value: true }],
+    value: isExpired,
+    resolve: choosePinCodeExpiry
+  });
   setTimeout(() => {
     if (isExpired) {
       document.getElementById('pin-binding-failed-overlay').classList.add('show');
@@ -2973,6 +3040,18 @@ function closePinCodeBindingFailedPopup() {
   document.getElementById('pin-binding-failed-overlay').classList.remove('show');
   hidePinCodeWelcomePage();
   openIndexSiteList(true);
+}
+
+// Defensive cleanup for re-deciding an earlier decision (via its bar dropdown)
+// after a full downstream path was already completed once -- e.g. changing
+// "登入狀態" back to 未綁定 after having already reached the populated/empty
+// site list. Idempotent (safe to call even when there's nothing to clear), so
+// it's called at the top of every decision resolver, not just on this path.
+function resetPinCodeDownstreamState() {
+  document.getElementById('pin-code-sitelist-empty').classList.remove('show');
+  document.querySelector('.content').classList.remove('pin-code-lock-scroll');
+  if (pinCodeToastTimer) { clearTimeout(pinCodeToastTimer); pinCodeToastTimer = null; }
+  document.getElementById('pin-code-toast').classList.remove('show');
 }
 
 function openIndexSiteList(empty) {
