@@ -4010,6 +4010,11 @@ function fpAppConfirmLocalSave() {
 
 function fpAppStartSiteManagerLink() {
   document.getElementById('page-floorplannerapp').classList.remove('show');
+  // #page-login (z-index 500) sits above #page-pincode-welcome (z-index 480) --
+  // if it was left visible from an earlier, unrelated interaction (e.g. the
+  // SIGN_IN flow has no teardown), it would render over the welcome page here
+  // even though the badge correctly says 3_020. Hide it defensively.
+  document.getElementById('page-login').classList.add('hidden');
   showPinCodeWelcomePage();
   setTimeout(fpAppOpenLoginCheck, 1300);
 }
@@ -4061,7 +4066,11 @@ function fpAppCompleteLink() {
 }
 
 registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
-  function () { document.getElementById('page-floorplannerapp').classList.add('show'); markCurrentPage('floorplannerapp:main'); },
+  function () {
+    document.getElementById('page-login').classList.add('hidden');
+    document.getElementById('page-floorplannerapp').classList.add('show');
+    markCurrentPage('floorplannerapp:main');
+  },
   function () {
     document.getElementById('page-floorplannerapp').classList.remove('show');
     document.getElementById('fpapp-save-dropdown').classList.remove('show');
