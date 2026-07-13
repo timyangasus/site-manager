@@ -405,6 +405,19 @@ body {
   font-family: inherit; margin-left: 8px;
 }
 .fp-detail-save-btn:hover { background: #0D47A1; }
+.fpapp-save-wrap { position: relative; margin-left: 8px; }
+.fpapp-save-wrap .fp-detail-save-btn { margin-left: 0; }
+.fpapp-save-dropdown {
+  display: none; position: absolute; top: calc(100% + 6px); left: 0; z-index: 20;
+  background: #fff; border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+  border: 1px solid #eee; width: 230px; overflow: hidden; padding: 4px;
+}
+.fpapp-save-dropdown.show { display: block; }
+.fpapp-save-dropdown-item {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px; border-radius: 6px;
+  font-size: 13px; color: #333; cursor: pointer; white-space: nowrap;
+}
+.fpapp-save-dropdown-item:hover { background: #f2f6fc; color: #1565C0; }
 .fp-detail-toolgroup { display: flex; gap: 4px; background: #f4f5f7; border-radius: 10px; padding: 6px; }
 .fp-tool-btn {
   width: 34px; height: 34px; border-radius: 7px; border: none; background: transparent;
@@ -2117,10 +2130,23 @@ body {
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3l9 5-9 5-9-5 9-5z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M3 13l9 5 9-5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
           Floors
         </div>
-        <button class="fp-detail-save-btn" onclick="fpAppOpenSaveMenu()">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Save
-        </button>
+        <div class="fpapp-save-wrap">
+          <button class="fp-detail-save-btn" onclick="fpAppToggleSaveMenu()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Save
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" style="margin-left:2px;"><path d="M6 9l6 6 6-6" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="fpapp-save-dropdown" id="fpapp-save-dropdown">
+            <div class="fpapp-save-dropdown-item" onclick="fpAppChooseSaveTarget(false)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#555" stroke-width="1.6"/></svg>
+              Local
+            </div>
+            <div class="fpapp-save-dropdown-item" onclick="fpAppChooseSaveTarget(true)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18a4 4 0 01-1-7.9 5 5 0 019.6-2A4.5 4.5 0 0119 15.5a4 4 0 01-4 3.5H6z" stroke="#555" stroke-width="1.6" stroke-linejoin="round"/></svg>
+              由 ASUS Site Manager 管理
+            </div>
+          </div>
+        </div>
       </div>
       <div class="fp-detail-toolgroup">
         <button class="fp-tool-btn active" onclick="fpSelectTool(this)" title="Select">
@@ -2286,17 +2312,6 @@ body {
         Set Scale
       </button>
     </div>
-  </div>
-</div>
-
-<!-- Floor Planner desktop app -- Save menu: Local vs handing the file off to ASUS Site Manager -->
-<div class="pin-flow-decision" id="fpapp-save-menu">
-  <button class="pin-flow-decision-close" onclick="fpAppCloseSaveMenu()">&times;</button>
-  <span class="pin-flow-decision-tag">DEMO 流程判斷</span>
-  <div class="pin-flow-decision-title">選擇儲存方式</div>
-  <div class="pin-flow-decision-options">
-    <button class="pin-flow-decision-option" onclick="fpAppChooseSaveTarget(false)">Local</button>
-    <button class="pin-flow-decision-option" onclick="fpAppChooseSaveTarget(true)">由 ASUS Site Manager 管理</button>
   </div>
 </div>
 
@@ -3962,12 +3977,15 @@ function fpAppZoom(direction) {
   document.getElementById('fpapp-canvas').style.width = (900 * fpAppZoomLevel) + 'px';
 }
 
-function fpAppOpenSaveMenu() {
-  document.getElementById('fpapp-save-menu').classList.add('show');
+function fpAppToggleSaveMenu() {
+  document.getElementById('fpapp-save-dropdown').classList.toggle('show');
 }
 function fpAppCloseSaveMenu() {
-  document.getElementById('fpapp-save-menu').classList.remove('show');
+  document.getElementById('fpapp-save-dropdown').classList.remove('show');
 }
+document.addEventListener('click', function (e) {
+  if (!e.target.closest('.fpapp-save-wrap')) fpAppCloseSaveMenu();
+});
 function fpAppChooseSaveTarget(useSiteManager) {
   fpAppCloseSaveMenu();
   recordDemoDecision(0, {
@@ -4032,7 +4050,7 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
   function () { document.getElementById('page-floorplannerapp').classList.add('show'); markCurrentPage('floorplannerapp:main'); },
   function () {
     document.getElementById('page-floorplannerapp').classList.remove('show');
-    document.getElementById('fpapp-save-menu').classList.remove('show');
+    document.getElementById('fpapp-save-dropdown').classList.remove('show');
     document.getElementById('fpapp-local-save-overlay').classList.remove('show');
     document.getElementById('fpapp-login-check').classList.remove('show');
     document.getElementById('fpapp-loading-overlay').classList.remove('show');
