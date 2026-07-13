@@ -349,14 +349,14 @@ body {
   color: #1a1a1a; font-size: 13px;
 }
 
-.fp-topbar { display: flex; justify-content: flex-end; padding: 20px 32px; border-bottom: 1px solid #eee; }
+.fp-topbar { display: flex; justify-content: flex-end; padding: 12px 32px; border-bottom: 1px solid #eee; }
 .fp-new-project-btn {
   display: flex; align-items: center; gap: 8px; background: #1565C0; color: #fff;
   border: none; border-radius: 8px; padding: 12px 20px; font-size: 14px; font-weight: 600;
   cursor: pointer; font-family: inherit;
 }
 .fp-new-project-btn:hover { background: #0D47A1; }
-.fp-body { padding: 32px; max-width: 1100px; }
+.fp-body { padding: 16px 32px 32px; max-width: 1100px; }
 .fp-greeting { font-size: 34px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
 .fp-subtitle { font-size: 14px; color: #888; margin-bottom: 24px; }
 .fp-search {
@@ -393,6 +393,12 @@ body {
 .fp-detail-tabs { display: flex; align-items: center; gap: 18px; }
 .fp-detail-tab { display: flex; align-items: center; gap: 6px; font-size: 14px; color: #444; cursor: pointer; }
 .fp-detail-tab:hover { color: #1565C0; }
+.fp-back-btn {
+  width: 30px; height: 30px; border-radius: 6px; border: 1px solid #ddd; background: #fff;
+  display: flex; align-items: center; justify-content: center; cursor: pointer; color: #444;
+}
+.fp-back-btn:hover { background: #f5f5f5; color: #1565C0; }
+.fp-detail-divider { width: 1px; height: 20px; background: #e5e5e5; }
 .fp-detail-save-btn {
   display: flex; align-items: center; gap: 6px; background: #1565C0; color: #fff; border: none;
   border-radius: 8px; padding: 9px 16px; font-size: 13px; font-weight: 600; cursor: pointer;
@@ -413,8 +419,8 @@ body {
 }
 .fp-view-btn.active { background: #1565C0; color: #fff; }
 
-.fp-canvas-wrap { position: relative; min-height: calc(100vh - 164px); background: #f4f5f7; overflow: auto; }
-.fp-canvas { margin: 40px auto; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); width: 720px; }
+.fp-canvas-wrap { position: relative; height: calc(100vh - 164px); background: #f4f5f7; overflow: auto; padding-bottom: 160px; box-sizing: border-box; }
+.fp-canvas { margin: 24px auto 0; background: #fff; box-shadow: 0 1px 4px rgba(0,0,0,0.06); width: 600px; }
 
 .fp-left-rail { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
 .fp-left-rail-group {
@@ -2754,7 +2760,11 @@ body {
   <div id="fp-view-detail" style="display:none;">
     <div class="fp-detail-topbar">
       <div class="fp-detail-tabs">
-        <div class="fp-detail-tab" onclick="gotoPage('2_080')">
+        <button class="fp-back-btn" onclick="gotoPage('2_080')" title="Back to projects">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="fp-detail-divider"></div>
+        <div class="fp-detail-tab" onclick="return false;">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M17 3a2.83 2.83 0 014 4L7 21l-4 1 1-4L17 3z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
           Project
         </div>
@@ -3552,7 +3562,7 @@ function fpSetBand(band, btn) {
 let fpZoomLevel = 1;
 function fpZoom(direction) {
   fpZoomLevel = Math.max(0.5, Math.min(2, fpZoomLevel + direction * 0.1));
-  document.querySelector('.fp-canvas').style.width = (720 * fpZoomLevel) + 'px';
+  document.querySelector('.fp-canvas').style.width = (600 * fpZoomLevel) + 'px';
 }
 function fpSaveProject() {
   showToast('Project saved');
