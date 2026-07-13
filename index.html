@@ -2736,25 +2736,27 @@ function resetCurrentDemoFlow() {
 
 // ── Page registry ──────────────────────────────────────────────────────────────
 // Every screen gets a short code "<flow number>_<seq>" so it can be referenced
-// directly ("gotoPage('1_021')") instead of by description, AND so the flow it
+// directly ("gotoPage('2_021')") instead of by description, AND so the flow it
 // belongs to is legible from the code itself (no memorizing "1xx = which flow").
-// Flow numbers are assigned in registration order (1 = MAIN_FLOW, 2 =
-// PIN_CODE_BINDING, a future 3rd flow is 3_xxx, ...) -- this scales past 9 flows
-// cleanly, unlike a hundreds-digit scheme. seq is always 3 digits, spaced by 10
-// within a flow so a page can be inserted later (e.g. 1_015) without renumbering
-// anything else; a same-family variant gets the next digit (1_021 is a variant
-// of 1_020). Current map:
+// Flow numbers are assigned in registration order (1 = SIGN_IN, 2 = MAIN_FLOW,
+// 3 = PIN_CODE_BINDING, a future 4th flow is 4_xxx, ...) -- this scales past 9
+// flows cleanly, unlike a hundreds-digit scheme. seq is always 3 digits, spaced
+// by 10 within a flow so a page can be inserted later (e.g. 1_015) without
+// renumbering anything else; a same-family variant gets the next digit (2_021
+// is a variant of 2_020). Current map:
 //
-//   1_010  登入首頁 Landing            1_040  History / Schedule
-//   1_011  第三方帳號登入              1_050  Site to Site
-//   1_012  Sign in 頁                  1_060  Notifications
-//   1_020  Sites 列表（有資料）        1_070  Settings -- not built (pre-existing gap)
-//   1_021  Sites 列表（空白）
-//   1_030  Firmware Update
+//   1_010  登入首頁 Landing            (SIGN_IN -- shared by MAIN_FLOW's
+//   1_011  第三方帳號登入               entry point and PIN_CODE_BINDING's
+//   1_012  Sign in 頁                   未綁定 branch; see doSignin())
 //
-//   2_010  Pin Code 路由器頁
-//   2_020  Site Manager 歡迎頁
-//   2_030  註冊頁「馬上加入」
+//   2_020  Sites 列表（有資料）        2_050  Site to Site
+//   2_021  Sites 列表（空白）          2_060  Notifications
+//   2_030  Firmware Update             2_070  Settings -- not built (pre-existing gap)
+//   2_040  History / Schedule
+//
+//   3_010  Pin Code 路由器頁
+//   3_020  Site Manager 歡迎頁
+//   3_030  註冊頁「馬上加入」
 //
 // registerPage(code, label, flow, activate?, signature?): flow is reset via
 // switchDemoFlow() first (so leftover state from wherever you were is cleared
@@ -2820,41 +2822,49 @@ document.addEventListener('click', function (e) {
   if (!e.target.closest('.demo-bar-pagenum-wrap')) closePageList();
 });
 
-registerFlow('main', '1_MAIN_FLOW', function () {
+// Sign-in screens are shared: this flow's own entry point AND the "未綁定"
+// branch of PIN_CODE_BINDING both use the same #page-login markup (see
+// doSignin() -- a successful sign-in either lands on 2_020 Sites list, or,
+// when pinCodeSigninPending is set, hands off into the PIN-expiry decision).
+registerFlow('signin', '1_SIGN_IN', function () {
   document.getElementById('page-login').classList.remove('hidden');
   goLanding();
 });
 
-registerPage('1_010', '登入首頁 Landing', 'main', null, 'view:landing',
+registerPage('1_010', '登入首頁 Landing', 'signin', null, 'view:landing',
   '登入首頁：尚未登入時的歡迎頁，可選擇用 ASUS VIP 帳號登入');
-registerPage('1_011', '第三方帳號登入', 'main', function () { goThirdParty(); }, 'view:thirdparty',
+registerPage('1_011', '第三方帳號登入', 'signin', function () { goThirdParty(); }, 'view:thirdparty',
   '第三方帳號登入：可選 Google/Facebook/Apple 等外部帳號登入');
-registerPage('1_012', 'Sign in 頁', 'main', function () { goSignin(); }, 'view:signin',
+registerPage('1_012', 'Sign in 頁', 'signin', function () { goSignin(); }, 'view:signin',
   'Sign in 頁：輸入帳號密碼登入 ASUS VIP');
-registerPage('1_020', 'Sites 列表（有資料）', 'main', function () {
+
+registerFlow('main', '2_MAIN_FLOW', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
-}, 'page:sitelist', 'Sites 列表（有資料）：登入後的站點總覽，列出所有管理中的站點');
-registerPage('1_021', 'Sites 列表（空白）', 'main', function () {
+});
+
+registerPage('2_020', 'Sites 列表（有資料）', 'main', null, 'page:sitelist',
+  'Sites 列表（有資料）：登入後的站點總覽，列出所有管理中的站點');
+registerPage('2_021', 'Sites 列表（空白）', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.add('show');
   document.querySelector('.content').classList.add('pin-code-lock-scroll');
   markCurrentPage('page:sitelist-empty');
 }, 'page:sitelist-empty', 'Sites 列表（空白）：尚未加入任何站點時的畫面');
-registerPage('1_030', 'Firmware Update', 'main', function () {
+registerPage('2_030', 'Firmware Update', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('firmware');
 }, 'page:firmware', 'Firmware Update：韌體更新頁面');
-registerPage('1_040', 'History / Schedule', 'main', function () {
+registerPage('2_040', 'History / Schedule', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('schedule');
 }, 'page:schedule', 'History / Schedule：排程/歷史紀錄頁面');
-registerPage('1_050', 'Site to Site', 'main', function () {
+registerPage('2_050', 'Site to Site', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('sitetosite');
 }, 'page:sitetosite', 'Site to Site：站點對站點連線管理');
-registerPage('1_060', 'Notifications', 'main', function () {
+registerPage('2_060', 'Notifications', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('notifications');
 }, 'page:notifications', 'Notifications：通知列表');
@@ -3081,8 +3091,8 @@ function openIndexSiteList(empty) {
   goPage('sitelist');
   document.getElementById('pin-code-sitelist-empty').classList.toggle('show', empty);
   document.querySelector('.content').classList.toggle('pin-code-lock-scroll', empty);
-  // goPage('sitelist') just marked the badge 1_020 (populated) unconditionally --
-  // correct it to 1_021 when this is actually the empty state.
+  // goPage('sitelist') just marked the badge 2_020 (populated) unconditionally --
+  // correct it to 2_021 when this is actually the empty state.
   if (empty) markCurrentPage('page:sitelist-empty');
 }
 
@@ -3103,7 +3113,7 @@ function hidePinCodeWelcomePage() {
   document.getElementById('page-pincode-welcome').classList.remove('show');
 }
 
-registerFlow('pincode', '2_PIN_CODE_BINDING',
+registerFlow('pincode', '3_PIN_CODE_BINDING',
   function () { showPinCodePage(); },
   function () {
     hidePinCodePage();
@@ -3117,13 +3127,13 @@ registerFlow('pincode', '2_PIN_CODE_BINDING',
   }
 );
 
-registerPage('2_010', 'Pin Code 路由器頁', 'pincode', null, 'pincode:router',
+registerPage('3_010', 'Pin Code 路由器頁', 'pincode', null, 'pincode:router',
   'Pin Code 路由器頁：路由器本機管理介面，顯示綁定用 PIN Code');
-registerPage('2_020', 'Site Manager 歡迎頁', 'pincode', function () {
+registerPage('3_020', 'Site Manager 歡迎頁', 'pincode', function () {
   hidePinCodePage();
   showPinCodeWelcomePage();
 }, 'pincode:welcome', 'Site Manager 歡迎頁：綁定流程中的「連接中」過場畫面');
-registerPage('2_030', '註冊頁「馬上加入」', 'pincode', function () {
+registerPage('3_030', '註冊頁「馬上加入」', 'pincode', function () {
   hidePinCodePage();
   startPinCodeSignupFlow();
 }, 'pincode:signup', '註冊頁「馬上加入」：尚未有帳號時的註冊表單');
