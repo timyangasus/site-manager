@@ -4017,8 +4017,22 @@ function fpAppOpenLoginCheck() {
   document.getElementById('fpapp-login-check').classList.add('show');
 }
 let fpAppSigninPending = false;
+// This decision's dropdown lets it be re-picked directly from the demo bar,
+// bypassing fpAppStartSiteManagerLink()'s normal 1300ms welcome-page wait --
+// without this, hidePinCodeWelcomePage() below would be a no-op (nothing to
+// hide) and the flow would jump straight to 1_012 or the loading transition,
+// skipping 3_020 entirely. Re-show it here so the backdrop is always correct
+// regardless of how this decision was reached (same idea as
+// ensurePinCodeExpiryBackdrop()).
+function ensureFpAppWelcomeBackdrop() {
+  document.getElementById('page-floorplannerapp').classList.remove('show');
+  document.getElementById('page-login').classList.add('hidden');
+  document.getElementById('page-floorplanner').style.display = 'none';
+  showPinCodeWelcomePage();
+}
 function fpAppChooseLoginState(isLoggedIn) {
   document.getElementById('fpapp-login-check').classList.remove('show');
+  ensureFpAppWelcomeBackdrop();
   recordDemoDecision(1, {
     label: 'VIP 帳號綁定',
     options: [{ label: '已登入', value: true }, { label: '未登入', value: false }],
