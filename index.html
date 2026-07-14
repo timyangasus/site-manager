@@ -4037,7 +4037,7 @@ function showFpAppSaveToast() {
   const toast = document.getElementById('fpapp-save-toast');
   toast.classList.add('show');
   if (fpAppSaveToastTimer) clearTimeout(fpAppSaveToastTimer);
-  fpAppSaveToastTimer = setTimeout(() => toast.classList.remove('show'), 5000);
+  fpAppSaveToastTimer = setTimeout(() => toast.classList.remove('show'), 6500);
 }
 function fpAppToastGoSiteManager() {
   document.getElementById('fpapp-save-toast').classList.remove('show');
@@ -4092,11 +4092,14 @@ function fpAppChooseLoginState(isLoggedIn) {
 }
 function fpAppCompleteLink() {
   hidePinCodeWelcomePage();
+  // Reveal 2_080 as the backdrop *before* the loading overlay appears, so the
+  // spinner sits over the Floor Planner list -- not whatever page (e.g. 2_020)
+  // happened to be active before this whole flow started.
+  document.getElementById('page-login').classList.add('hidden');
+  goPage('floorplanner');
   document.getElementById('fpapp-loading-overlay').classList.add('show');
   setTimeout(() => {
     document.getElementById('fpapp-loading-overlay').classList.remove('show');
-    document.getElementById('page-login').classList.add('hidden');
-    goPage('floorplanner');
     fpAddHomeProject();
     showToast('Home 已加入 Floor Planner');
   }, 1200);
