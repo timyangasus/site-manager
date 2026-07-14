@@ -3410,17 +3410,6 @@ body {
   </div>
 </div>
 
-<!-- Account & device migration: step 5, confirm import -->
-<div class="pin-binding-overlay" id="account-migration-confirm-overlay">
-  <div class="pin-binding-dialog">
-    <div class="pin-binding-text" style="margin-bottom:16px;">是否匯入至目前 ASUS VIP 帳號？</div>
-    <div style="display:flex;gap:10px;justify-content:center;">
-      <button class="newsite-cancel" onclick="cancelAccountMigration()">取消</button>
-      <button class="newsite-confirm" onclick="confirmAccountMigration()">是</button>
-    </div>
-  </div>
-</div>
-
     <!-- ── Topology Panel ── -->
     <div class="topo-panel-overlay" id="topo-overlay" onclick="topoClose()"></div>
     <div class="topo-panel" id="topo-panel">
@@ -5428,7 +5417,7 @@ function openAccountMigrationPopup() {
 }
 function closeAccountMigrationPopup() {
   ['account-migration-overlay', 'account-migration-loading-overlay', 'account-migration-verified-overlay',
-   'account-migration-found-overlay', 'account-migration-confirm-overlay'].forEach(id =>
+   'account-migration-found-overlay'].forEach(id =>
     document.getElementById(id).classList.remove('show'));
 }
 
@@ -5446,18 +5435,13 @@ function startAccountMigration(provider) {
       document.getElementById('account-migration-found-overlay').classList.add('show');
       setTimeout(() => {
         document.getElementById('account-migration-found-overlay').classList.remove('show');
-        document.getElementById('account-migration-confirm-overlay').classList.add('show');
+        confirmAccountMigration();
       }, 1300);
     }, 1000);
   }, 1300);
 }
 
-function cancelAccountMigration() {
-  document.getElementById('account-migration-confirm-overlay').classList.remove('show');
-}
-
 function confirmAccountMigration() {
-  document.getElementById('account-migration-confirm-overlay').classList.remove('show');
   activateImportedDevice();
   showToast('已將 ' + accountMigrationProvider + ' 帳號中的「' + ACCOUNT_MIGRATION_DEVICE + '」裝置加入 ASUS Site Manager');
 }
