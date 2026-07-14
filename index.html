@@ -1211,6 +1211,24 @@ body {
 }
 .site-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+/* Rich toast with title/description/action -- used by the Floor Planner desktop
+   app's "Local" save to offer a shortcut into ASUS Site Manager management. */
+.fpapp-save-toast {
+  position: fixed; bottom: 36px; left: 50%; transform: translateX(-50%) translateY(12px);
+  background: #1a1a1a; color: #fff; font-size: 13px; line-height: 1.7;
+  padding: 18px 22px; border-radius: 12px; width: 380px; max-width: calc(100vw - 40px);
+  opacity: 0; transition: opacity 0.3s, transform 0.3s;
+  z-index: 950; pointer-events: none; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+.fpapp-save-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+.fpapp-save-toast-title { font-weight: 700; font-size: 14px; margin-bottom: 8px; }
+.fpapp-save-toast-desc { color: rgba(255,255,255,0.75); margin-bottom: 14px; }
+.fpapp-save-toast-btn {
+  display: inline-block; background: #1565C0; color: #fff; border: none; border-radius: 20px;
+  padding: 9px 18px; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.fpapp-save-toast-btn:hover { background: #1251A3; }
+
 /* ── ASUS Site Manager welcome / loading page ── */
 /* ── "New window opening" animation: plays once whenever the Site Manager
    welcome page or the sign-up screen first appears, since both represent a
@@ -3310,6 +3328,13 @@ body {
 <div class="fw-toast" id="fw-toast">✓ Firmware upgrade complete</div>
 <div class="site-toast" id="site-toast"></div>
 
+<!-- Floor Planner desktop app -- rich toast shown after a Local save, offering a shortcut into ASUS Site Manager -->
+<div class="fpapp-save-toast" id="fpapp-save-toast">
+  <div class="fpapp-save-toast-title">Floor Plan 已儲存至本機</div>
+  <div class="fpapp-save-toast-desc">使用 ASUS Site Manager 雲端儲存，可隨時存取並同步管理您的專案。</div>
+  <button class="fpapp-save-toast-btn" onclick="fpAppToastGoSiteManager()">由 ASUS Site Manager 管理</button>
+</div>
+
 <!-- Account Panel -->
 <div class="account-overlay" id="account-overlay" onclick="closeAccountPanel()"></div>
 <div class="account-panel" id="account-panel">
@@ -4005,7 +4030,19 @@ function fpAppCloseLocalSave() {
 }
 function fpAppConfirmLocalSave() {
   fpAppCloseLocalSave();
-  showToast('已儲存至本機');
+  showFpAppSaveToast();
+}
+let fpAppSaveToastTimer = null;
+function showFpAppSaveToast() {
+  const toast = document.getElementById('fpapp-save-toast');
+  toast.classList.add('show');
+  if (fpAppSaveToastTimer) clearTimeout(fpAppSaveToastTimer);
+  fpAppSaveToastTimer = setTimeout(() => toast.classList.remove('show'), 5000);
+}
+function fpAppToastGoSiteManager() {
+  document.getElementById('fpapp-save-toast').classList.remove('show');
+  if (fpAppSaveToastTimer) { clearTimeout(fpAppSaveToastTimer); fpAppSaveToastTimer = null; }
+  fpAppChooseSaveTarget(true);
 }
 
 function fpAppStartSiteManagerLink() {
@@ -4077,6 +4114,8 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
     document.getElementById('fpapp-local-save-overlay').classList.remove('show');
     document.getElementById('fpapp-login-check').classList.remove('show');
     document.getElementById('fpapp-loading-overlay').classList.remove('show');
+    if (fpAppSaveToastTimer) { clearTimeout(fpAppSaveToastTimer); fpAppSaveToastTimer = null; }
+    document.getElementById('fpapp-save-toast').classList.remove('show');
     fpAppSigninPending = false;
   }
 );
