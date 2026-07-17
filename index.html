@@ -3870,6 +3870,11 @@ function closeBindingIntroductionPopup() {
 
 function goToBindingLoginStep() {
   document.getElementById('pin-binding-intro-overlay').classList.remove('show');
+  // Show the 3_020 welcome/connecting page as the backdrop for BOTH decisions
+  // (登入狀態 here, and PIN Code 過期 later) rather than leaving the router
+  // page (3_005/3_010) showing behind the first one.
+  hidePinCodePage();
+  showPinCodeWelcomePage();
   // Small gap before the next panel pops in -- back-to-back with zero gap reads
   // as "the same thing," not as a new decision appearing.
   setTimeout(openLoginStateSelector, 200);
