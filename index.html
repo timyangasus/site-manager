@@ -158,17 +158,29 @@ body {
   /* fixed to the actual content viewport (below titlebar+demo-bar+topbar, right of sidebar)
      rather than absolute within #page-sitelist, whose real (hidden) content is much taller */
   display: none; position: fixed; top: 109px; left: 48px; right: 0; bottom: 0; z-index: 20;
-  background: #f0f0f0; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+  background: #f8f8f9; flex-direction: row; align-items: center; justify-content: center; gap: 90px;
 }
 .pin-code-sitelist-empty.show { display: flex; }
-.pin-code-sitelist-empty-illust {
-  width: 120px; height: 120px; border-radius: 50%; background: #e8e8e8;
-  display: flex; align-items: center; justify-content: center; margin-bottom: 28px;
+.sitelist-empty-left { max-width: 340px; text-align: center; }
+.sitelist-empty-box { display: flex; justify-content: center; margin-bottom: 24px; }
+.sitelist-empty-brand { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 16px; }
+.sitelist-empty-brand img { width: 28px; height: 28px; object-fit: contain; }
+.sitelist-empty-brand span { font-size: 22px; font-weight: 700; color: #1a1a1a; }
+.sitelist-empty-desc { font-size: 14px; color: #555; line-height: 1.8; }
+.sitelist-empty-divider { width: 1px; align-self: stretch; margin: 70px 0; background: #e2e2e2; }
+.sitelist-empty-right { display: flex; flex-direction: column; gap: 16px; width: 380px; }
+.sitelist-empty-option {
+  display: flex; align-items: flex-start; gap: 16px; background: #fff; border-radius: 12px;
+  padding: 20px; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.06); transition: box-shadow 0.15s;
+  text-align: left;
 }
-.pin-code-sitelist-empty-btn {
-  background: #1565C0; color: #fff; border: none; border-radius: 8px;
-  padding: 10px 24px; font-size: 14px; font-weight: 600; font-family: inherit;
+.sitelist-empty-option:hover { box-shadow: 0 4px 14px rgba(0,0,0,0.1); }
+.sitelist-empty-option-icon {
+  width: 52px; height: 52px; border-radius: 12px; background: #1565C0; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
 }
+.sitelist-empty-option-title { font-size: 16px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
+.sitelist-empty-option-subtitle { font-size: 13px; color: #888; }
 
 .page-header {
   display: flex; align-items: center; justify-content: space-between;
@@ -2468,10 +2480,45 @@ body {
     <!-- ── Site List ── -->
     <div id="page-sitelist">
       <div class="pin-code-sitelist-empty" id="pin-code-sitelist-empty">
-        <div class="pin-code-sitelist-empty-illust">
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="56" height="56"><path fill="#b0b0b0" d="M200-120q-33 0-56.5-23.5T120-200v-160q0-33 23.5-56.5T200-440h400v-160h80v160h80q33 0 56.5 23.5T840-360v160q0 33-23.5 56.5T760-120H200Zm0-80h560v-160H200v160Zm108.5-51.5Q320-263 320-280t-11.5-28.5Q297-320 280-320t-28.5 11.5Q240-297 240-280t11.5 28.5Q263-240 280-240t28.5-11.5Zm140 0Q460-263 460-280t-11.5-28.5Q437-320 420-320t-28.5 11.5Q380-297 380-280t11.5 28.5Q403-240 420-240t28.5-11.5Zm140 0Q600-263 600-280t-11.5-28.5Q577-320 560-320t-28.5 11.5Q520-297 520-280t11.5 28.5Q543-240 560-240t28.5-11.5ZM570-630l-58-58q26-24 58-38t70-14q38 0 70 14t58 38l-58 58q-14-14-31.5-22t-38.5-8q-21 0-38.5 8T570-630ZM470-730l-56-56q44-44 102-69t124-25q66 0 124 25t102 69l-56 56q-33-33-76.5-51.5T640-800q-50 0-93.5 18.5T470-730ZM200-200v-160 160Z"/></svg>
+        <div class="sitelist-empty-left">
+          <div class="sitelist-empty-box">
+            <svg width="140" height="112" viewBox="0 0 140 112" fill="none">
+              <line x1="58" y1="8" x2="55" y2="20" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="76" y1="4" x2="76" y2="17" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+              <line x1="94" y1="9" x2="98" y2="20" stroke="#ccc" stroke-width="2.5" stroke-linecap="round"/>
+              <path d="M30 50 L70 28 L110 50 L70 72 Z" fill="#e6e6e6"/>
+              <path d="M30 50 L30 88 L70 108 L70 72 Z" fill="#d6d6d6"/>
+              <path d="M110 50 L110 88 L70 108 L70 72 Z" fill="#efefef"/>
+              <path d="M42 50 L28 24 L58 34 Z" fill="#f5f5f5" stroke="#ccc" stroke-width="1.5" stroke-linejoin="round"/>
+              <path d="M98 50 L112 24 L82 34 Z" fill="#f5f5f5" stroke="#ccc" stroke-width="1.5" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="sitelist-empty-brand">
+            <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACsAAAA2CAYAAABeFWCFAAAACXBIWXMAABYlAAAWJQFJUiTwAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAOdEVYdFNvZnR3YXJlAEZpZ21hnrGWYwAABUVJREFUeAG1mU9oHFUYwL/vbYglwfoXRXpJNluhh2Y3ngTJdmuk4KW2HoSeaiEeBEsaPJlS2h5K25MGzE1I1EMvitGTHko3TUSK0EzXFApJNuMt5mLAxCZ053393mx2d3ay8+fNvP4umXkzO/PL2+/P2xmEZ8Cb+XcP1dCZAaLHYAqStwQYxhWF2vdA8CqYgkWrlYVbXWCQpijAIb6DAATB0hLSQHBbiapNYzOby71/sCXqIvniqWYXEarVyt3Jxr4xWadn+ztoibpIgl5Izkav3LzoHTAim80Xb/AsHOlw6ACPJwm1DXJ2L1YqlW3vYGrZ/vzwef5zOuCwiteDoIcrurZ07x//gVSyShQBPws7hwhfhJjwtbaDRBWJZQcKxbNRonUoEzcUhHQCRd3jkIDs0dJ7RDAR83RVvrojzyKaXP5roRp+IU0Ov1U8Ahl5HfR4OfSoW/Tnb0MEWrKq6DsOTPFMaSUNAfYEH6x3J4hBbNn27qQLcdjS8/tuTvRLXFH3/DgnpROt459dtr+3Upn/BjSIlFVt9AnVpiCFqAIRX2ltQ5W701egSaSs7N2eCOhOWhCRw9dRsb4ha7vX/d0pDqH1LztYvMzz8BEYgsvdf+TshNbSMAJlXVGEKyraTJFB8eFyQlFFxzBg0bG6qEGQxpetsgUpQP9ArlAqSZJ3wCQIV6vW3SuQkjbZvkKpT5Bc5M3Yi48Yd5hk0Qv+YXdSwCkgibzaJ6S/BYjyilUuB1/KQzZ/bI0/1gfmTK3qg7kh8ElyZbhMQKWAD9mIdHXVmp/xH2jG7ECh9LFZUbAl4nHvgMoFFWIhooo+XlZO1ytRO60EI/oAzGF3ozhuW+XNxgBPxin+HuM3Ak5wv3BTNuK/1WFTiT6yynZj4HChVCCS06ALC6uwaey6spxYKqGMJBWiOOcVVUnrEP2U9Po8iWcb22YfcnCJWrXKs43denWhO2lygZPxVGPbld2LrU1IQ4daKtwZTZ20zW9EeG72LSSEV1SzflFOji9ZtAAGacpKECpTE8wuWg7gOe/I3rriAhgBmy26KcuhwMVYjIMeXKLwtLdEGV9XIM01NtsSjJNjhoX5gQXaEH0Vq1OJ0qqlMeiuf+MuGf/Bf9ftRy+80f8z/0cv8XOBTiVtk4VuShSfch9fbwyqzOcff3/w5gEwBSftsjU329qNwC3oe8K8+LW9M+kVTVui9nkilletubZ2HSkbhWooLLpofl0hhry5oEjdFDJE06ZF/euKBqmefPfni5/vrSnSNZQWW/6k9ZI4DHJDxZOS8DwvUIw96heZzCer98srQccT3Sg3+M7bUsKo+97AELwGuBkmqtB/MHd0JEvYNba3u83vOFLPLHGrtysLv0adpyU7MHjiNZmpfcFx2nxXwGWtBilwRTv8hOlEbFklCmL3Gn9dr3vH+SnLE0jOj3FFFbFkg0RdiHb4hZd+1yL8fe3B/Nc6H4mUHRw80QtiZ6KjaOO+HLugA4mVHkfcAE0iZbfEzig/o8qGnoSwCzHhhFyn5/DSw4flLdAkVDZXGB7laRuBKAgc9eMr6jQlKrtx3P6ztQDSIfAG2aFjZ7jon4SYIIVXhbSiis4P5liU32WeAS0oUJZFtzCDl9KIKvYV9OzQ8Ii+qDJCh2eXw5v2tXBJzpR9f2EFUtI2s6o7gcQxSIIbBtTd4Q5TcbpTHFrPulR3ErVrkAJuEG2hoLrT2uL8D2AIV7ZZ9D1tNAn8RuZ//ink/lTSaaNxEaHdSRcVCqjiFn8zLarooszuCF9+iW+yBCaQ2GNX5rS7UxyeAt83Pz5e5SReAAAAAElFTkSuQmCC" alt="">
+            <span>ASUS Expert Site Manager</span>
+          </div>
+          <div class="sitelist-empty-desc">您尚未將任何裝置加入 ASUS Site Manager。<br>請選擇以下任一方式加入裝置，開始管理您的網路。</div>
         </div>
-        <button class="pin-code-sitelist-empty-btn">+ Add Site</button>
+        <div class="sitelist-empty-divider"></div>
+        <div class="sitelist-empty-right">
+          <div class="sitelist-empty-option" onclick="return false;">
+            <div class="sitelist-empty-option-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="2" width="12" height="20" rx="2" stroke="#fff" stroke-width="1.8"/><circle cx="10" cy="9" r="2.3" stroke="#fff" stroke-width="1.6"/><path d="M6.5 16c0-2 1.8-3 3.5-3s3.5 1 3.5 3" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg>
+            </div>
+            <div class="sitelist-empty-option-text">
+              <div class="sitelist-empty-option-title">Account binding via ASUS ExpertWiFi App</div>
+            </div>
+          </div>
+          <div class="sitelist-empty-option" onclick="gotoPage('3_010')">
+            <div class="sitelist-empty-option-icon">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="10" width="14" height="10" rx="2" stroke="#fff" stroke-width="1.8"/><path d="M8 10V7a4 4 0 018 0v3" stroke="#fff" stroke-width="1.8"/><circle cx="9" cy="15" r="1" fill="#fff"/><circle cx="12" cy="15" r="1" fill="#fff"/><circle cx="15" cy="15" r="1" fill="#fff"/></svg>
+            </div>
+            <div class="sitelist-empty-option-text">
+              <div class="sitelist-empty-option-title">Bind via PIN Code</div>
+              <div class="sitelist-empty-option-subtitle">Remotely bind a router in different locations</div>
+            </div>
+          </div>
+        </div>
       </div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
         <div style="display:flex;align-items:center;gap:20px;font-size:13px;color:#666;">
