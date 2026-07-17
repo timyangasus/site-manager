@@ -3847,9 +3847,19 @@ function startPinCodeSignupFlow() {
 }
 
 function finishPinCodeSignup() {
-  document.getElementById('view-pincode-signup').classList.remove('active');
-  document.getElementById('view-signin').classList.add('active');
-  markCurrentPage('view:signin');
+  if (pinCodeSigninPending) {
+    // Still mid PIN_CODE_BINDING's 未綁定 path -- show Sign in so the user can
+    // continue into the expiry decision, same as if they'd signed in directly.
+    document.getElementById('view-pincode-signup').classList.remove('active');
+    document.getElementById('view-signin').classList.add('active');
+    markCurrentPage('view:signin');
+  } else {
+    // Reached via the plain Sign in page's own "Sign up" link (goSignup()),
+    // not the PIN code flow -- completing sign-up is just as good as signing
+    // in, so land on the Sites list exactly like a normal sign-in would.
+    document.getElementById('page-login').classList.add('hidden');
+    goPage('sitelist');
+  }
 }
 
 function openPinCodeExpiryDecision() {
