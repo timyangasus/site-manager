@@ -3930,11 +3930,16 @@ function startPinCodeSignupFlow() {
 
 function finishPinCodeSignup() {
   if (pinCodeSigninPending) {
-    // Still mid PIN_CODE_BINDING's 未綁定 path -- show Sign in so the user can
-    // continue into the expiry decision, same as if they'd signed in directly.
-    document.getElementById('view-pincode-signup').classList.remove('active');
-    document.getElementById('view-signin').classList.add('active');
-    markCurrentPage('view:signin');
+    // PIN_CODE_BINDING's 未綁定 path -- completing sign-up finishes the binding
+    // directly (no PIN-expiry judgment, unlike the 已綁定 path). Reveal 2_020
+    // as the backdrop first, then play the spinner over it.
+    pinCodeSigninPending = false;
+    document.getElementById('page-login').classList.add('hidden');
+    goPage('sitelist');
+    document.getElementById('signup-complete-loading-overlay').classList.add('show');
+    setTimeout(() => {
+      document.getElementById('signup-complete-loading-overlay').classList.remove('show');
+    }, 1200);
   } else {
     // Reached via the plain Sign in page's own "Sign up" link (goSignup()),
     // not the PIN code flow -- completing sign-up is just as good as signing
