@@ -2435,6 +2435,13 @@ body {
   </div>
 </div>
 
+<!-- Sign in flow: Sign up (3_030) completion -> Sites list (2_020), spinner only, no label -->
+<div class="pin-binding-overlay" id="signup-complete-loading-overlay">
+  <div class="pin-binding-dialog">
+    <div class="pin-binding-spinner" style="margin-bottom:0;"></div>
+  </div>
+</div>
+
 <!-- Pin Code binding failed -->
 <div class="pin-binding-overlay" id="pin-binding-failed-overlay">
   <div class="pin-binding-dialog">
@@ -3856,9 +3863,14 @@ function finishPinCodeSignup() {
   } else {
     // Reached via the plain Sign in page's own "Sign up" link (goSignup()),
     // not the PIN code flow -- completing sign-up is just as good as signing
-    // in, so land on the Sites list exactly like a normal sign-in would.
-    document.getElementById('page-login').classList.add('hidden');
-    goPage('sitelist');
+    // in, so land on the Sites list exactly like a normal sign-in would,
+    // with a brief spinner-only (no label) loading transition first.
+    document.getElementById('signup-complete-loading-overlay').classList.add('show');
+    setTimeout(() => {
+      document.getElementById('signup-complete-loading-overlay').classList.remove('show');
+      document.getElementById('page-login').classList.add('hidden');
+      goPage('sitelist');
+    }, 1200);
   }
 }
 
