@@ -2323,6 +2323,21 @@ body {
   </div>
 </div>
 
+<!-- Floor Planner desktop app -- intro shown before jumping into ASUS Site Manager management -->
+<div class="newsite-overlay" id="fpapp-sitemanager-intro-overlay">
+  <div class="newsite-dialog">
+    <button class="pin-binding-close" onclick="fpAppCloseSiteManagerIntro()">&times;</button>
+    <div class="newsite-dialog-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 18a4 4 0 01-1-7.9 5 5 0 019.6-2A4.5 4.5 0 0119 15.5a4 4 0 01-4 3.5H6z" stroke="#1565C0" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    </div>
+    <div class="newsite-dialog-title">使用 ASUS VIP 帳號管理 Floor Planner</div>
+    <div class="newsite-dialog-body">使用 ASUS Site Manager，您的 Floor Planner 檔案將透過目前登入的 ASUS VIP 帳號進行管理與同步。</div>
+    <div class="newsite-dialog-btns">
+      <button class="newsite-confirm" onclick="fpAppConfirmSiteManagerIntro()" style="width:100%;">繼續</button>
+    </div>
+  </div>
+</div>
+
 <!-- Floor Planner desktop app -- mock native "Save As" file browser for the Local path -->
 <div class="pin-binding-overlay" id="fpapp-local-save-overlay">
   <div class="fpapp-filedialog">
@@ -4063,10 +4078,20 @@ function fpAppChooseSaveTarget(useSiteManager) {
     resolve: fpAppChooseSaveTarget
   });
   if (useSiteManager) {
-    fpAppStartSiteManagerLink();
+    fpAppOpenSiteManagerIntro();
   } else {
     document.getElementById('fpapp-local-save-overlay').classList.add('show');
   }
+}
+function fpAppCloseSiteManagerIntro() {
+  document.getElementById('fpapp-sitemanager-intro-overlay').classList.remove('show');
+}
+function fpAppConfirmSiteManagerIntro() {
+  fpAppCloseSiteManagerIntro();
+  fpAppStartSiteManagerLink();
+}
+function fpAppOpenSiteManagerIntro() {
+  document.getElementById('fpapp-sitemanager-intro-overlay').classList.add('show');
 }
 function fpAppCloseLocalSave() {
   document.getElementById('fpapp-local-save-overlay').classList.remove('show');
@@ -4157,6 +4182,7 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
   function () {
     document.getElementById('page-floorplannerapp').classList.remove('show');
     document.getElementById('fpapp-save-dropdown').classList.remove('show');
+    document.getElementById('fpapp-sitemanager-intro-overlay').classList.remove('show');
     document.getElementById('fpapp-local-save-overlay').classList.remove('show');
     document.getElementById('fpapp-login-check').classList.remove('show');
     document.getElementById('fpapp-loading-overlay').classList.remove('show');
