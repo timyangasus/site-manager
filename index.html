@@ -510,16 +510,6 @@ body {
   display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
 .fpapp-home-btn:hover { background: #333; }
-.fpapp-header-right { display: flex; align-items: center; gap: 8px; }
-.fpapp-header-icon {
-  width: 32px; height: 32px; border-radius: 50%; border: 1px solid #e5e5e5; background: #fff;
-  display: flex; align-items: center; justify-content: center; cursor: pointer; color: #555;
-}
-.fpapp-header-icon:hover { background: #f5f5f5; }
-.fpapp-header-avatar {
-  width: 32px; height: 32px; border-radius: 50%; background: #1565C0; display: flex;
-  align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 13px;
-}
 .fpapp-canvas-wrap { position: relative; flex: 1; background: #f4f5f7; overflow: auto; padding-bottom: 160px; box-sizing: border-box; }
 
 /* mock native "Save As" file dialog for the Local save path */
@@ -2136,18 +2126,6 @@ body {
       <button class="fpapp-home-btn" onclick="return false;" title="Home">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 10.5L12 4l8 6.5V20a1 1 0 01-1 1h-4.5a.5.5 0 01-.5-.5V15h-4v5.5a.5.5 0 01-.5.5H5a1 1 0 01-1-1V10.5z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
       </button>
-      <div class="fpapp-header-right">
-        <div class="fpapp-header-icon" title="Location">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#555"/></svg>
-        </div>
-        <div class="fpapp-header-icon" title="Chat">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 5h16v11H8l-4 4V5z" stroke="#555" stroke-width="1.6" stroke-linejoin="round"/></svg>
-        </div>
-        <div class="fpapp-header-icon" title="Info">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#555" stroke-width="1.6"/><path d="M12 11v5.5M12 8v.01" stroke="#555" stroke-width="1.8" stroke-linecap="round"/></svg>
-        </div>
-        <div class="fpapp-header-avatar">A</div>
-      </div>
     </div>
 
     <div class="fp-detail-topbar">
