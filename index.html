@@ -3820,13 +3820,21 @@ function chooseLoginState(isLoggedIn) {
   if (isLoggedIn) {
     setTimeout(openPinCodeExpiryDecision, 200);
   } else {
-    // Brief loading transition into Site Manager before landing on the sign-up screen
+    // Brief loading transition into Site Manager before landing on the sign-in
+    // screen (1_012) -- not the sign-up form (3_030) directly, since the user
+    // may already have an ASUS VIP account; "Sign up" from there gets to 3_030.
     pinCodeSignupTransitionTimer = setTimeout(() => {
       pinCodeSignupTransitionTimer = null;
       hidePinCodeWelcomePage();
-      startPinCodeSignupFlow();
+      startPinCodeSigninFlow();
     }, 1200);
   }
+}
+
+function startPinCodeSigninFlow() {
+  pinCodeSigninPending = true;
+  document.getElementById('page-login').classList.remove('hidden');
+  goSignin();
 }
 
 function startPinCodeSignupFlow() {
