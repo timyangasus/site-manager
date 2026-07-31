@@ -211,12 +211,12 @@ body {
 .model-cell { display: flex; align-items: center; gap: 0; }
 .expand-btn {
   width: 20px; height: 20px; border-radius: 4px;
-  border: 1px solid rgba(0,0,0,0.15); background: #fff;
+  border: none; background: transparent;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; transition: background 0.1s; margin-right: 23px;
+  flex-shrink: 0; transition: background 0.1s, transform 0.15s; margin-right: 23px;
 }
-.expand-btn:hover { background: #eef4ff; border-color: #1565C0; }
-.expand-btn.topo-active { background: #e8f0fe; border-color: #1565C0; }
+.expand-btn:hover { background: rgba(0,0,0,0.06); }
+.expand-btn.topo-active { background: rgba(21,101,192,0.08); transform: rotate(180deg); }
 .expand-btn.topo-active svg path { stroke: #1565C0; }
 .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex-shrink: 0; margin-right: 14px; }
 .router-img { width: 41px; height: 41px; object-fit: contain; flex-shrink: 0; margin-right: 13px; }
@@ -4977,6 +4977,12 @@ document.querySelectorAll('.expand-btn').forEach((btn, idx) => {
     inlineTopoToggle2(btn, idx);
   });
 });
+
+// Auto-open the first site's topology on load
+setTimeout(() => {
+  const firstBtn = document.querySelector('.expand-btn');
+  if (firstBtn) firstBtn.click();
+}, 100);
 
 // ── Inline Topology ──────────────────────────────────────────────────────────
 function inlineTopoToggle(btn, idx) {
