@@ -1057,19 +1057,15 @@ body {
 .topo-node-name { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
 .topo-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 1px; }
 .topo-status-dot.online  { background: #43a047; }
-.topo-status-dot.warning { background: #f9a825; }
 .topo-status-dot.offline { background: #bdbdbd; }
 .topo-node-conn { font-size: 11px; color: #888; }
 .topo-node-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
 .topo-node-ip { font-size: 12px; color: #555; font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 500; }
 
-/* Connection badge */
+/* Connection badge (offline only -- the online Wi-Fi/Wired badge duplicated the conn-type text) */
 .topo-conn-badge {
   font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600; white-space: nowrap;
 }
-.topo-conn-badge.wire { background: #e8f5e9; color: #2e7d32; }
-.topo-conn-badge.wifi-good { background: #e8f5e9; color: #2e7d32; }
-.topo-conn-badge.wifi-slow { background: #fff8e1; color: #f57c00; }
 .topo-conn-badge.offline-badge { background: #f0f0f0; color: #999; }
 
 /* ── Login / Landing pages ── */
@@ -4789,21 +4785,6 @@ const topoImgMap = {
 };
 
 
-function topoSignalDots(signal, type) {
-  const color = type === 'wire' ? '#4caf50' : signal >= 75 ? '#4caf50' : signal >= 40 ? '#f59e0b' : '#bbb';
-  const active = type === 'wire' ? 4 : signal >= 75 ? 4 : signal >= 50 ? 3 : signal >= 25 ? 2 : 1;
-  return [1,2,3,4].map(i =>
-    `<div style="width:7px;height:7px;border-radius:50%;background:${i<=active?color:'#e0e0e0'};"></div>`
-  ).join('');
-}
-
-function getConnBadge(n) {
-  if (n.type === 'wire') return `<span class="topo-conn-badge wire">Wired</span>`;
-  if (n.signal >= 75) return `<span class="topo-conn-badge wifi-good">Wi-Fi</span>`;
-  if (n.signal >= 40) return `<span class="topo-conn-badge wifi-slow">Wi-Fi</span>`;
-  return `<span class="topo-conn-badge offline-badge">Weak</span>`;
-}
-
 // ── Fixed Topology Renderer (used by the inline expand row) ────────────────
 // Rules:
 //   • Each node owns one vertical segment on the trunk: from the previous
@@ -4892,7 +4873,7 @@ function drawPills(nodes, trunkX, parentMidY) {
     const n = nodes[i];
     const c = lc(n);
     if (n.band || n.type === 'wire') {
-      const labelText = n.type === 'wire' ? 'Wired' : `${n.band} ${n.dbm}dBm`;
+      const labelText = n.type === 'wire' ? 'Wired' : `${n.dbm}dBm`;
       const gapTop  = (i === 0) ? parentMidY : maxBottom([nodes[i-1]]);
       const gapBot  = n._y;
       const midY    = (gapTop + gapBot) / 2;
@@ -4916,11 +4897,10 @@ function drawPills(nodes, trunkX, parentMidY) {
 function drawCards(nodes, cardX) {
   let out = '';
   for (const n of nodes) {
-    const dots  = topoSignalDots(n.signal, n.type);
-    const badge = getConnBadge(n);
     const isOffline = !!n.offline;
     const cardStyle = isOffline ? 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;opacity:0.55;' : 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;';
-    const offlineBadge = isOffline ? '<span class="topo-conn-badge offline-badge" style="background:#f0f0f0;color:#999;border-color:#ddd;">Offline</span>' : badge;
+    const offlineBadge = isOffline ? '<span class="topo-conn-badge offline-badge" style="background:#f0f0f0;color:#999;border-color:#ddd;">Offline</span>' : '';
+    const statusDot = isOffline ? '<span class="topo-status-dot offline"></span>' : n.signal >= 70 ? '<span class="topo-status-dot online"></span>' : '';
     out += `<div style="position:absolute;left:${cardX}px;top:${n._y}px;right:0;height:${FIXED_CARD_H}px;">
       <div class="topo-node-card" style="${cardStyle}"
         data-node-name="${n.name}" data-node-conn="${n.conn}"
@@ -4930,10 +4910,10 @@ function drawCards(nodes, cardX) {
         <img class="topo-node-img" src="${topoImgMap[n.img]}" alt="${n.name}" style="${isOffline ? 'filter:grayscale(1);' : ''}">
         <div class="topo-node-info">
           <div class="topo-node-name" style="${isOffline ? 'color:#999;' : ''}">
-            <span class="topo-status-dot ${isOffline ? 'offline' : n.signal >= 70 ? 'online' : 'warning'}"></span>
+            ${statusDot}
             ${n.name}
           </div>
-          <div class="topo-node-conn">${n.conn}</div>
+          <div class="topo-node-conn">${n.conn.replace('Wireless ', '')}</div>
         </div>
         <div class="topo-node-right">
           <span style="font-size:11px;color:#888;">${isOffline ? '' : (n.clients !== undefined ? n.clients + ' clients' : '')}</span>
