@@ -215,22 +215,14 @@ body {
 .health-bar { width: 160px; height: 4px; border-radius: 2px; background: #e8e8e8; overflow: hidden; }
 .muted { color: #aaa; }
 .center { text-align: center; }
-.overflow-btn {
-  width: 24px; height: 24px; border-radius: 4px; border: none;
-  background: transparent; cursor: pointer; color: #5f6368;
-  font-size: 14px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-  letter-spacing: 1px; transition: background 0.1s;
-}
-.overflow-btn:hover { background: rgba(0,0,0,0.07); }
 .site-table tbody tr { cursor: pointer; }
 .site-link-btn {
   width: 22px; height: 22px; border-radius: 4px;
-  border: 1px solid rgba(0,0,0,0.15); background: #fff;
+  border: 1px solid #1565C0; background: #fff;
   cursor: pointer; display: flex; align-items: center; justify-content: center;
   flex-shrink: 0; transition: background 0.1s;
 }
-.site-link-btn:hover { background: #eef4ff; border-color: #1565C0; }
+.site-link-btn:hover { background: #eef4ff; }
 
 /* ── Footer ── */
 .footer {
@@ -975,23 +967,6 @@ body {
 .fw-loading-text { font-size: 14px; color: #1565C0; font-weight: 500; }
 
 
-/* ── Topology Panel ── */
-.topo-panel {
-  position: fixed; top: 29px; right: -600px; bottom: 0;
-  width: 600px; background: #fff;
-  border-left: 1px solid rgba(0,0,0,0.1);
-  display: flex; flex-direction: column;
-  transition: right 0.28s cubic-bezier(0.4,0,0.2,1);
-  z-index: 160;
-}
-.topo-panel.show { right: 0; }
-.topo-panel-overlay {
-  display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,0.2); z-index: 150;
-  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
-}
-.topo-panel-overlay.show { display: block; }
-
 /* ── Site Detail Panel (slide-out from clicking a Site List row) ── */
 .site-detail-panel {
   position: fixed; top: 29px; right: -420px; bottom: 0;
@@ -1038,113 +1013,6 @@ body {
 .site-detail-stats > div:last-child { border-right: none; }
 .site-detail-stats .stat-label { font-size: 12px; color: #8a8f98; margin-bottom: 4px; }
 .site-detail-stats .stat-value { font-size: 14px; font-weight: 600; }
-.topo-header {
-  padding: 16px 20px 12px; border-bottom: 1px solid rgba(0,0,0,0.08);
-  flex-shrink: 0;
-}
-.topo-header-top {
-  display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
-}
-.topo-site-name { font-size: 16px; font-weight: 700; color: #1a1a1a; }
-.topo-close {
-  width: 28px; height: 28px; border-radius: 4px; border: none; background: transparent;
-  cursor: pointer; font-size: 16px; color: #666;
-  display: flex; align-items: center; justify-content: center; transition: background 0.1s;
-}
-.topo-close:hover { background: rgba(0,0,0,0.07); }
-.topo-nav { display: flex; align-items: center; justify-content: space-between; }
-.topo-nav-btn {
-  height: 28px; padding: 0 12px; border-radius: 6px;
-  border: 1px solid #ddd; background: #fff; cursor: pointer;
-  font-size: 12px; color: #555; font-family: inherit;
-  display: flex; align-items: center; gap: 5px; transition: background 0.1s;
-}
-.topo-nav-btn:hover { background: #f5f5f5; }
-.topo-nav-btn:disabled { opacity: 0.35; cursor: default; }
-.topo-nav-label { font-size: 12px; color: #888; }
-.topo-meta { display: flex; align-items: center; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
-.topo-meta-item { font-size: 12px; color: #666; display: flex; align-items: center; gap: 5px; }
-.topo-meta-dot { width: 8px; height: 8px; border-radius: 50%; }
-.topo-body { flex: 1; overflow-y: auto; padding: 20px; }
-.topo-section-title {
-  font-size: 11px; font-weight: 700; color: #888;
-  text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 16px;
-}
-
-/* Root node */
-.topo-root {
-  display: flex; align-items: center; gap: 14px; margin-bottom: 4px;
-}
-.topo-root-icon {
-  width: 56px; height: 56px; border-radius: 12px;
-  background: #e8f0fe; display: flex; align-items: center; justify-content: center;
-  flex-shrink: 0; border: 2.5px solid #1565C0;
-}
-.topo-root-info { flex: 1; }
-.topo-root-name { font-size: 15px; font-weight: 700; color: #1a1a1a; }
-.topo-root-sub { font-size: 12px; color: #888; margin-top: 2px; }
-.topo-root-badge {
-  font-size: 11px; padding: 3px 10px; border-radius: 999px;
-  background: #e6f4ea; color: #1e7e34; font-weight: 600;
-}
-.topo-root-badge.offline { background: #f0f0f0; color: #999; }
-
-/* Tree structure */
-.topo-children { margin-left: 28px; padding-top: 4px; }
-.topo-child-row { display: flex; align-items: stretch; }
-
-/* Vertical + horizontal lines */
-.topo-lines { display: flex; flex-direction: column; align-items: center; width: 28px; flex-shrink: 0; }
-.topo-line-v-top { width: 3px; height: 24px; background: #c5d8f0; border-radius: 0; flex-shrink: 0; }
-.topo-line-v-bottom { width: 3px; flex: 1; background: #c5d8f0; flex-shrink: 0; }
-.topo-line-v-none { width: 3px; flex: 1; flex-shrink: 0; }
-.topo-line-corner { 
-  width: 28px; height: 24px; flex-shrink: 0;
-  border-left: 3px solid #c5d8f0;
-  border-bottom: 3px solid #c5d8f0;
-  border-bottom-left-radius: 6px;
-  margin-left: 0;
-}
-
-/* Node card */
-.topo-node-card {
-  flex: 1; display: flex; align-items: center; gap: 12px;
-  background: #fafafa; border: 1px solid rgba(0,0,0,0.07);
-  border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
-  transition: background 0.1s;
-}
-.topo-node-card:hover { background: #f0f5ff; border-color: rgba(21,101,192,0.2); }
-.topo-node-img { width: 38px; height: 38px; object-fit: contain; flex-shrink: 0; }
-.topo-node-info { flex: 1; min-width: 0; }
-.topo-node-name { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
-.topo-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 1px; }
-.topo-status-dot.online  { background: #43a047; }
-.topo-status-dot.warning { background: #f9a825; }
-.topo-status-dot.offline { background: #bdbdbd; }
-.topo-node-conn { font-size: 11px; color: #888; }
-.topo-node-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
-.topo-node-ip { font-size: 12px; color: #555; font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 500; }
-
-/* Signal dots (like ASUS AiMesh style) */
-.topo-signal-dots { display: flex; gap: 3px; align-items: center; }
-.topo-signal-dot { width: 7px; height: 7px; border-radius: 50%; }
-
-/* Connection badge */
-.topo-conn-badge {
-  font-size: 10px; padding: 2px 7px; border-radius: 4px; font-weight: 600; white-space: nowrap;
-}
-.topo-conn-badge.wire { background: #e8f5e9; color: #2e7d32; }
-.topo-conn-badge.wifi-good { background: #e8f5e9; color: #2e7d32; }
-.topo-conn-badge.wifi-slow { background: #fff8e1; color: #f57c00; }
-.topo-conn-badge.offline-badge { background: #f0f0f0; color: #999; }
-
-/* Offline state */
-.topo-offline-msg {
-  text-align: center; padding: 40px 20px;
-  font-size: 13px; color: #aaa;
-}
-
-
 /* ── Login / Landing pages ── */
 #page-login {
   position: fixed; top: 32px; left: 0; right: 0; bottom: 0; z-index: 500;
@@ -1574,25 +1442,6 @@ body {
 }
 .newsite-confirm:hover { background: #1251a3; }
 
-
-.node-popup-overlay { display:none; position:fixed; inset:0; z-index:9000; }
-.node-popup-overlay.show { display:block; }
-.node-popup {
-  display:none; position:fixed; z-index:9001;
-  background:#fff; border-radius:12px;
-  padding:20px 22px 18px; width:280px;
-  box-shadow:0 4px 24px rgba(0,0,0,0.15);
-  border:1px solid rgba(0,0,0,0.08);
-}
-.node-popup-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-.node-popup-name { font-size:15px; font-weight:700; color:#1a1a1a; }
-.node-popup-close { width:24px;height:24px;border-radius:4px;border:none;background:transparent;cursor:pointer;font-size:14px;color:#888;display:flex;align-items:center;justify-content:center; }
-.node-popup-close:hover { background:rgba(0,0,0,0.07); }
-.node-popup-row { display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:13px; }
-.node-popup-row:last-child { border-bottom:none; }
-.node-popup-key { color:#888; }
-.node-popup-val { font-weight:600; color:#1a1a1a; }
-.node-status-online { display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;background:#e6f4ea;color:#1e7e34;font-size:12px;font-weight:600; }
 
 /* ── Account Panel ── */
 .account-overlay { display:none; position:fixed; inset:0; z-index:8000; }
@@ -2627,7 +2476,6 @@ body {
             <th style="width:48px;text-align:center;">Guests</th>
             <th style="width:76px;">ISP</th>
             <th style="width:32px;"></th>
-            <th style="width:32px;"></th>
           </tr></thead>
           <tbody>
           <tr id="site-row-0" onclick="openSiteDetail(0)">
@@ -2645,8 +2493,7 @@ body {
             <td class="center">3</td>
             <td class="center">4</td>
             <td>Comcast</td>
-            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(0)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#5F6368"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation(); topoOpen(0)" title="More">···</button></td>
+            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(0)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
           </tr>
           <tr id="site-row-1" onclick="openSiteDetail(1)">
             <td><div class="model-cell">
@@ -2663,8 +2510,7 @@ body {
             <td class="center">2</td>
             <td class="center">2</td>
             <td>AT&T</td>
-            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(1)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#5F6368"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation(); topoOpen(1)" title="More">···</button></td>
+            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(1)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
           </tr>
           <tr id="site-row-2" onclick="openSiteDetail(2)">
             <td><div class="model-cell">
@@ -2681,8 +2527,7 @@ body {
             <td class="center">4</td>
             <td class="center">6</td>
             <td>Xfinity</td>
-            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(2)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#5F6368"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation(); topoOpen(2)" title="More">···</button></td>
+            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(2)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
           </tr>
           <tr id="site-row-3" onclick="openSiteDetail(3)">
             <td><div class="model-cell">
@@ -2699,8 +2544,7 @@ body {
             <td class="center">3</td>
             <td class="center">3</td>
             <td>Spectrum</td>
-            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(3)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#5F6368"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation(); topoOpen(3)" title="More">···</button></td>
+            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(3)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
           </tr>
           <tr id="site-row-4" onclick="openSiteDetail(4)">
             <td><div class="model-cell">
@@ -2717,8 +2561,7 @@ body {
             <td class="center">2</td>
             <td class="center">5</td>
             <td>Verizon</td>
-            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(4)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#5F6368"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation(); topoOpen(4)" title="More">···</button></td>
+            <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); openSiteDetail(4)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
           </tr>
           <tr id="site-row-5" class="offline-row" onclick="openSiteDetail(5)">
             <td><div class="model-cell">
@@ -2735,8 +2578,7 @@ body {
             <td class="center" id="site-row-5-wired"><span class="muted">–</span></td>
             <td class="center" id="site-row-5-guests"><span class="muted">–</span></td>
             <td id="site-row-5-isp"><span class='muted'>Xfinity</span></td>
-            <td><button class="site-link-btn" title="Open" style="opacity:0.5;" onclick="event.stopPropagation(); openSiteDetail(5)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#5F6368"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation(); topoOpen(5)" title="More">···</button></td>
+            <td><button class="site-link-btn" title="Open" style="opacity:0.5;" onclick="event.stopPropagation(); openSiteDetail(5)"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
           </tr>
           </tbody>
         </table>
@@ -3562,30 +3404,6 @@ body {
           <div><div class="stat-label">Guests</div><div class="stat-value" id="site-detail-guests"></div></div>
         </div>
       </div>
-    </div>
-
-    <!-- ── Topology Panel ── -->
-    <div class="topo-panel-overlay" id="topo-overlay" onclick="topoClose()"></div>
-    <div class="topo-panel" id="topo-panel">
-      <div class="topo-header">
-        <div class="topo-header-top">
-          <span class="topo-site-name" id="topo-site-name">—</span>
-          <button class="topo-close" onclick="topoClose()">✕</button>
-        </div>
-        <div class="topo-nav">
-          <button class="topo-nav-btn" id="topo-prev" onclick="topoNav(-1)">
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M8 2L4 6l4 4" stroke="#555" stroke-width="1.5" stroke-linecap="round"/></svg>
-            Prev
-          </button>
-          <span class="topo-nav-label" id="topo-nav-label">1 / 6</span>
-          <button class="topo-nav-btn" id="topo-next" onclick="topoNav(1)">
-            Next
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M4 2l4 4-4 4" stroke="#555" stroke-width="1.5" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-        <div class="topo-meta" id="topo-meta"></div>
-      </div>
-      <div class="topo-body" id="topo-body"></div>
     </div>
 
 <script>
@@ -4874,295 +4692,6 @@ const topoImgMap = {
 };
 
 
-let topoCurrentIdx = 0;
-
-function topoOpen(idx) {
-  topoCurrentIdx = idx;
-  topoRender();
-  document.getElementById('topo-overlay').classList.add('show');
-  document.getElementById('topo-panel').classList.add('show');
-}
-
-function topoClose() {
-  document.getElementById('topo-overlay').classList.remove('show');
-  document.getElementById('topo-panel').classList.remove('show');
-}
-
-function topoNav(dir) {
-  const total = topoSites.length;
-  topoCurrentIdx = (topoCurrentIdx + dir + total) % total;
-  topoRender();
-}
-
-function topoSignalBars(signal) {
-  const levels = [signal >= 25, signal >= 50, signal >= 75, signal >= 90];
-  return `<div class="topo-signal-bar">
-    ${levels.map(on => `<div class="topo-signal-seg ${on?'on':''}" style="height:${4+levels.indexOf(on)*3}px"></div>`).join('')}
-  </div>`;
-}
-
-function topoSignalDots(signal, type) {
-  const color = type === 'wire' ? '#4caf50' : signal >= 75 ? '#4caf50' : signal >= 40 ? '#f59e0b' : '#bbb';
-  const active = type === 'wire' ? 4 : signal >= 75 ? 4 : signal >= 50 ? 3 : signal >= 25 ? 2 : 1;
-  return [1,2,3,4].map(i =>
-    `<div style="width:7px;height:7px;border-radius:50%;background:${i<=active?color:'#e0e0e0'};"></div>`
-  ).join('');
-}
-
-function getConnBadge(n) {
-  if (n.type === 'wire') return `<span class="topo-conn-badge wire">Wired</span>`;
-  if (n.signal >= 75) return `<span class="topo-conn-badge wifi-good">Wi-Fi</span>`;
-  if (n.signal >= 40) return `<span class="topo-conn-badge wifi-slow">Wi-Fi</span>`;
-  return `<span class="topo-conn-badge offline-badge">Weak</span>`;
-}
-
-function lc(n) {
-  if (n.type === 'wire') return '#4caf50';
-  return n.signal >= 75 ? '#4caf50' : n.signal >= 40 ? '#f59e0b' : '#bbb';
-}
-
-function topoSignalDots(signal, type) {
-  const color = type === 'wire' ? '#4caf50' : signal >= 75 ? '#4caf50' : signal >= 40 ? '#f59e0b' : '#bbb';
-  const active = type === 'wire' ? 4 : signal >= 75 ? 4 : signal >= 50 ? 3 : signal >= 25 ? 2 : 1;
-  return [1,2,3,4].map(i =>
-    `<div style="width:7px;height:7px;border-radius:50%;background:${i<=active?color:'#e0e0e0'};"></div>`
-  ).join('');
-}
-
-function getConnBadge(n) {
-  if (n.type === 'wire') return `<span class="topo-conn-badge wire">Wired</span>`;
-  if (n.signal >= 75) return `<span class="topo-conn-badge wifi-good">Wi-Fi</span>`;
-  if (n.signal >= 40) return `<span class="topo-conn-badge wifi-slow">Wi-Fi</span>`;
-  return `<span class="topo-conn-badge offline-badge">Weak</span>`;
-}
-
-// ── Fixed Topology Renderer ────────────────────────────────────────────────
-// Rules:
-//   • Each node owns one vertical segment on the trunk: from the previous
-//     sibling's midY (or the parent's midY for i=0) down to this node's midY.
-//   • One horizontal segment at this node's midY: trunk → card edge.
-//   • One RSSI pill centred on this node's vertical segment (wireless only).
-//     Pill needs ≥ PILL_MIN_H px of vertical space; gap is enlarged if needed.
-
-const FIXED_CARD_H   = 68;
-const FIXED_CARD_GAP = 16;
-const PILL_MIN_H     = 20;   // minimum segment height to show a pill
-const TRUNK_X_PX     = 10;   // x of main trunk line
-const CARD_START_X   = 120;  // card left edge — wide enough for pills
-const CHILD_IND      = 48;   // indent per child level
-const PILL_H         = 16;   // pill height (smaller)
-
-function lc(n) {
-  if (n.type === 'wire') return '#4caf50';
-  return n.signal >= 75 ? '#4caf50' : n.signal >= 40 ? '#f59e0b' : '#bbb';
-}
-
-// ── Step 1: layout ──────────────────────────────────────────────────────────
-// Assign _y / _midY to every node.
-// For nodes that need a RSSI pill, ensure the gap above them is at least
-// PILL_MIN_H so the pill never overlaps the card above.
-function fixedLayout(nodes, startY, parentMidY) {
-  let y = startY;
-  for (let i = 0; i < nodes.length; i++) {
-    const n = nodes[i];
-    const needsPill = (n.type !== 'wire' && n.band);
-
-    // segTop = midY of the anchor above this node (previous sibling or parent)
-    const prevAnchorMidY = (i === 0) ? parentMidY : nodes[i-1]._midY;
-
-    if (needsPill) {
-      // Ensure gap between prevAnchorBottom and this card top ≥ PILL_MIN_H
-      const prevBottom = (i === 0) ? parentMidY : maxBottom([nodes[i-1]]);
-      const minY = prevBottom + PILL_MIN_H;
-      if (y < minY) y = minY;
-    }
-
-    n._y    = y;
-    n._midY = y + FIXED_CARD_H / 2;
-    y += FIXED_CARD_H + FIXED_CARD_GAP;
-
-    if (n.children && n.children.length > 0) {
-      y = fixedLayout(n.children, y, n._midY);
-    }
-  }
-  return y;
-}
-
-function maxBottom(nodes) {
-  let m = 0;
-  for (const n of nodes) {
-    m = Math.max(m, n._y + FIXED_CARD_H);
-    if (n.children && n.children.length > 0) m = Math.max(m, maxBottom(n.children));
-  }
-  return m;
-}
-
-// ── Step 2: SVG lines only (no pills) ──────────────────────────────────────
-function drawLines(nodes, trunkX, cardX, parentMidY) {
-  if (!nodes || !nodes.length) return '';
-  let svg = '';
-  for (let i = 0; i < nodes.length; i++) {
-    const n = nodes[i];
-    const c = lc(n);
-    const trunkTop = (i === 0) ? parentMidY : nodes[i-1]._midY;
-    svg += `<line x1="${trunkX}" y1="${trunkTop}" x2="${trunkX}" y2="${n._midY}"
-      stroke="${c}" stroke-width="3" stroke-linecap="square"/>`;
-    svg += `<line x1="${trunkX}" y1="${n._midY}" x2="${cardX}" y2="${n._midY}"
-      stroke="${c}" stroke-width="3" stroke-linecap="square"/>`;
-    if (n.children && n.children.length > 0) {
-      svg += drawLines(n.children, trunkX + CHILD_IND, cardX + CHILD_IND, n._midY);
-    }
-  }
-  return svg;
-}
-
-// ── Step 2b: pill divs — centred ON the trunk line ─────────────────────────
-function drawPills(nodes, trunkX, parentMidY) {
-  if (!nodes || !nodes.length) return '';
-  let html = '';
-  for (let i = 0; i < nodes.length; i++) {
-    const n = nodes[i];
-    const c = lc(n);
-    if (n.band || n.type === 'wire') {
-      const labelText = n.type === 'wire' ? 'Wired' : `${n.band} ${n.dbm}dBm`;
-      const gapTop  = (i === 0) ? parentMidY : maxBottom([nodes[i-1]]);
-      const gapBot  = n._y;
-      const midY    = (gapTop + gapBot) / 2;
-      // Centre pill horizontally on the trunk line
-      html += `<div style="position:absolute;top:${midY - PILL_H/2}px;
-        left:${trunkX}px;transform:translateX(-50%);
-        height:${PILL_H}px;padding:0 8px;border-radius:${PILL_H/2}px;
-        border:1.5px solid ${c};background:white;z-index:10;
-        display:flex;align-items:center;white-space:nowrap;
-        font-size:9.5px;font-weight:600;font-family:Segoe UI,system-ui,sans-serif;
-        color:${c};pointer-events:none;">${labelText}</div>`;
-    }
-    if (n.children && n.children.length > 0) {
-      html += drawPills(n.children, trunkX + CHILD_IND, n._midY);
-    }
-  }
-  return html;
-}
-
-// ── Step 3: card divs ───────────────────────────────────────────────────────
-function drawCards(nodes, cardX) {
-  let out = '';
-  for (const n of nodes) {
-    const dots  = topoSignalDots(n.signal, n.type);
-    const badge = getConnBadge(n);
-    const isOffline = !!n.offline;
-    const cardStyle = isOffline ? 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;opacity:0.55;' : 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;';
-    const offlineBadge = isOffline ? '<span class="topo-conn-badge offline-badge" style="background:#f0f0f0;color:#999;border-color:#ddd;">Offline</span>' : badge;
-    out += `<div style="position:absolute;left:${cardX}px;top:${n._y}px;right:0;height:${FIXED_CARD_H}px;">
-      <div class="topo-node-card" style="${cardStyle}"
-        data-node-name="${n.name}" data-node-conn="${n.conn}"
-        data-node-clients="${n.clients !== undefined ? n.clients : ''}"
-        data-node-mac="${n.mac || ''}" data-node-uptime="${n.uptime || ''}"
-        data-node-ip="${n.ip}" data-node-signal="${n.signal}" data-node-type="${n.type}">
-        <img class="topo-node-img" src="${topoImgMap[n.img]}" alt="${n.name}" style="${isOffline ? 'filter:grayscale(1);' : ''}">
-        <div class="topo-node-info">
-          <div class="topo-node-name" style="${isOffline ? 'color:#999;' : ''}">
-            <span class="topo-status-dot ${isOffline ? 'offline' : n.signal >= 70 ? 'online' : 'warning'}"></span>
-            ${n.name}
-          </div>
-          <div class="topo-node-conn">${n.conn}</div>
-        </div>
-        <div class="topo-node-right">
-          <span style="font-size:11px;color:#888;">${isOffline ? '' : (n.clients !== undefined ? n.clients + ' clients' : '')}</span>
-          <span class="topo-node-ip">${isOffline ? '—' : n.ip}</span>
-          ${offlineBadge}
-        </div>
-      </div>
-    </div>`;
-    if (n.children && n.children.length > 0) {
-      out += drawCards(n.children, cardX + CHILD_IND);
-    }
-  }
-  return out;
-}
-
-// ── Entry point ─────────────────────────────────────────────────────────────
-function buildTopoTree(nodes) {
-  if (!nodes || !nodes.length) return '<div style="padding:20px;color:#aaa;font-size:13px;">No connected nodes.</div>';
-
-  fixedLayout(nodes, 0, 0);
-  const H = maxBottom(nodes) + 4;
-
-  const svgLines = drawLines(nodes, TRUNK_X_PX, CARD_START_X, 0);
-  const pills    = drawPills(nodes, TRUNK_X_PX, 0);
-  const cards    = drawCards(nodes, CARD_START_X);
-
-  return `<div style="position:relative;height:${H}px;">
-    <svg style="position:absolute;left:0;top:0;width:${CARD_START_X + 8}px;height:${H}px;
-      overflow:visible;pointer-events:none;" xmlns="http://www.w3.org/2000/svg">
-      ${svgLines}
-    </svg>
-    ${cards}
-    ${pills}
-  </div>`;
-}
-
-function renderNodesFromRoot(nodes) {
-  return buildTopoTree(nodes);
-}
-
-function topoRender() {
-  const s = topoSites[topoCurrentIdx];
-  const total = topoSites.length;
-
-  document.getElementById('topo-site-name').textContent = s.name;
-  document.getElementById('topo-nav-label').textContent = (topoCurrentIdx+1) + ' / ' + total;
-  document.getElementById('topo-prev').disabled = false;
-  document.getElementById('topo-next').disabled = false;
-
-  const dotColor = s.status === 'online' ? '#18CD00' : '#b0b0b0';
-  document.getElementById('topo-meta').innerHTML = `
-    <div class="topo-meta-item">
-      <div class="topo-meta-dot" style="background:${dotColor}"></div>
-      <span>${s.status === 'online' ? 'Online' : 'Offline'}</span>
-    </div>
-    <div class="topo-meta-item">ISP: ${s.isp}</div>
-    <div class="topo-meta-item">WAN: ${s.ip}</div>
-    <div class="topo-meta-item">${s.nodes.length} nodes</div>
-  `;
-
-  const body = document.getElementById('topo-body');
-
-  if (s.status === 'offline') {
-    body.innerHTML = `
-      <div class="topo-section-title">Topology</div>
-      <div class="topo-root">
-        <div class="topo-root-icon" style="border-color:#ccc;background:#f0f0f0;">
-          <img src="${topoImgMap[s.img]}" style="width:40px;height:40px;object-fit:contain;opacity:0.35;">
-        </div>
-        <div class="topo-root-info">
-          <div class="topo-root-name">${s.name}</div>
-          <div class="topo-root-sub">Device offline</div>
-        </div>
-        <span class="topo-root-badge offline">Offline</span>
-      </div>
-      <div class="topo-offline-msg">No topology data available while device is offline.</div>
-    `;
-    return;
-  }
-
-  // Stem from root down
-  body.innerHTML = `
-    <div class="topo-section-title">Topology</div>
-    <div class="topo-root">
-      <div class="topo-root-icon">
-        <img src="${topoImgMap[s.img]}" style="width:40px;height:40px;object-fit:contain;">
-      </div>
-      <div class="topo-root-info">
-        <div class="topo-root-name">${s.name}</div>
-        <div class="topo-root-sub">Main Router · ${s.isp}</div>
-      </div>
-      <span class="topo-root-badge">Online</span>
-    </div>
-    <div style="margin-left:28px;">${renderNodesFromRoot(s.nodes)}</div>
-  `;
-}
-
 // ── Site Detail Panel (slide-out shown when a Site List row is clicked) ────────
 const siteDetailExtra = [
   { mac: '04:42:1A:52:79:E0', region: 'Taiwan', s2s: '' },
@@ -5730,47 +5259,7 @@ function doSignin() {
 
 
 
-// ── Node card popup ────────────────────────────────────────────────────────
-document.addEventListener('click', function(e) {
-  const card = e.target.closest ? e.target.closest('[data-node-name]') : null;
-  if (!card) return;
-  e.stopPropagation();
 
-  const popup = document.getElementById('node-popup');
-  if (!popup) return;
-
-  document.getElementById('np-name').textContent    = card.dataset.nodeName || '—';
-  const nodeType = card.dataset.nodeType || '';
-  document.getElementById('np-conn').textContent    = nodeType === 'wire' ? '有線 Wired' : card.dataset.nodeConn || '—';
-  document.getElementById('np-clients').textContent = card.dataset.nodeClients || '—';
-  document.getElementById('np-mac').textContent     = card.dataset.nodeMac || '—';
-  document.getElementById('np-ip').textContent      = card.dataset.nodeIp || '—';
-  document.getElementById('np-uptime').textContent  = card.dataset.nodeUptime || '—';
-  const signal = parseInt(card.dataset.nodeSignal) || 0;
-  let statusHtml;
-  if (nodeType === 'wire' || signal >= 75) {
-    statusHtml = '<span class="node-status-online">Online ●</span>';
-  } else if (signal >= 40) {
-    statusHtml = '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;background:#fff8e1;color:#b8730a;font-size:12px;font-weight:600;">Online ●</span>';
-  } else {
-    statusHtml = '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;background:#fdecea;color:#c62828;font-size:12px;font-weight:600;">Weak ●</span>';
-  }
-  document.getElementById('np-status').innerHTML = statusHtml;
-
-  const x = Math.min(e.clientX + 12, window.innerWidth - 300);
-  const y = Math.max(10, e.clientY - 200);
-  popup.style.left    = x + 'px';
-  popup.style.top     = y + 'px';
-  popup.style.display = 'block';
-  document.getElementById('node-popup-overlay').classList.add('show');
-});
-
-function closeNodePopup() {
-  const popup = document.getElementById('node-popup');
-  if (popup) popup.style.display = 'none';
-  const overlay = document.getElementById('node-popup-overlay');
-  if (overlay) overlay.classList.remove('show');
-}
 </script>
 
 <!-- New Site confirm dialog -->
@@ -5793,20 +5282,6 @@ function closeNodePopup() {
   </div>
 </div>
 
-
-<div class="node-popup-overlay" id="node-popup-overlay" onclick="closeNodePopup()"></div>
-<div class="node-popup" id="node-popup">
-  <div class="node-popup-header">
-    <span class="node-popup-name" id="np-name">—</span>
-    <button class="node-popup-close" onclick="closeNodePopup()">✕</button>
-  </div>
-  <div class="node-popup-row"><span class="node-popup-key">狀態</span><span class="node-popup-val" id="np-status">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">BH 類型</span><span class="node-popup-val" id="np-conn">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">Clients</span><span class="node-popup-val" id="np-clients">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">MAC</span><span class="node-popup-val" id="np-mac">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">IP</span><span class="node-popup-val" id="np-ip">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">Uptime</span><span class="node-popup-val" id="np-uptime">—</span></div>
-</div>
 
 
 <!-- S2S Wizard Modal -->
