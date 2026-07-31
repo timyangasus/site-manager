@@ -230,6 +230,13 @@ body {
   letter-spacing: 1px; transition: background 0.1s;
 }
 .overflow-btn:hover { background: rgba(0,0,0,0.07); }
+.site-link-btn {
+  width: 22px; height: 22px; border-radius: 4px;
+  border: 1px solid #1565C0; background: #fff;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background 0.1s;
+}
+.site-link-btn:hover { background: #eef4ff; }
 .expand-btn.topo-active { background: #e8f0fe; border-color: #1565C0; }
 .expand-btn.topo-active svg path { stroke: #1565C0; }
 
@@ -2588,13 +2595,14 @@ body {
             </th>
             <th style="width:56px;">Host</th>
             <th style="width:68px;">Uptime</th>
-            <th style="width:130px;">Network Device</th>
+            <th style="width:130px;">AP</th>
             <th style="width:174px;">Internet Health</th>
             <th style="width:44px;text-align:center;">WAN</th>
             <th style="width:44px;text-align:center;">WiFi</th>
-            <th style="width:44px;text-align:center;">Wred</th>
+            <th style="width:44px;text-align:center;">Wired</th>
             <th style="width:48px;text-align:center;">Guests</th>
             <th style="width:76px;">ISP</th>
+            <th style="width:32px;"></th>
             <th style="width:32px;"></th>
           </tr></thead>
           <tbody>
@@ -2607,16 +2615,17 @@ body {
             </div></td>
             <td>host</td>
             <td>14d 3h</td>
-            <td style="font-size:12px;">12 / Offline: 0</td>
+            <td style="font-size:12px;">Total: 12 / Offline: 0</td>
             <td><div class="health-bar"><div style="height:100%;border-radius:2px;width:100%;background:linear-gradient(90deg,#18CD00 0.0%,#18CD00 27.0%,#18CD00 27.0%,#18CD00 38.0%,#ffb900 38.0%,#ffb900 41.0%,#18CD00 41.0%,#18CD00 52.0%,#ffb900 52.0%,#ffb900 54.0%,#18CD00 54.0%,#18CD00 66.0%,#d83b01 66.0%,#d83b01 68.0%,#18CD00 68.0%,#18CD00 100.0%);"></div></div></td>
             <td class="center">2</td>
             <td class="center">6</td>
             <td class="center">3</td>
             <td class="center">4</td>
             <td>Comcast</td>
+            <td><button class="site-link-btn" title="Open"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H520v-80h280v280h-80v-184L388-332Z" fill="#1565C0"/></svg></button></td>
             <td><button class="overflow-btn" onclick="topoOpen(0)" title="More">···</button></td>
           </tr>
-          <tr class="topo-expand-row" id="topo-expand-0"><td colspan="11"><div class="topo-inline-wrap" id="topo-inline-0"></div></td></tr>
+          <tr class="topo-expand-row" id="topo-expand-0"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-0"></div></td></tr>
           <tr id="site-row-1">
             <td><div class="model-cell">
               <button class="expand-btn"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -2626,16 +2635,17 @@ body {
             </div></td>
             <td>host</td>
             <td>7d 11h</td>
-            <td style="font-size:12px;">8 / <span style="color:#999;">Offline: 1</span></td>
+            <td style="font-size:12px;">Total: 8 / <span style="color:#999;">Offline: 1</span></td>
             <td><div class="health-bar"><div style="height:100%;border-radius:2px;width:100%;background:linear-gradient(90deg,#18CD00 0.0%,#18CD00 30.0%,#18CD00 30.0%,#18CD00 44.0%,#ffb900 44.0%,#ffb900 48.0%,#18CD00 48.0%,#18CD00 62.0%,#ffb900 62.0%,#ffb900 65.0%,#18CD00 65.0%,#18CD00 100.0%);"></div></div></td>
             <td class="center">1</td>
             <td class="center">4</td>
             <td class="center">2</td>
             <td class="center">2</td>
             <td>AT&T</td>
+            <td><button class="site-link-btn" title="Open"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H520v-80h280v280h-80v-184L388-332Z" fill="#1565C0"/></svg></button></td>
             <td><button class="overflow-btn" onclick="topoOpen(1)" title="More">···</button></td>
           </tr>
-          <tr class="topo-expand-row" id="topo-expand-1"><td colspan="11"><div class="topo-inline-wrap" id="topo-inline-1"></div></td></tr>
+          <tr class="topo-expand-row" id="topo-expand-1"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-1"></div></td></tr>
           <tr id="site-row-2">
             <td><div class="model-cell">
               <button class="expand-btn"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -2645,16 +2655,17 @@ body {
             </div></td>
             <td>host</td>
             <td>21d 6h</td>
-            <td style="font-size:12px;">15 / Offline: 0</td>
+            <td style="font-size:12px;">Total: 15 / Offline: 0</td>
             <td><div class="health-bar"><div style="height:100%;border-radius:2px;width:100%;background:linear-gradient(90deg,#18CD00 0.0%,#18CD00 29.0%,#18CD00 29.0%,#18CD00 39.0%,#d83b01 39.0%,#d83b01 41.0%,#18CD00 41.0%,#18CD00 57.0%,#ffb900 57.0%,#ffb900 62.0%,#18CD00 62.0%,#18CD00 75.0%,#d83b01 75.0%,#d83b01 77.0%,#18CD00 77.0%,#18CD00 89.0%,#ffb900 89.0%,#ffb900 94.0%,#18CD00 94.0%,#18CD00 100.0%);"></div></div></td>
             <td class="center">1</td>
             <td class="center">8</td>
             <td class="center">4</td>
             <td class="center">6</td>
             <td>Xfinity</td>
+            <td><button class="site-link-btn" title="Open"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H520v-80h280v280h-80v-184L388-332Z" fill="#1565C0"/></svg></button></td>
             <td><button class="overflow-btn" onclick="topoOpen(2)" title="More">···</button></td>
           </tr>
-          <tr class="topo-expand-row" id="topo-expand-2"><td colspan="11"><div class="topo-inline-wrap" id="topo-inline-2"></div></td></tr>
+          <tr class="topo-expand-row" id="topo-expand-2"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-2"></div></td></tr>
           <tr id="site-row-3">
             <td><div class="model-cell">
               <button class="expand-btn"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -2664,16 +2675,17 @@ body {
             </div></td>
             <td>host</td>
             <td>3d 18h</td>
-            <td style="font-size:12px;">9 / Offline: 0</td>
+            <td style="font-size:12px;">Total: 9 / Offline: 0</td>
             <td><div class="health-bar"><div style="height:100%;border-radius:2px;width:100%;background:linear-gradient(90deg,#18CD00 0.0%,#18CD00 21.0%,#18CD00 21.0%,#18CD00 37.0%,#ffb900 37.0%,#ffb900 42.0%,#18CD00 42.0%,#18CD00 58.0%,#ffb900 58.0%,#ffb900 63.0%,#18CD00 63.0%,#18CD00 71.0%,#d83b01 71.0%,#d83b01 74.0%,#18CD00 74.0%,#18CD00 100.0%);"></div></div></td>
             <td class="center">2</td>
             <td class="center">5</td>
             <td class="center">3</td>
             <td class="center">3</td>
             <td>Spectrum</td>
+            <td><button class="site-link-btn" title="Open"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H520v-80h280v280h-80v-184L388-332Z" fill="#1565C0"/></svg></button></td>
             <td><button class="overflow-btn" onclick="topoOpen(3)" title="More">···</button></td>
           </tr>
-          <tr class="topo-expand-row" id="topo-expand-3"><td colspan="11"><div class="topo-inline-wrap" id="topo-inline-3"></div></td></tr>
+          <tr class="topo-expand-row" id="topo-expand-3"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-3"></div></td></tr>
           <tr id="site-row-4">
             <td><div class="model-cell">
               <button class="expand-btn"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -2683,16 +2695,17 @@ body {
             </div></td>
             <td>host</td>
             <td>5d 22h</td>
-            <td style="font-size:12px;">11 / <span style="color:#999;">Offline: 2</span></td>
+            <td style="font-size:12px;">Total: 11 / <span style="color:#999;">Offline: 2</span></td>
             <td><div class="health-bar"><div style="height:100%;border-radius:2px;width:100%;background:linear-gradient(90deg,#18CD00 0.0%,#18CD00 21.0%,#18CD00 21.0%,#18CD00 31.0%,#d83b01 31.0%,#d83b01 34.0%,#18CD00 34.0%,#18CD00 50.0%,#ffb900 50.0%,#ffb900 52.0%,#18CD00 52.0%,#18CD00 61.0%,#ffb900 61.0%,#ffb900 64.0%,#18CD00 64.0%,#18CD00 79.0%,#d83b01 79.0%,#d83b01 81.0%,#18CD00 81.0%,#18CD00 100.0%);"></div></div></td>
             <td class="center">1</td>
             <td class="center">7</td>
             <td class="center">2</td>
             <td class="center">5</td>
             <td>Verizon</td>
+            <td><button class="site-link-btn" title="Open"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H520v-80h280v280h-80v-184L388-332Z" fill="#1565C0"/></svg></button></td>
             <td><button class="overflow-btn" onclick="topoOpen(4)" title="More">···</button></td>
           </tr>
-          <tr class="topo-expand-row" id="topo-expand-4"><td colspan="11"><div class="topo-inline-wrap" id="topo-inline-4"></div></td></tr>
+          <tr class="topo-expand-row" id="topo-expand-4"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-4"></div></td></tr>
           <tr id="site-row-5" class="offline-row">
             <td><div class="model-cell">
               <button class="expand-btn"><svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 4L6 8L10 4" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
@@ -2702,16 +2715,17 @@ body {
             </div></td>
             <td>host</td>
             <td id="site-row-5-uptime"><span class="muted">–</span></td>
-            <td id="site-row-5-devices" style="font-size:12px;"><span class="muted">7 / Offline: 7</span></td>
+            <td id="site-row-5-devices" style="font-size:12px;"><span class="muted">Total: 7 / Offline: 7</span></td>
             <td><div class="health-bar"><div id="site-row-5-health" style="height:100%;border-radius:2px;background:#c8c8c8;width:100%;"></div></div></td>
             <td class="center" id="site-row-5-wan"><span class="muted">–</span></td>
             <td class="center" id="site-row-5-wifi"><span class="muted">–</span></td>
             <td class="center" id="site-row-5-wired"><span class="muted">–</span></td>
             <td class="center" id="site-row-5-guests"><span class="muted">–</span></td>
             <td id="site-row-5-isp"><span class='muted'>Xfinity</span></td>
+            <td><button class="site-link-btn" title="Open" style="opacity:0.5;"><svg width="12" height="12" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H520v-80h280v280h-80v-184L388-332Z" fill="#1565C0"/></svg></button></td>
             <td><button class="overflow-btn" onclick="topoOpen(5)" title="More">···</button></td>
           </tr>
-          <tr class="topo-expand-row" id="topo-expand-5"><td colspan="11"><div class="topo-inline-wrap" id="topo-inline-5"></div></td></tr>
+          <tr class="topo-expand-row" id="topo-expand-5"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-5"></div></td></tr>
           </tbody>
         </table>
       </div>
@@ -5635,7 +5649,7 @@ function activateImportedDevice() {
   document.getElementById('site-row-5-dot').style.background = '#18CD00';
   document.getElementById('site-row-5-name').style.color = '';
   document.getElementById('site-row-5-uptime').textContent = '2m';
-  document.getElementById('site-row-5-devices').innerHTML = '7 / Offline: 0';
+  document.getElementById('site-row-5-devices').innerHTML = 'Total: 7 / Offline: 0';
   document.getElementById('site-row-5-health').style.background = '#18CD00';
   document.getElementById('site-row-5-wan').textContent = '1';
   document.getElementById('site-row-5-wifi').textContent = '4';
