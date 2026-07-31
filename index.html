@@ -150,6 +150,10 @@ body {
 .topbar-btn:hover { background: rgba(0,0,0,0.07); }
 .content { flex: 1; overflow-y: auto; padding: 20px 24px; }
 .content.pin-code-lock-scroll { overflow: hidden; }
+.page-title-heading { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 14px; }
+#page-settings > .page-title-heading,
+#page-sitetosite > .page-title-heading,
+#page-floorplanner > .page-title-heading { padding: 20px 24px 0; margin-bottom: 0; }
 
 /* ── Site List page ── */
 #page-firmware { display: none; }
@@ -2468,7 +2472,7 @@ body {
 
 <div class="main">
   <div class="topbar">
-    <span class="topbar-title" id="topbar-title">Sites</span>
+    <span class="topbar-title" id="topbar-title"></span>
     <div class="topbar-right">
     <button class="topbar-btn" title="Refresh"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18" height="18"><path fill="#5f6368" d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Z"/></svg></button>
     <button class="topbar-btn" title="Info"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="18" height="18"><path fill="#5f6368" d="M440-280h80v-240h-80v240Zm40-320q17 0 28.5-11.5T520-640q0-17-11.5-28.5T480-680q-17 0-28.5 11.5T440-640q0 17 11.5 28.5T480-600Zm0 520q-83 0-156-31.5T197-197q-54-54-85.5-127T80-480q0-83 31.5-156T197-763q54-54 127-85.5T480-880q83 0 156 31.5T763-763q54 54 85.5 127T880-480q0 83-31.5 156T763-197q-54 54-127 85.5T480-80Zm0-80q134 0 227-93t93-227q0-134-93-227t-227-93q-134 0-227 93t-93 227q0 134 93 227t227 93Zm0-320Z"/></svg></button>
@@ -2480,6 +2484,7 @@ body {
 
     <!-- ── Site List ── -->
     <div id="page-sitelist">
+      <div class="page-title-heading">Sites</div>
       <div class="pin-code-sitelist-empty" id="pin-code-sitelist-empty">
         <div class="sitelist-empty-left">
           <div class="sitelist-empty-box">
@@ -2677,6 +2682,7 @@ body {
 
     <!-- ── Firmware Upgrade ── -->
     <div id="page-firmware">
+      <div class="page-title-heading">Firmware Upgrade</div>
       <div class="fw-header">
         <div>
           <div class="fw-total">Total Site(s) : 6</div>
@@ -2779,6 +2785,7 @@ body {
 
     <!-- ── Schedule / Profile ── -->
     <div id="page-schedule">
+      <div class="page-title-heading">Schedule</div>
       <div class="pf-empty" id="pf-empty">
         <div class="pf-empty-icon">
           <svg width="120" height="120" viewBox="0 0 110 110" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -3014,6 +3021,7 @@ body {
     </div>
     <!-- ── Notification ── -->
     <div id="page-sitetosite" style="display:none;">
+  <div class="page-title-heading">Site to Site</div>
   <div id="s2s-wrap">
     <!-- State 1/2: SiteToSiteHome (IntroPanel + MainContent) -->
     <!-- State 3: GroupTopologyPage replaces this entire block -->
@@ -3025,6 +3033,7 @@ body {
 </div>
 
 <div id="page-notifications">
+      <div class="page-title-heading">Notification</div>
       <div class="notif-tab-bar">
         <div class="notif-tab active">Events</div>
         <div class="notif-search">
@@ -3095,6 +3104,7 @@ body {
     </div>
 
 <div id="page-settings">
+  <div class="page-title-heading">Settings</div>
   <div class="settings-page">
     <div class="settings-nav">
       <div class="settings-nav-item active" id="settings-nav-system" onclick="settingsShowCategory('system')">
@@ -3153,6 +3163,7 @@ body {
 </div>
 
 <div id="page-floorplanner">
+  <div class="page-title-heading">Floor Planner</div>
   <div id="fp-view-list">
     <div class="fp-topbar">
       <button class="fp-new-project-btn" onclick="return false;">
@@ -4266,8 +4277,8 @@ const pageMap = {
 };
 
 function goPage(page) {
-  const _titles = { sitelist:'Sites', firmware:'Firmware Upgrade', notifications:'Notification', schedule:'Schedule', home:'Home', history:'History', settings:'Settings', sitetosite:'Site to Site', floorplanner:'Floor Planner' };
-  document.getElementById('topbar-title').textContent = _titles[page] || '';
+  // Page titles moved into each page's own content area (see .page-title-heading
+  // in each #page-* block) -- the topbar's title slot stays blank/reserved.
   markCurrentPage('page:' + page);
   document.getElementById('page-sitelist').style.display = page === 'sitelist' ? 'block' : 'none';
   document.getElementById('page-firmware').style.display = page === 'firmware' ? 'block' : 'none';
