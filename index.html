@@ -1055,9 +1055,6 @@ body {
 .topo-node-img { width: 38px; height: 38px; object-fit: contain; flex-shrink: 0; }
 .topo-node-info { flex: 1; min-width: 0; }
 .topo-node-name { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
-.topo-status-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; margin-top: 1px; }
-.topo-status-dot.online  { background: #43a047; }
-.topo-status-dot.offline { background: #bdbdbd; }
 .topo-node-conn { font-size: 11px; color: #888; }
 .topo-node-right { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; flex-shrink: 0; }
 .topo-node-ip { font-size: 12px; color: #555; font-variant-numeric: tabular-nums; white-space: nowrap; font-weight: 500; }
@@ -4747,8 +4744,8 @@ fwUpdateBtn();
 // ── Topology Panel ───────────────────────────────────────────────────────────
 const topoSites = [
   {name:'GT-AXE16000_Main',isp:'Comcast',ip:'203.74.12.88',img:'rog',status:'online',nodes:[
-    {name:'ExpertWiFi EBM68',band:'6G',dbm:-61,mac:'04:42:1A:52:79:E0',uptime:'14d',clients:8,type:'wifi',signal:92,ip:'192.168.1.2',img:'rtac',conn:'Wireless 5GHz',children:[
-      {name:'RT-AC86U Office',band:'2.4G',dbm:-52,mac:'B0:6E:BF:12:34:56',uptime:'7d',clients:5,type:'wifi',signal:68,ip:'192.168.1.3',img:'zen_white',conn:'Wireless 2.4GHz',children:[]}
+    {name:'ExpertWiFi EBM68',band:'6G',dbm:-61,mac:'04:42:1A:52:79:E0',uptime:'14d',clients:8,type:'wifi',signal:92,ip:'192.168.1.2',img:'rtac',conn:'Wireless 5GHz',mlo:true,children:[
+      {name:'RT-AC86U Office',band:'2.4G',dbm:-52,mac:'B0:6E:BF:12:34:56',uptime:'7d',clients:5,type:'wifi',signal:68,ip:'192.168.1.3',img:'zen_white',conn:'Wireless 2.4GHz',mlo:true,children:[]}
     ]},
     {name:'ZenWiFi Node A',band:'5G',dbm:-58,mac:'2C:4D:54:AB:CD:EF',uptime:'14d',clients:3,type:'wifi',signal:78,ip:'192.168.1.4',img:'zen_black',conn:'Wireless 5GHz',children:[
       {name:'ZenWiFi Node B',band:'5G',dbm:0,mac:'2C:4D:54:AB:CD:F0',uptime:'—',clients:0,type:'wifi',signal:0,ip:'—',img:'zen_black',conn:'Wireless 5GHz',offline:true,children:[]}
@@ -4759,17 +4756,17 @@ const topoSites = [
     {name:'EBP15 Switch',band:'',dbm:0,mac:'11:22:33:44:55:66',uptime:'30d',clients:4,type:'wire',signal:100,ip:'10.0.0.3',img:'zen_black',conn:'Wired',children:[]}
   ]},
   {name:'ZenWiFi_Pro_AX',isp:'Xfinity',ip:'98.10.55.3',img:'zen_white',status:'online',nodes:[
-    {name:'ZenWiFi Sat 1',band:'6G',dbm:-48,mac:'FC:34:97:AB:12:CD',uptime:'21d',clients:7,type:'wifi',signal:95,ip:'192.168.2.2',img:'zen_white',conn:'Wireless 6GHz',children:[]},
+    {name:'ZenWiFi Sat 1',band:'6G',dbm:-48,mac:'FC:34:97:AB:12:CD',uptime:'21d',clients:7,type:'wifi',signal:95,ip:'192.168.2.2',img:'zen_white',conn:'Wireless 6GHz',mlo:true,children:[]},
     {name:'ZenWiFi Sat 2',band:'5G',dbm:-62,mac:'FC:34:97:AB:12:CE',uptime:'21d',clients:9,type:'wifi',signal:88,ip:'192.168.2.3',img:'zen_white',conn:'Wireless 6GHz',children:[
       {name:'EBR63 Node',band:'',dbm:0,mac:'00:11:22:33:44:55',uptime:'21d',clients:2,type:'wire',signal:100,ip:'192.168.2.4',img:'zen_black',conn:'Wired',children:[]}
     ]}
   ]},
   {name:'ExpertWiFi_EBM68',isp:'Spectrum',ip:'67.88.100.5',img:'rog',status:'online',nodes:[
-    {name:'EBM68 Sat A',band:'5G',dbm:-54,mac:'04:42:1A:11:22:33',uptime:'3d',clients:5,type:'wifi',signal:90,ip:'172.16.0.2',img:'zen_white',conn:'Wireless 5GHz',children:[]},
+    {name:'EBM68 Sat A',band:'5G',dbm:-54,mac:'04:42:1A:11:22:33',uptime:'3d',clients:5,type:'wifi',signal:90,ip:'172.16.0.2',img:'zen_white',conn:'Wireless 5GHz',mlo:true,children:[]},
     {name:'EBM68 Sat B',band:'5G',dbm:-67,mac:'04:42:1A:11:22:34',uptime:'3d',clients:3,type:'wifi',signal:82,ip:'172.16.0.3',img:'zen_white',conn:'Wireless 5GHz',children:[]}
   ]},
   {name:'GT-AX11000_Gaming',isp:'Verizon',ip:'108.22.33.1',img:'zen_black',status:'online',nodes:[
-    {name:'Gaming Node 1',band:'5G',dbm:-59,mac:'BC:EE:7B:44:55:66',uptime:'5d',clients:4,type:'wifi',signal:76,ip:'192.168.10.2',img:'rtac',conn:'Wireless 5GHz',children:[]},
+    {name:'Gaming Node 1',band:'5G',dbm:-59,mac:'BC:EE:7B:44:55:66',uptime:'5d',clients:4,type:'wifi',signal:76,ip:'192.168.10.2',img:'rtac',conn:'Wireless 5GHz',mlo:true,children:[]},
     {name:'Gaming Switch',band:'',dbm:0,mac:'BC:EE:7B:44:55:67',uptime:'5d',clients:6,type:'wire',signal:100,ip:'192.168.10.3',img:'zen_black',conn:'Wired',children:[
       {name:'Gaming Node 2',band:'2.4G',dbm:-52,mac:'BC:EE:7B:44:55:68',uptime:'5d',clients:2,type:'wifi',signal:69,ip:'192.168.10.4',img:'rtac',conn:'Wireless 2.4GHz',children:[]}
     ]}
@@ -4900,7 +4897,8 @@ function drawCards(nodes, cardX) {
     const isOffline = !!n.offline;
     const cardStyle = isOffline ? 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;opacity:0.55;' : 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;';
     const offlineBadge = isOffline ? '<span class="topo-conn-badge offline-badge" style="background:#f0f0f0;color:#999;border-color:#ddd;">Offline</span>' : '';
-    const statusDot = isOffline ? '<span class="topo-status-dot offline"></span>' : n.signal >= 70 ? '<span class="topo-status-dot online"></span>' : '';
+    const band = n.conn.replace('Wireless ', '');
+    const connText = n.type === 'wire' ? band : `Uplink Type: ${band}${n.mlo ? ', MLO' : ''}`;
     out += `<div style="position:absolute;left:${cardX}px;top:${n._y}px;right:0;height:${FIXED_CARD_H}px;">
       <div class="topo-node-card" style="${cardStyle}"
         data-node-name="${n.name}" data-node-conn="${n.conn}"
@@ -4910,10 +4908,9 @@ function drawCards(nodes, cardX) {
         <img class="topo-node-img" src="${topoImgMap[n.img]}" alt="${n.name}" style="${isOffline ? 'filter:grayscale(1);' : ''}">
         <div class="topo-node-info">
           <div class="topo-node-name" style="${isOffline ? 'color:#999;' : ''}">
-            ${statusDot}
             ${n.name}
           </div>
-          <div class="topo-node-conn">${n.conn.replace('Wireless ', '')}</div>
+          <div class="topo-node-conn">${connText}</div>
         </div>
         <div class="topo-node-right">
           <span style="font-size:11px;color:#888;">${isOffline ? '' : (n.clients !== undefined ? n.clients + ' clients' : '')}</span>
