@@ -4880,8 +4880,8 @@ function drawPills(nodes, trunkX, parentMidY) {
   for (let i = 0; i < nodes.length; i++) {
     const n = nodes[i];
     const c = lc(n);
-    if (n.band || n.type === 'wire') {
-      const labelText = n.offline ? '—' : n.type === 'wire' ? 'Wired' : `${n.dbm}dBm`;
+    if ((n.band || n.type === 'wire') && !n.offline) {
+      const labelText = n.type === 'wire' ? 'Wired' : `${n.dbm}dBm`;
       const gapTop  = (i === 0) ? parentMidY : maxBottom([nodes[i-1]]);
       const gapBot  = n._y;
       const midY    = (gapTop + gapBot) / 2;
