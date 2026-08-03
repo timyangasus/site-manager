@@ -4907,7 +4907,7 @@ function drawCards(nodes, cardX) {
   for (const n of nodes) {
     const isOffline = !!n.offline;
     const cardStyle = isOffline ? 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;opacity:0.55;' : 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;';
-    const offlineBadge = isOffline ? '<span class="topo-conn-badge offline-badge" style="background:#f0f0f0;color:#999;border-color:#ddd;">—</span>' : '';
+    const offlineBadge = isOffline ? '<span style="font-size:12px;color:#999;">—</span>' : '';
     const band = n.conn.replace('Wireless ', '');
     const connText = n.type === 'wire' ? band : `Uplink Type: ${band}${n.mlo ? ', MLO' : ''}`;
     out += `<div style="position:absolute;left:${cardX}px;top:${n._y}px;right:0;height:${FIXED_CARD_H}px;">
