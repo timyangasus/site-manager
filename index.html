@@ -4848,14 +4848,17 @@ function drawLines(nodes, trunkX, cardX, parentMidY) {
     svg += `<line x1="${trunkX}" y1="${n._midY}" x2="${cardX}" y2="${n._midY}"
       stroke="${c}" stroke-width="3" stroke-linecap="square"/>`;
     if (n.children && n.children.length > 0) {
-      svg += drawLines(n.children, trunkX + CHILD_IND, cardX + CHILD_IND, n._midY);
+      // A node's children branch from THIS node's own card position, not a
+      // separate indented lane -- so the connection visually runs under this
+      // device rather than through an abstract trunk off to the side.
+      svg += drawLines(n.children, cardX, cardX + CHILD_IND, n._midY);
     }
   }
   return svg;
 }
 
 // ── Step 2b: pill divs — centred ON the trunk line ─────────────────────────
-function drawPills(nodes, trunkX, parentMidY) {
+function drawPills(nodes, trunkX, cardX, parentMidY) {
   if (!nodes || !nodes.length) return '';
   let html = '';
   for (let i = 0; i < nodes.length; i++) {
@@ -4876,7 +4879,7 @@ function drawPills(nodes, trunkX, parentMidY) {
         color:${c};pointer-events:none;">${labelText}</div>`;
     }
     if (n.children && n.children.length > 0) {
-      html += drawPills(n.children, trunkX + CHILD_IND, n._midY);
+      html += drawPills(n.children, cardX, cardX + CHILD_IND, n._midY);
     }
   }
   return html;
@@ -4922,11 +4925,11 @@ function buildTopoTree(nodes) {
   const H = maxBottom(nodes) + 4;
 
   const svgLines = drawLines(nodes, TRUNK_X_PX, CARD_START_X, 0);
-  const pills    = drawPills(nodes, TRUNK_X_PX, 0);
+  const pills    = drawPills(nodes, TRUNK_X_PX, CARD_START_X, 0);
   const cards    = drawCards(nodes, CARD_START_X);
 
   return `<div style="position:relative;height:${H}px;">
-    <svg style="position:absolute;left:0;top:0;width:${CARD_START_X + 8}px;height:${H}px;
+    <svg style="position:absolute;left:0;top:0;width:${CARD_START_X + CHILD_IND * 3}px;height:${H}px;
       overflow:visible;pointer-events:none;" xmlns="http://www.w3.org/2000/svg">
       ${svgLines}
     </svg>
