@@ -4811,10 +4811,13 @@ function fixedLayout(nodes, startY, parentMidY) {
 
     if (needsPill) {
       // Ensure gap between prevAnchorBottom and this card top ≥ PILL_MIN_H.
-      // For i===0 that's the PARENT CARD'S bottom edge, not its midY --
-      // otherwise the reserved gap eats into the parent card's own height
-      // and the pill ends up sitting on/against the card instead of the line.
-      const prevBottom = (i === 0) ? parentMidY + FIXED_CARD_H / 2 : maxBottom([nodes[i-1]]);
+      // For i===0 with a REAL parent card, that's the parent's bottom edge,
+      // not its midY -- otherwise the reserved gap eats into the parent
+      // card's own height and the pill sits on/against the card instead of
+      // the line. At the root level parentMidY is null (no card there), so
+      // no extra offset is added -- otherwise the first card gets pushed
+      // down as if avoiding a phantom card that doesn't exist.
+      const prevBottom = (i === 0) ? (parentMidY == null ? 0 : parentMidY + FIXED_CARD_H / 2) : maxBottom([nodes[i-1]]);
       const minY = prevBottom + PILL_MIN_H;
       if (y < minY) y = minY;
     }
@@ -4870,7 +4873,7 @@ function drawPills(nodes, trunkX, cardX, parentMidY) {
     const c = lc(n);
     if ((n.band || n.type === 'wire') && !n.offline) {
       const labelText = n.type === 'wire' ? 'Wired' : `${n.dbm}dBm`;
-      const gapTop  = (i === 0) ? parentMidY + FIXED_CARD_H / 2 : maxBottom([nodes[i-1]]);
+      const gapTop  = (i === 0) ? (parentMidY == null ? 0 : parentMidY + FIXED_CARD_H / 2) : maxBottom([nodes[i-1]]);
       const gapBot  = n._y;
       const midY    = (gapTop + gapBot) / 2;
       // Centre pill horizontally on the trunk line
@@ -4925,11 +4928,11 @@ function drawCards(nodes, cardX) {
 function buildTopoTree(nodes) {
   if (!nodes || !nodes.length) return '<div style="padding:20px;color:#aaa;font-size:13px;">No connected nodes.</div>';
 
-  fixedLayout(nodes, 0, 0);
+  fixedLayout(nodes, 0, null);
   const H = maxBottom(nodes) + 4;
 
   const svgLines = drawLines(nodes, TRUNK_X_PX, CARD_START_X, 0);
-  const pills    = drawPills(nodes, TRUNK_X_PX, CARD_START_X, 0);
+  const pills    = drawPills(nodes, TRUNK_X_PX, CARD_START_X, null);
   const cards    = drawCards(nodes, CARD_START_X);
 
   return `<div style="position:relative;height:${H}px;">
