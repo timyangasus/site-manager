@@ -4810,8 +4810,11 @@ function fixedLayout(nodes, startY, parentMidY) {
     const prevAnchorMidY = (i === 0) ? parentMidY : nodes[i-1]._midY;
 
     if (needsPill) {
-      // Ensure gap between prevAnchorBottom and this card top ≥ PILL_MIN_H
-      const prevBottom = (i === 0) ? parentMidY : maxBottom([nodes[i-1]]);
+      // Ensure gap between prevAnchorBottom and this card top ≥ PILL_MIN_H.
+      // For i===0 that's the PARENT CARD'S bottom edge, not its midY --
+      // otherwise the reserved gap eats into the parent card's own height
+      // and the pill ends up sitting on/against the card instead of the line.
+      const prevBottom = (i === 0) ? parentMidY + FIXED_CARD_H / 2 : maxBottom([nodes[i-1]]);
       const minY = prevBottom + PILL_MIN_H;
       if (y < minY) y = minY;
     }
@@ -4867,7 +4870,7 @@ function drawPills(nodes, trunkX, cardX, parentMidY) {
     const c = lc(n);
     if ((n.band || n.type === 'wire') && !n.offline) {
       const labelText = n.type === 'wire' ? 'Wired' : `${n.dbm}dBm`;
-      const gapTop  = (i === 0) ? parentMidY : maxBottom([nodes[i-1]]);
+      const gapTop  = (i === 0) ? parentMidY + FIXED_CARD_H / 2 : maxBottom([nodes[i-1]]);
       const gapBot  = n._y;
       const midY    = (gapTop + gapBot) / 2;
       // Centre pill horizontally on the trunk line
