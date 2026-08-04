@@ -1055,7 +1055,6 @@ body {
   border-radius: 8px; padding: 10px 14px; margin-bottom: 8px;
   transition: background 0.1s;
 }
-.topo-node-card:hover { background: #f0f5ff; border-color: rgba(21,101,192,0.2); }
 .topo-node-img { width: 38px; height: 38px; object-fit: contain; flex-shrink: 0; }
 .topo-node-info { flex: 1; min-width: 0; }
 .topo-node-name { font-size: 13px; font-weight: 600; color: #1a1a1a; margin-bottom: 3px; display: flex; align-items: center; gap: 6px; }
@@ -1499,24 +1498,6 @@ body {
 .newsite-confirm:hover { background: #1251a3; }
 
 
-.node-popup-overlay { display:none; position:fixed; inset:0; z-index:9000; }
-.node-popup-overlay.show { display:block; }
-.node-popup {
-  display:none; position:fixed; z-index:9001;
-  background:#fff; border-radius:12px;
-  padding:20px 22px 18px; width:280px;
-  box-shadow:0 4px 24px rgba(0,0,0,0.15);
-  border:1px solid rgba(0,0,0,0.08);
-}
-.node-popup-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
-.node-popup-name { font-size:15px; font-weight:700; color:#1a1a1a; }
-.node-popup-close { width:24px;height:24px;border-radius:4px;border:none;background:transparent;cursor:pointer;font-size:14px;color:#888;display:flex;align-items:center;justify-content:center; }
-.node-popup-close:hover { background:rgba(0,0,0,0.07); }
-.node-popup-row { display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid rgba(0,0,0,0.05);font-size:13px; }
-.node-popup-row:last-child { border-bottom:none; }
-.node-popup-key { color:#888; }
-.node-popup-val { font-weight:600; color:#1a1a1a; }
-.node-status-online { display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;background:#e6f4ea;color:#1e7e34;font-size:12px;font-weight:600; }
 
 /* ── Account Panel ── */
 .account-overlay { display:none; position:fixed; inset:0; z-index:8000; }
@@ -4906,16 +4887,12 @@ function drawCards(nodes, cardX) {
   let out = '';
   for (const n of nodes) {
     const isOffline = !!n.offline;
-    const cardStyle = isOffline ? 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;opacity:0.55;' : 'height:100%;margin:0;box-sizing:border-box;cursor:pointer;';
+    const cardStyle = isOffline ? 'height:100%;margin:0;box-sizing:border-box;opacity:0.55;' : 'height:100%;margin:0;box-sizing:border-box;';
     const offlineBadge = isOffline ? '<span style="font-size:12px;color:#999;">—</span>' : '';
     const band = n.conn.replace('Wireless ', '');
-    const connText = n.type === 'wire' ? band : `Uplink Type: ${band}${n.mlo ? ', MLO' : ''}`;
+    const connText = isOffline ? '' : n.mlo ? 'Uplink Type: MLO' : n.type === 'wire' ? 'Uplink Type: Ethernet' : `Uplink Type: ${band}`;
     out += `<div style="position:absolute;left:${cardX}px;top:${n._y}px;right:0;height:${FIXED_CARD_H}px;">
-      <div class="topo-node-card" style="${cardStyle}"
-        data-node-name="${n.name}" data-node-conn="${n.conn}"
-        data-node-clients="${n.clients !== undefined ? n.clients : ''}"
-        data-node-mac="${n.mac || ''}" data-node-uptime="${n.uptime || ''}"
-        data-node-ip="${n.ip}" data-node-signal="${n.signal}" data-node-type="${n.type}">
+      <div class="topo-node-card" style="${cardStyle}">
         <img class="topo-node-img" src="${topoImgMap[n.img]}" alt="${n.name}" style="${isOffline ? 'filter:grayscale(1);' : ''}">
         <div class="topo-node-info">
           <div class="topo-node-name" style="${isOffline ? 'color:#999;' : ''}">
@@ -5567,47 +5544,7 @@ function doSignin() {
 
 
 
-// ── Node card popup (clicking a device within the inline topology tree) ────────
-document.addEventListener('click', function(e) {
-  const card = e.target.closest ? e.target.closest('[data-node-name]') : null;
-  if (!card) return;
-  e.stopPropagation();
 
-  const popup = document.getElementById('node-popup');
-  if (!popup) return;
-
-  document.getElementById('np-name').textContent    = card.dataset.nodeName || '—';
-  const nodeType = card.dataset.nodeType || '';
-  document.getElementById('np-conn').textContent    = nodeType === 'wire' ? '有線 Wired' : card.dataset.nodeConn || '—';
-  document.getElementById('np-clients').textContent = card.dataset.nodeClients || '—';
-  document.getElementById('np-mac').textContent     = card.dataset.nodeMac || '—';
-  document.getElementById('np-ip').textContent      = card.dataset.nodeIp || '—';
-  document.getElementById('np-uptime').textContent  = card.dataset.nodeUptime || '—';
-  const signal = parseInt(card.dataset.nodeSignal) || 0;
-  let statusHtml;
-  if (nodeType === 'wire' || signal >= 75) {
-    statusHtml = '<span class="node-status-online">Online ●</span>';
-  } else if (signal >= 40) {
-    statusHtml = '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;background:#fff8e1;color:#b8730a;font-size:12px;font-weight:600;">Online ●</span>';
-  } else {
-    statusHtml = '<span style="display:inline-flex;align-items:center;gap:5px;padding:2px 10px;border-radius:999px;background:#fdecea;color:#c62828;font-size:12px;font-weight:600;">Weak ●</span>';
-  }
-  document.getElementById('np-status').innerHTML = statusHtml;
-
-  const x = Math.min(e.clientX + 12, window.innerWidth - 300);
-  const y = Math.max(10, e.clientY - 200);
-  popup.style.left    = x + 'px';
-  popup.style.top     = y + 'px';
-  popup.style.display = 'block';
-  document.getElementById('node-popup-overlay').classList.add('show');
-});
-
-function closeNodePopup() {
-  const popup = document.getElementById('node-popup');
-  if (popup) popup.style.display = 'none';
-  const overlay = document.getElementById('node-popup-overlay');
-  if (overlay) overlay.classList.remove('show');
-}
 </script>
 
 <!-- New Site confirm dialog -->
@@ -5631,19 +5568,6 @@ function closeNodePopup() {
 </div>
 
 
-<div class="node-popup-overlay" id="node-popup-overlay" onclick="closeNodePopup()"></div>
-<div class="node-popup" id="node-popup">
-  <div class="node-popup-header">
-    <span class="node-popup-name" id="np-name">—</span>
-    <button class="node-popup-close" onclick="closeNodePopup()">✕</button>
-  </div>
-  <div class="node-popup-row"><span class="node-popup-key">狀態</span><span class="node-popup-val" id="np-status">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">BH 類型</span><span class="node-popup-val" id="np-conn">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">Clients</span><span class="node-popup-val" id="np-clients">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">MAC</span><span class="node-popup-val" id="np-mac">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">IP</span><span class="node-popup-val" id="np-ip">—</span></div>
-  <div class="node-popup-row"><span class="node-popup-key">Uptime</span><span class="node-popup-val" id="np-uptime">—</span></div>
-</div>
 
 
 <!-- S2S Wizard Modal -->
