@@ -4789,6 +4789,7 @@ const TRUNK_X_PX     = 10;   // x of main trunk line
 const CARD_START_X   = 120;  // card left edge — wide enough for pills
 const CHILD_IND      = 48;   // indent per child level
 const PILL_H         = 16;   // pill height (smaller)
+const ICON_CENTER_X  = 33;   // card padding-left (14) + half the 38px node icon
 
 function lc(n) {
   if (n.type === 'wire') return '#4caf50';
@@ -4851,7 +4852,7 @@ function drawLines(nodes, trunkX, cardX, parentMidY) {
       // A node's children branch from THIS node's own card position, not a
       // separate indented lane -- so the connection visually runs under this
       // device rather than through an abstract trunk off to the side.
-      svg += drawLines(n.children, cardX, cardX + CHILD_IND, n._midY);
+      svg += drawLines(n.children, cardX + ICON_CENTER_X, cardX + CHILD_IND, n._midY);
     }
   }
   return svg;
@@ -4879,7 +4880,7 @@ function drawPills(nodes, trunkX, cardX, parentMidY) {
         color:${c};pointer-events:none;">${labelText}</div>`;
     }
     if (n.children && n.children.length > 0) {
-      html += drawPills(n.children, cardX, cardX + CHILD_IND, n._midY);
+      html += drawPills(n.children, cardX + ICON_CENTER_X, cardX + CHILD_IND, n._midY);
     }
   }
   return html;
