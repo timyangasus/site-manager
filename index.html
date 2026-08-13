@@ -1456,6 +1456,31 @@ body {
   margin-top: 8px; transition: background 0.12s;
 }
 .signin-btn:hover { background: #1251a3; }
+.signin-btn-outline {
+  width: 100%; height: 42px; border-radius: 8px;
+  border: 1px solid #1565C0; background: #fff; color: #1565C0;
+  font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit;
+  margin-top: 14px; transition: background 0.12s;
+}
+.signin-btn-outline:hover { background: #EEF3FB; }
+.cant-signin-dialog { width: 560px; }
+.cant-signin-cards { display: flex; gap: 16px; margin-top: 4px; }
+.cant-signin-card {
+  flex: 1; border: 1px solid #e5e5e5; border-radius: 10px; padding: 22px 16px;
+  text-align: center; display: flex; flex-direction: column; align-items: center;
+}
+.cant-signin-card-icon {
+  width: 44px; height: 44px; border-radius: 50%; background: #EEF3FB;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 14px;
+}
+.cant-signin-card-title { font-size: 13.5px; font-weight: 600; color: #1a1a1a; line-height: 1.55; margin-bottom: 18px; flex: 1; }
+.cant-signin-card-desc { margin: -10px 0 14px; font-size: 12px; color: #888; line-height: 1.5; }
+.cant-signin-card-btn {
+  border: none; border-radius: 8px; background: #1565C0; color: #fff;
+  font-size: 13px; font-weight: 600; padding: 9px 20px; cursor: pointer;
+  text-decoration: none; display: inline-block; font-family: inherit;
+}
+.cant-signin-card-btn:hover { background: #0D47A1; }
 .signin-divider {
   display: flex; align-items: center; gap: 12px;
   margin: 20px 0; color: #bbb; font-size: 12px;
@@ -1854,7 +1879,7 @@ body {
       <div class="signin-subtitle">Choose a sign-in method</div>
 
       <div class="signin-method-list">
-        <button class="signin-method-item" onclick="doSignin()">
+        <button class="signin-method-item" onclick="goSigninAsus()">
           <div class="signin-method-icon signin-method-asus">A</div>
           <span class="signin-method-label">ASUS</span>
         </button>
@@ -1875,6 +1900,37 @@ body {
           <span class="signin-method-label">WeChat</span>
         </button>
       </div>
+    </div>
+
+    <!-- ASUS VIP sign-in form, reached by choosing "ASUS" on the sign-in method screen -->
+    <div class="signin-view" id="view-signin-asus">
+      <div class="signin-title">Sign in with ASUS VIP</div>
+
+      <div style="margin-top:10px;font-size:15px;color:#666;">Don't have ASUS Account? <a href="#" onclick="goSignup(); return false;" style="color:#1565C0;font-weight:600;text-decoration:none;">Sign up</a></div>
+
+      <div class="signin-field" style="margin-top:26px;">
+        <label class="signin-label">Account</label>
+        <div style="position:relative;">
+          <input class="signin-input" type="email" placeholder="" id="login-email" value="asus1234@gmail.com" style="padding-right:40px;">
+          <svg style="position:absolute;right:12px;top:50%;transform:translateY(-50%);opacity:0.35;" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#888" stroke-width="1.8"/><polyline points="22,6 12,13 2,6" stroke="#888" stroke-width="1.8" stroke-linecap="round"/></svg>
+        </div>
+        <div style="text-align:right;font-size:11.5px;color:#aaa;margin-top:4px;">Please enter your email</div>
+      </div>
+
+      <div class="signin-field">
+        <label class="signin-label">Your password</label>
+        <div style="position:relative;">
+          <input class="signin-input" type="password" placeholder="" id="login-pw" value="••••••••" style="padding-right:40px;">
+          <svg id="pw-eye" onclick="togglePw()" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);opacity:0.35;cursor:pointer;" width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#888" stroke-width="1.8"/><circle cx="12" cy="12" r="3" stroke="#888" stroke-width="1.8"/></svg>
+        </div>
+        <div style="text-align:right;margin-top:6px;">
+          <a class="signin-forget" href="#" onclick="openCantSignInPopup(); return false;">無法登入？</a>
+        </div>
+      </div>
+
+      <button class="signin-btn" onclick="doSignin()">Sign in</button>
+
+      <button class="signin-btn-outline" onclick="openThirdPartyMigrationPopup()">既有ASUS Router App用戶?</button>
     </div>
 
     <!-- Pin Code binding: not-logged-in -> sign up (mock form; account.asus.com blocks iframe embedding) -->
@@ -1964,14 +2020,40 @@ body {
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#1565C0"/>
       </svg>
     </div>
-    <div class="newsite-dialog-title">使用過第三方登入？</div>
-    <div class="newsite-dialog-body">
-      新版 App 僅支援 ASUS VIP 帳號登入。<br><br>
-      如果您過去曾使用 Google、Apple 或其他第三方帳號登入 ASUS Router App，且已加入過裝置，無需擔心，您的裝置資訊不會因此遺失。<br><br>
-      完成 ASUS VIP 帳號註冊或登入後，即可將過去使用第三方帳號管理的裝置整合至新的 ASUS VIP 帳號中，並繼續使用所有功能。
+    <div class="newsite-dialog-body" style="margin-top:8px;">
+      ASUS Router Portal 僅支援 ASUS VIP 帳號登入。<br><br>
+      如果您過去曾使用 Google、Apple 或 Facebook 等第三方帳號登入 ASUS Router App，且已加入過裝置，無需擔心，您的裝置資訊不會因此遺失。<br><br>
+      完成 ASUS VIP 帳號註冊或登入後，我們會引導您將該第三方帳號「連結」至此 ASUS VIP 帳號——連結後兩者將共用相同的路由器清單與管理權限，不需要重新設定裝置。
     </div>
     <div class="newsite-dialog-btns">
-      <button class="newsite-confirm" onclick="confirmThirdPartyMigration()">前往註冊 ASUS VIP</button>
+      <button class="newsite-confirm" onclick="confirmThirdPartyMigration()">我了解了</button>
+    </div>
+  </div>
+</div>
+
+<!-- "無法登入？" popup -- two scannable action cards: recovering a forgotten
+     password, or discovering the real email/password behind a third-party
+     login used with ASUS VIP. Both point at the real account.asus.com. -->
+<div class="newsite-overlay" id="cant-signin-overlay">
+  <div class="newsite-dialog cant-signin-dialog">
+    <button class="pin-binding-close" onclick="closeCantSignInPopup()">&times;</button>
+    <div class="newsite-dialog-title" style="margin-bottom:18px;">無法登入？</div>
+    <div class="cant-signin-cards">
+      <div class="cant-signin-card">
+        <div class="cant-signin-card-icon">
+          <svg width="20" height="20" viewBox="0 -960 960 960"><path fill="#1565C0" d="M280-280q-100 0-170-70t-70-170q0-100 70-170t170-70q68 0 124 35t87 95h359l100 100-140 140-60-60-60 60-77-77q-30 63-86.5 98.5T280-280Zm0-80q56 0 98-34t56-86h186l-40-40 40-40-40-40H434q-14-52-56-86t-98-34q-66 0-113 47t-47 113q0 66 47 113t113 47Zm-40-120q17 0 28.5-11.5T280-520q0-17-11.5-28.5T240-560q-17 0-28.5 11.5T200-520q0 17 11.5 28.5T240-480Z"/></svg>
+        </div>
+        <div class="cant-signin-card-title">記得註冊時的 email 或手機號碼？</div>
+        <a class="cant-signin-card-btn" href="https://account.asus.com/tw/forgot.aspx" target="_blank" rel="noopener">重設密碼</a>
+      </div>
+      <div class="cant-signin-card">
+        <div class="cant-signin-card-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M17 7h-4v2h4c1.65 0 3 1.35 3 3s-1.35 3-3 3h-4v2h4c2.76 0 5-2.24 5-5s-2.24-5-5-5zm-6 8H7c-1.65 0-3-1.35-3-3s1.35-3 3-3h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-2zm-3-3h8v2H8v-2z" fill="#1565C0"/></svg>
+        </div>
+        <div class="cant-signin-card-title">使用Google, Facebook等第三方帳號登入ASUSVIP?</div>
+        <div class="cant-signin-card-desc" style="margin-bottom:16px;">請前往 ASUS VIP 官方網站，使用第三方帳號登入後，進入帳號管理後台，確認實際綁定的信箱以及密碼後，返回ASUS Router Portal，即可使用該信箱與密碼登入。</div>
+        <a class="cant-signin-card-btn" href="https://account.asus.com/tw/loginform.aspx?returnUrl=https%3A%2F%2Fwww.asus.com%2Ftw%2Fevent%2Fasus_store%2Fvip.aspx&id=Pq1exFgHX6NCvbITHUZpeg%3D%3D" target="_blank" rel="noopener">開啟 ASUS VIP 官網</a>
+      </div>
     </div>
   </div>
 </div>
@@ -3688,7 +3770,10 @@ registerFlow('signin', '1_SIGN_IN', function () {
 });
 
 registerPage('1_012', 'Sign in 頁', 'signin', null, 'view:signin',
-  'Sign in 頁：輸入帳號密碼登入 ASUS VIP，此流程的首頁');
+  'Sign in 頁：選擇登入方式（ASUS / Google / Facebook / Apple / WeChat），此流程的首頁');
+
+registerPage('1_013', 'Sign in with ASUS VIP 頁', 'signin', function () { goSigninAsus(); }, 'view:signin-asus',
+  'Sign in with ASUS VIP 頁：點選 ASUS 圖示後進入的帳號密碼登入表單');
 
 registerFlow('main', '2_MAIN_FLOW', function () {
   document.getElementById('page-login').classList.add('hidden');
@@ -5053,12 +5138,21 @@ function closeSiteDetail() {
 // ── Sign in (flow 1 home page) ─────────────────────────────────────────────────
 function goSignin() {
   document.getElementById('view-pincode-signup').classList.remove('active');
+  document.getElementById('view-signin-asus').classList.remove('active');
   document.getElementById('view-signin').classList.add('active');
   markCurrentPage('view:signin');
 }
 
+function goSigninAsus() {
+  document.getElementById('view-signin').classList.remove('active');
+  document.getElementById('view-pincode-signup').classList.remove('active');
+  document.getElementById('view-signin-asus').classList.add('active');
+  markCurrentPage('view:signin-asus');
+}
+
 function goSignup() {
   document.getElementById('view-signin').classList.remove('active');
+  document.getElementById('view-signin-asus').classList.remove('active');
   document.getElementById('view-pincode-signup').classList.add('active');
   markCurrentPage('pincode:signup');
 }
@@ -5070,8 +5164,15 @@ function closeThirdPartyMigrationPopup() {
   document.getElementById('signin-thirdparty-migration-overlay').classList.remove('show');
 }
 function confirmThirdPartyMigration() {
+  // Just acknowledges the explanation -- stays on view-signin-asus (where the
+  // "既有ASUS Router App用戶?" button lives), not a signup redirect.
   closeThirdPartyMigrationPopup();
-  goSignup();
+}
+function openCantSignInPopup() {
+  document.getElementById('cant-signin-overlay').classList.add('show');
+}
+function closeCantSignInPopup() {
+  document.getElementById('cant-signin-overlay').classList.remove('show');
 }
 
 function goRegister() {
