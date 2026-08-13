@@ -1942,19 +1942,19 @@ body {
           <div class="signin-method-icon signin-method-asus">A</div>
           <span class="signin-method-label">ASUS</span>
         </button>
-        <button class="signin-method-item" onclick="doSignin()">
+        <button class="signin-method-item" onclick="doThirdPartySignin('Google')">
           <div class="signin-method-icon signin-method-google">G</div>
           <span class="signin-method-label">Google</span>
         </button>
-        <button class="signin-method-item" onclick="doSignin()">
+        <button class="signin-method-item" onclick="doThirdPartySignin('Facebook')">
           <div class="signin-method-icon signin-method-facebook">f</div>
           <span class="signin-method-label">Facebook</span>
         </button>
-        <button class="signin-method-item" onclick="doSignin()">
+        <button class="signin-method-item" onclick="doThirdPartySignin('Apple')">
           <div class="signin-method-icon signin-method-apple">&#63743;</div>
           <span class="signin-method-label">Apple</span>
         </button>
-        <button class="signin-method-item" onclick="doSignin()">
+        <button class="signin-method-item" onclick="doThirdPartySignin('WeChat')">
           <div class="signin-method-icon signin-method-wechat">W</div>
           <span class="signin-method-label">WeChat</span>
         </button>
@@ -1990,6 +1990,13 @@ body {
       <button class="signin-btn" onclick="doSignin()">Sign in</button>
 
       <button class="signin-btn-outline" onclick="openThirdPartyMigrationPopup()">既有ASUS Router App用戶?</button>
+
+      <!-- Only shown when this form was reached from Settings > Accounts'
+           "連結 ASUS VIP 帳號" row (see goLinkAsusVipFromSettings()) -- the
+           fresh sign-in path has nowhere meaningful to "cancel" back to. -->
+      <div id="signin-asus-cancel-row" style="text-align:center;margin-top:16px;display:none;">
+        <button class="account-link-intro-skip-link" onclick="cancelLinkAsusVipFromSettings()">取消</button>
+      </div>
     </div>
 
     <!-- Pin Code binding: not-logged-in -> sign up (mock form; account.asus.com blocks iframe embedding) -->
@@ -5303,6 +5310,7 @@ function goSigninAsus() {
   document.getElementById('view-signin').classList.remove('active');
   document.getElementById('view-pincode-signup').classList.remove('active');
   document.getElementById('view-signin-asus').classList.add('active');
+  document.getElementById('signin-asus-cancel-row').style.display = linkingAsusFromSettings ? 'block' : 'none';
   markCurrentPage('view:signin-asus');
 }
 
@@ -5766,6 +5774,36 @@ let accountLinkedEmail = '';
 // confirmAccountMigration() whether it still needs to hand off to the Sites
 // list once the chain finishes, since the intro page is holding that off.
 let accountLinkFullScreenActive = false;
+// Which method the current demo session actually signed in with -- 'ASUS'
+// (the VIP email/password form) or a provider name (Google/Facebook/Apple/
+// WeChat) chosen directly on 1_012. Drives which direction Settings >
+// Accounts offers to link (see renderAccountLinkSettingsRow()).
+let signedInProvider = 'ASUS';
+// True while Settings > Accounts' "連結 ASUS VIP 帳號" row has sent the user
+// to view-signin-asus to link the OTHER direction (signed in via a
+// third-party method, now adding real ASUS VIP credentials) -- tells
+// doSignin() to complete the link instead of running the fresh-signin path,
+// and tells goSigninAsus() whether to show the "取消" escape hatch.
+let linkingAsusFromSettings = false;
+
+function goLinkAsusVipFromSettings() {
+  linkingAsusFromSettings = true;
+  document.getElementById('page-login').classList.remove('hidden');
+  goSigninAsus();
+}
+function cancelLinkAsusVipFromSettings() {
+  linkingAsusFromSettings = false;
+  document.getElementById('page-login').classList.add('hidden');
+}
+function completeAsusVipLinkFromSettings() {
+  linkingAsusFromSettings = false;
+  document.getElementById('page-login').classList.add('hidden');
+  accountLinked = true;
+  accountLinkedProvider = 'ASUS VIP';
+  accountLinkedEmail = document.getElementById('login-email').value;
+  renderAccountLinkSettingsRow();
+  showToast('已連結 ASUS VIP 帳號：' + accountLinkedEmail + '！兩邊帳號將共用路由器清單與管理權限');
+}
 
 // ── Post sign-in/sign-up guided page (see #page-account-link-intro) ────────
 // Called instead of goPage('sitelist') right after a fresh sign-in/sign-up,
@@ -5815,17 +5853,27 @@ function fullScreenStartAccountMigration(provider) {
 function renderAccountLinkSettingsRow() {
   const row = document.getElementById('account-migration-settings-row');
   if (!row) return;
+  const signedInViaAsus = signedInProvider === 'ASUS';
   if (accountLinked) {
     row.onclick = null;
     row.classList.add('settings-row-disabled');
-    document.getElementById('account-migration-settings-title-text').textContent = '已連結第三方帳號：' + accountLinkedEmail;
+    const label = signedInViaAsus ? '已連結第三方帳號：' : '已連結 ASUS VIP 帳號：';
+    document.getElementById('account-migration-settings-title-text').textContent = label + accountLinkedEmail;
     document.getElementById('account-migration-settings-desc').textContent = '您將可共享此帳號下的路由器清單與管理權限';
     document.getElementById('account-migration-settings-chevron').style.display = 'none';
-  } else {
+  } else if (signedInViaAsus) {
     row.onclick = openAccountMigrationPopup;
     row.classList.remove('settings-row-disabled');
     document.getElementById('account-migration-settings-title-text').textContent = '連結第三方帳號';
     document.getElementById('account-migration-settings-desc').textContent = '將第三方帳號與目前的 ASUS VIP 帳號連結，共用路由器清單與管理權限';
+    document.getElementById('account-migration-settings-chevron').style.display = '';
+  } else {
+    // Signed in via a third-party method directly -- offer the reverse
+    // direction: add real ASUS VIP credentials to link to.
+    row.onclick = goLinkAsusVipFromSettings;
+    row.classList.remove('settings-row-disabled');
+    document.getElementById('account-migration-settings-title-text').textContent = '連結 ASUS VIP 帳號';
+    document.getElementById('account-migration-settings-desc').textContent = '將此帳號與一組 ASUS VIP 帳號連結，共用路由器清單與管理權限';
     document.getElementById('account-migration-settings-chevron').style.display = '';
   }
 }
@@ -5898,6 +5946,10 @@ function activateImportedDevice() {
 }
 
 function doSignin() {
+  if (linkingAsusFromSettings) {
+    completeAsusVipLinkFromSettings();
+    return;
+  }
   if (fpAppSigninPending) {
     fpAppSigninPending = false;
     fpAppCompleteLink();
@@ -5912,8 +5964,24 @@ function doSignin() {
     openPinCodeExpiryDecision();
     return;
   }
+  signedInProvider = 'ASUS';
   document.getElementById('page-login').classList.add('hidden');
   maybePromptAccountLink();
+}
+
+// Signing in via a method OTHER than ASUS VIP (1_012's Google/Facebook/Apple/
+// WeChat icons) -- demo-only loading transition, no account-link intro
+// afterwards (that prompt is ASUS-VIP-specific; see doSignin()). Settings >
+// Accounts instead offers the reverse "連結 ASUS VIP 帳號" entry point --
+// see renderAccountLinkSettingsRow().
+function doThirdPartySignin(provider) {
+  signedInProvider = provider;
+  document.getElementById('signup-complete-loading-overlay').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('signup-complete-loading-overlay').classList.remove('show');
+    document.getElementById('page-login').classList.add('hidden');
+    goPage('sitelist');
+  }, 1200);
 }
 
 
