@@ -1989,7 +1989,7 @@ body {
 
       <button class="signin-btn" onclick="doSignin()">Sign in</button>
 
-      <button class="signin-btn-outline" onclick="openThirdPartyMigrationPopup()">既有ASUS Router App用戶?</button>
+      <button class="signin-btn-outline" id="signin-asus-router-app-btn" onclick="openThirdPartyMigrationPopup()">既有ASUS Router App用戶?</button>
 
       <!-- Only shown when this form was reached from Settings > Accounts'
            "連結 ASUS VIP 帳號" row (see goLinkAsusVipFromSettings()) -- the
@@ -5310,7 +5310,10 @@ function goSigninAsus() {
   document.getElementById('view-signin').classList.remove('active');
   document.getElementById('view-pincode-signup').classList.remove('active');
   document.getElementById('view-signin-asus').classList.add('active');
+  // Both only make sense for a fresh sign-in, not when linking ASUS VIP from
+  // Settings (the user already knows they're on a third-party account).
   document.getElementById('signin-asus-cancel-row').style.display = linkingAsusFromSettings ? 'block' : 'none';
+  document.getElementById('signin-asus-router-app-btn').style.display = linkingAsusFromSettings ? 'none' : '';
   markCurrentPage('view:signin-asus');
 }
 
