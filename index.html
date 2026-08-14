@@ -1364,7 +1364,7 @@ body {
 .login-logo { height: 28px; object-fit: contain; margin-bottom: 48px; }
 .login-earth { width: 240px; object-fit: contain; }
 .login-version { position: absolute; bottom: 24px; right: 32px; font-size: 12px; color: #999; }
-.login-footer { position: absolute; bottom: 24px; left: 64px; font-size: 11px; color: #aaa; max-width: 500px; }
+.login-footer { align-self: stretch; margin-top: 32px; font-size: 11px; color: #aaa; }
 /* The sign-up view already has its own equivalent legal fine print further down, so hide the
    generic fixed-position footer here to avoid it overlapping form fields when scrolled. */
 #view-pincode-signup.active ~ .login-footer { display: none; }
@@ -1387,7 +1387,7 @@ body {
 
 
 /* Sign in view */
-.signin-view { width: 100%; max-width: 420px; display: none; margin-top: -60px; }
+.signin-view { width: 100%; max-width: 420px; display: none; }
 .signin-view.active { display: block; }
 .pin-code-signup-view.active { display: block; animation: pin-code-window-open 0.32s ease-out; }
 .pin-code-signup-view { max-width: 680px; margin: 24px 0; }
@@ -1495,13 +1495,6 @@ body {
   margin-top: 8px; transition: background 0.12s;
 }
 .signin-btn:hover { background: #1251a3; }
-.signin-btn-outline {
-  width: 100%; height: 42px; border-radius: 8px;
-  border: 1px solid #1565C0; background: #fff; color: #1565C0;
-  font-size: 13.5px; font-weight: 600; cursor: pointer; font-family: inherit;
-  margin-top: 14px; transition: background 0.12s;
-}
-.signin-btn-outline:hover { background: #EEF3FB; }
 .cant-signin-dialog { width: 680px; }
 .cant-signin-cards { display: flex; gap: 16px; margin-top: 4px; }
 .cant-signin-card {
@@ -2026,8 +2019,6 @@ body {
 
       <button class="signin-btn" onclick="doSignin()">Sign in</button>
 
-      <button class="signin-btn-outline" id="signin-asus-router-app-btn" onclick="openThirdPartyMigrationPopup()">既有ASUS Router App用戶?</button>
-
       <!-- Only shown when this form was reached from Settings > Accounts'
            "連結 ASUS VIP 帳號" row (see goLinkAsusVipFromSettings()) -- the
            fresh sign-in path has nowhere meaningful to "cancel" back to. -->
@@ -2191,26 +2182,6 @@ body {
     </div>
     <div class="account-link-intro-title" style="font-size:16px; margin-bottom:4px;">找到 1 台裝置</div>
     <div class="account-link-intro-body" id="account-link-found-device" style="text-align:center;">ExpertWiFi_EBR63</div>
-  </div>
-</div>
-
-<!-- Third-party login / old-account migration explanation popup -->
-<div class="newsite-overlay" id="signin-thirdparty-migration-overlay">
-  <div class="newsite-dialog">
-    <button class="pin-binding-close" onclick="closeThirdPartyMigrationPopup()">&times;</button>
-    <div class="newsite-dialog-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#1565C0"/>
-      </svg>
-    </div>
-    <div class="newsite-dialog-body" style="margin-top:8px;">
-      ASUS Router Portal 僅支援 ASUS VIP 帳號登入。<br><br>
-      如果您過去曾使用 Google、Apple 或 Facebook 等第三方帳號登入 ASUS Router App，且已加入過裝置，無需擔心，您的裝置資訊不會因此遺失。<br><br>
-      完成 ASUS VIP 帳號註冊或登入後，我們會引導您將該第三方帳號「連結」至此 ASUS VIP 帳號——連結後兩者將共用相同的路由器清單與管理權限，不需要重新設定裝置。
-    </div>
-    <div class="newsite-dialog-btns">
-      <button class="newsite-confirm" onclick="confirmThirdPartyMigration()">我了解了</button>
-    </div>
   </div>
 </div>
 
@@ -5386,10 +5357,9 @@ function goSigninAsus() {
   document.getElementById('view-signin').classList.remove('active');
   document.getElementById('view-pincode-signup').classList.remove('active');
   document.getElementById('view-signin-asus').classList.add('active');
-  // Both only make sense for a fresh sign-in, not when linking ASUS VIP from
-  // Settings (the user already knows they're on a third-party account).
+  // Only makes sense when linking ASUS VIP from Settings, giving that flow an
+  // escape hatch back -- a fresh sign-in has nowhere meaningful to cancel to.
   document.getElementById('signin-asus-cancel-row').style.display = linkingAsusFromSettings ? 'block' : 'none';
-  document.getElementById('signin-asus-router-app-btn').style.display = linkingAsusFromSettings ? 'none' : '';
   markCurrentPage('view:signin-asus');
 }
 
@@ -5400,17 +5370,6 @@ function goSignup() {
   markCurrentPage('pincode:signup');
 }
 
-function openThirdPartyMigrationPopup() {
-  document.getElementById('signin-thirdparty-migration-overlay').classList.add('show');
-}
-function closeThirdPartyMigrationPopup() {
-  document.getElementById('signin-thirdparty-migration-overlay').classList.remove('show');
-}
-function confirmThirdPartyMigration() {
-  // Just acknowledges the explanation -- stays on view-signin-asus (where the
-  // "既有ASUS Router App用戶?" button lives), not a signup redirect.
-  closeThirdPartyMigrationPopup();
-}
 function openCantSignInPopup() {
   document.getElementById('cant-signin-overlay').classList.add('show');
 }
