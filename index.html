@@ -244,6 +244,21 @@ body {
   letter-spacing: 1px; transition: background 0.1s;
 }
 .overflow-btn:hover { background: rgba(0,0,0,0.07); }
+.site-row-menu {
+  display: none; position: fixed; z-index: 850;
+  background: #fff; border-radius: 10px; width: 160px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.15); border: 1px solid rgba(0,0,0,0.06);
+  padding: 6px; overflow: hidden;
+}
+.site-row-menu.show { display: block; }
+.site-row-menu-item {
+  padding: 10px 14px; font-size: 14px; color: #1a1a1a; text-align: center;
+  border-radius: 6px; cursor: pointer; transition: background 0.1s;
+}
+.site-row-menu-item:not(:last-child) { border-bottom: 1px solid rgba(0,0,0,0.06); }
+.site-row-menu-item:hover { background: #f5f5f5; }
+.site-row-menu-item.disabled { color: #ccc; cursor: default; }
+.site-row-menu-item.disabled:hover { background: none; }
 
 /* ── Footer ── */
 .footer {
@@ -2794,7 +2809,7 @@ body {
             <td class="center">4</td>
             <td>Comcast</td>
             <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); window.open('http://dsldummyui1234.asuscomm.com:8080/index.html', '_blank')"><svg width="16" height="16" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation();" title="More">···</button></td>
+            <td><button class="overflow-btn" onclick="toggleSiteRowMenu(event, 0)" title="More">···</button></td>
           </tr>
           <tr class="topo-expand-row" id="topo-expand-0"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-0"></div></td></tr>
           <tr id="site-row-1" onclick="openSiteDetail(1)">
@@ -2814,7 +2829,7 @@ body {
             <td class="center">2</td>
             <td>AT&T</td>
             <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); window.open('http://dsldummyui1234.asuscomm.com:8080/index.html', '_blank')"><svg width="16" height="16" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation();" title="More">···</button></td>
+            <td><button class="overflow-btn" onclick="toggleSiteRowMenu(event, 1)" title="More">···</button></td>
           </tr>
           <tr class="topo-expand-row" id="topo-expand-1"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-1"></div></td></tr>
           <tr id="site-row-2" onclick="openSiteDetail(2)">
@@ -2834,7 +2849,7 @@ body {
             <td class="center">6</td>
             <td>Xfinity</td>
             <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); window.open('http://dsldummyui1234.asuscomm.com:8080/index.html', '_blank')"><svg width="16" height="16" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation();" title="More">···</button></td>
+            <td><button class="overflow-btn" onclick="toggleSiteRowMenu(event, 2)" title="More">···</button></td>
           </tr>
           <tr class="topo-expand-row" id="topo-expand-2"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-2"></div></td></tr>
           <tr id="site-row-3" onclick="openSiteDetail(3)">
@@ -2854,7 +2869,7 @@ body {
             <td class="center">3</td>
             <td>Spectrum</td>
             <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); window.open('http://dsldummyui1234.asuscomm.com:8080/index.html', '_blank')"><svg width="16" height="16" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation();" title="More">···</button></td>
+            <td><button class="overflow-btn" onclick="toggleSiteRowMenu(event, 3)" title="More">···</button></td>
           </tr>
           <tr class="topo-expand-row" id="topo-expand-3"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-3"></div></td></tr>
           <tr id="site-row-4" onclick="openSiteDetail(4)">
@@ -2874,7 +2889,7 @@ body {
             <td class="center">5</td>
             <td>Verizon</td>
             <td><button class="site-link-btn" title="Open" onclick="event.stopPropagation(); window.open('http://dsldummyui1234.asuscomm.com:8080/index.html', '_blank')"><svg width="16" height="16" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation();" title="More">···</button></td>
+            <td><button class="overflow-btn" onclick="toggleSiteRowMenu(event, 4)" title="More">···</button></td>
           </tr>
           <tr class="topo-expand-row" id="topo-expand-4"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-4"></div></td></tr>
           <tr id="site-row-5" class="offline-row" onclick="openSiteDetail(5)">
@@ -2894,7 +2909,7 @@ body {
             <td class="center" id="site-row-5-guests"><span class="muted">–</span></td>
             <td id="site-row-5-isp"><span class='muted'>Xfinity</span></td>
             <td><button class="site-link-btn" title="Open" style="opacity:0.5;" onclick="event.stopPropagation(); window.open('http://dsldummyui1234.asuscomm.com:8080/index.html', '_blank')"><svg width="16" height="16" viewBox="0 -960 960 960" fill="none"><path d="M200-120q-33 0-56.5-23.5T120-200v-560q0-33 23.5-56.5T200-840h280v80H200v560h560v-280h80v280q0 33-23.5 56.5T760-120H200Zm188-212-56-56 372-372H560v-80h280v280h-80v-144L388-332Z" fill="#1565C0"/></svg></button></td>
-            <td><button class="overflow-btn" onclick="event.stopPropagation();" title="More">···</button></td>
+            <td><button class="overflow-btn" onclick="toggleSiteRowMenu(event, 5)" title="More">···</button></td>
           </tr>
           <tr class="topo-expand-row" id="topo-expand-5"><td colspan="12"><div class="topo-inline-wrap" id="topo-inline-5"></div></td></tr>
           </tbody>
@@ -3743,6 +3758,15 @@ body {
           <div><div class="stat-label">Guests</div><div class="stat-value" id="site-detail-guests"></div></div>
         </div>
       </div>
+    </div>
+
+    <!-- Site List row "···" menu -- single shared instance, repositioned to
+         whichever button was clicked (see toggleSiteRowMenu()). -->
+    <div class="site-row-menu" id="site-row-menu">
+      <div class="site-row-menu-item" onclick="siteRowMenuAction('rename')">重新命名</div>
+      <div class="site-row-menu-item" onclick="siteRowMenuAction('reboot')">重啟</div>
+      <div class="site-row-menu-item" onclick="siteRowMenuAction('firmware')">韌體更新</div>
+      <div class="site-row-menu-item disabled">刪除</div>
     </div>
 
 <script>
@@ -5296,6 +5320,36 @@ function openSiteDetail(idx) {
 function closeSiteDetail() {
   document.getElementById('site-detail-overlay').classList.remove('show');
   document.getElementById('site-detail-panel').classList.remove('show');
+}
+
+// ── Site List row "···" menu ────────────────────────────────────────────────
+let siteRowMenuIndex = -1;
+function toggleSiteRowMenu(e, idx) {
+  e.stopPropagation();
+  const menu = document.getElementById('site-row-menu');
+  if (menu.classList.contains('show') && siteRowMenuIndex === idx) {
+    closeSiteRowMenu();
+    return;
+  }
+  siteRowMenuIndex = idx;
+  const rect = e.currentTarget.getBoundingClientRect();
+  menu.style.top = (rect.bottom + 4) + 'px';
+  menu.style.left = (rect.right - 160) + 'px';
+  menu.classList.add('show');
+}
+function closeSiteRowMenu() {
+  document.getElementById('site-row-menu').classList.remove('show');
+  siteRowMenuIndex = -1;
+}
+document.addEventListener('click', function (e) {
+  const menu = document.getElementById('site-row-menu');
+  if (menu.classList.contains('show') && !menu.contains(e.target)) closeSiteRowMenu();
+});
+function siteRowMenuAction(action) {
+  closeSiteRowMenu();
+  if (action === 'firmware') { goPage('firmware'); return; }
+  if (action === 'rename') { showToast('重新命名功能尚未開放'); return; }
+  if (action === 'reboot') { showToast('已送出重啟指令'); return; }
 }
 
 
