@@ -3364,7 +3364,7 @@ body {
             <div class="settings-row-text">
               <div class="settings-row-title" id="account-migration-settings-title">
                 <span id="account-migration-settings-title-text">連結第三方帳號</span>
-                <button class="settings-row-info-btn" onclick="event.stopPropagation(); openAccountLinkInfoPopup();" title="說明" aria-label="說明">
+                <button class="settings-row-info-btn" id="account-migration-settings-info-btn" onclick="event.stopPropagation(); openAccountLinkInfoPopup();" title="說明" aria-label="說明">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#999" stroke-width="1.6"/><path d="M12 11v5" stroke="#999" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="8" r="0.9" fill="#999"/></svg>
                 </button>
               </div>
@@ -5899,12 +5899,14 @@ function renderAccountLinkSettingsRow() {
     document.getElementById('account-migration-settings-title-text').textContent = label + accountLinkedEmail;
     document.getElementById('account-migration-settings-desc').textContent = '您將可共享此帳號下的路由器清單與管理權限';
     document.getElementById('account-migration-settings-chevron').style.display = 'none';
+    document.getElementById('account-migration-settings-info-btn').style.display = 'none';
   } else if (signedInViaAsus) {
     row.onclick = openAccountMigrationPopup;
     row.classList.remove('settings-row-disabled');
     document.getElementById('account-migration-settings-title-text').textContent = '連結第三方帳號';
     document.getElementById('account-migration-settings-desc').textContent = '將第三方帳號與目前的 ASUS VIP 帳號連結，共用路由器清單與管理權限';
     document.getElementById('account-migration-settings-chevron').style.display = '';
+    document.getElementById('account-migration-settings-info-btn').style.display = '';
   } else {
     // Signed in via a third-party method directly -- offer the reverse
     // direction: add real ASUS VIP credentials to link to.
@@ -5913,6 +5915,7 @@ function renderAccountLinkSettingsRow() {
     document.getElementById('account-migration-settings-title-text').textContent = '連結 ASUS VIP 帳號';
     document.getElementById('account-migration-settings-desc').textContent = '將此帳號與一組 ASUS VIP 帳號連結，共用路由器清單與管理權限';
     document.getElementById('account-migration-settings-chevron').style.display = '';
+    document.getElementById('account-migration-settings-info-btn').style.display = '';
   }
 }
 function openAccountLinkInfoPopup() {
