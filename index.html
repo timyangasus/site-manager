@@ -3851,12 +3851,12 @@ body {
         </div>
 
         <div class="site-detail-tab-content hidden" id="site-detail-tab-settings">
-          <div class="settings-row" id="router-credentials-row">
+          <div class="settings-row" id="router-credentials-row" onclick="handleRouterCredentialsRowClick()">
             <div class="settings-row-text">
               <div class="settings-row-title">Router Credentials</div>
               <div class="settings-row-desc" id="router-credentials-desc">For security reasons, the administrator username and password for this router cannot be viewed.</div>
             </div>
-            <button class="settings-row-action-btn" id="router-credentials-reset-btn" onclick="openResetRouterCredentialsPopup()">Reset</button>
+            <button class="settings-row-action-btn" id="router-credentials-reset-btn" onclick="event.stopPropagation(); openResetRouterCredentialsPopup();">Reset</button>
           </div>
         </div>
       </div>
@@ -5567,11 +5567,20 @@ let routerResetDeviceName = '';
 // by doSignin()/doThirdPartySignin() to continue into the Create New Router
 // Credentials page afterwards instead of landing on the plain Site List.
 let routerResetSigninPending = false;
+// True once the verification email has been "sent" -- lets the tester reopen
+// the mock Outlook screen (see handleRouterCredentialsRowClick()) after
+// closing it, instead of it being reachable only once.
+let routerCredentialsPending = false;
 
 function resetRouterCredentialsState() {
+  routerCredentialsPending = false;
   document.getElementById('router-credentials-desc').textContent =
     'For security reasons, the administrator username and password for this router cannot be viewed.';
   document.getElementById('router-credentials-reset-btn').style.display = '';
+}
+
+function handleRouterCredentialsRowClick() {
+  if (routerCredentialsPending) openRouterResetEmailMock();
 }
 
 function openResetRouterCredentialsPopup() {
@@ -5584,7 +5593,8 @@ function closeResetRouterCredentialsPopup() {
 
 function sendRouterCredentialsVerification() {
   closeResetRouterCredentialsPopup();
-  document.getElementById('router-credentials-desc').textContent = 'Verification sent — check your email to confirm.';
+  routerCredentialsPending = true;
+  document.getElementById('router-credentials-desc').textContent = 'Verification sent — check your email to confirm. Click here to reopen the email.';
   document.getElementById('router-credentials-reset-btn').style.display = 'none';
   setTimeout(openRouterResetEmailMock, 700);
 }
