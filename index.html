@@ -1065,16 +1065,82 @@ body {
   transition: background 0.12s;
 }
 .settings-row-action-btn:hover { background: #EEF3FB; }
-.router-reset-email-dialog {
-  background: #fff; border-radius: 12px; width: 460px;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.15); position: relative; overflow: hidden;
+
+/* ── Demo-only full-screen "Outlook" mock, standing in for actually checking
+   an inbox after "Send verification e-mail". Generic mail-client chrome, not
+   a real Outlook asset. ── */
+.router-reset-email-page {
+  position: fixed; top: 32px; left: 0; right: 0; bottom: 0; z-index: 500;
+  display: none; flex-direction: column; background: #fff;
+  font-family: 'Segoe UI Variable', 'Segoe UI', system-ui, sans-serif; color: #1a1a1a; font-size: 13px;
 }
-.router-reset-email-header { padding: 20px 24px 16px; border-bottom: 1px solid rgba(0,0,0,0.08); }
-.router-reset-email-subject { font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px; }
-.router-reset-email-meta { font-size: 12px; color: #8a8f98; }
-.router-reset-email-body { padding: 20px 24px; font-size: 13px; color: #444; line-height: 1.7; }
-.router-reset-email-body b { color: #1a1a1a; }
-.router-reset-email-footer { padding: 0 24px 24px; }
+.router-reset-email-page.show { display: flex; }
+.outlook-topbar {
+  height: 48px; flex-shrink: 0; display: flex; align-items: center; gap: 16px;
+  padding: 0 16px; background: #0078D4; color: #fff;
+}
+.outlook-topbar-logo { display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; }
+.outlook-topbar-logo svg { flex-shrink: 0; }
+.outlook-topbar-search {
+  flex: 1; max-width: 480px; height: 30px; border-radius: 4px; background: rgba(255,255,255,0.15);
+  display: flex; align-items: center; padding: 0 12px; font-size: 12.5px; color: rgba(255,255,255,0.85); gap: 8px;
+}
+.outlook-topbar-close {
+  margin-left: auto; background: none; border: none; color: #fff; opacity: 0.85; cursor: pointer;
+  font-size: 12.5px; font-family: inherit; display: flex; align-items: center; gap: 6px;
+}
+.outlook-topbar-close:hover { opacity: 1; }
+.outlook-body { flex: 1; display: flex; min-height: 0; }
+.outlook-rail { width: 170px; flex-shrink: 0; background: #faf9f8; border-right: 1px solid #e5e5e5; padding: 16px 8px; overflow-y: auto; }
+.outlook-rail-compose {
+  height: 36px; border-radius: 4px; background: #0078D4; color: #fff; font-size: 13px; font-weight: 600;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 16px; cursor: default;
+}
+.outlook-rail-item { height: 32px; display: flex; align-items: center; padding: 0 12px; border-radius: 4px; color: #444; cursor: default; }
+.outlook-rail-item.active { background: #e5f1fb; color: #0078D4; font-weight: 600; }
+.outlook-list { width: 240px; flex-shrink: 0; border-right: 1px solid #e5e5e5; overflow-y: auto; }
+.outlook-list-item { padding: 12px 16px; border-bottom: 1px solid #f0f0f0; cursor: default; }
+.outlook-list-item.active { background: #e5f1fb; }
+.outlook-list-item:not(.active) { opacity: 0.55; }
+.outlook-list-item-top { display: flex; justify-content: space-between; margin-bottom: 3px; }
+.outlook-list-sender { font-size: 13px; font-weight: 700; color: #1a1a1a; }
+.outlook-list-time { font-size: 11px; color: #8a8f98; }
+.outlook-list-subject { font-size: 12.5px; font-weight: 600; color: #1a1a1a; margin-bottom: 2px; }
+.outlook-list-snippet { font-size: 12px; color: #8a8f98; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.outlook-reading-pane { flex: 1; overflow-y: auto; overflow-x: hidden; padding: 28px clamp(20px, 4vw, 40px); }
+.outlook-reading-subject { font-size: 20px; font-weight: 600; color: #1a1a1a; margin-bottom: 18px; }
+.outlook-reading-meta { display: flex; gap: 12px; margin-bottom: 24px; }
+.outlook-reading-avatar {
+  width: 36px; height: 36px; border-radius: 50%; background: #0078D4; color: #fff;
+  display: flex; align-items: center; justify-content: center; font-weight: 700; flex-shrink: 0;
+}
+.outlook-reading-from { font-size: 13px; color: #1a1a1a; }
+.outlook-reading-to { font-size: 12px; color: #8a8f98; margin-top: 2px; }
+.outlook-reading-body { font-size: 14px; color: #333; line-height: 1.8; max-width: 560px; }
+.outlook-reading-body b { color: #1a1a1a; }
+.outlook-verify-btn {
+  margin-top: 24px; height: 40px; padding: 0 28px; border-radius: 4px; border: none;
+  background: #1565C0; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+}
+.outlook-verify-btn:hover { background: #1251a3; }
+
+/* ── Demo-only full-screen "Create New Router Credentials" -- deliberately no
+   Site Manager background photo (this is a router-local action), but keeps
+   the same brand mark and card styling as the rest of the app. ── */
+.router-reset-create-page {
+  position: fixed; top: 32px; left: 0; right: 0; bottom: 0; z-index: 500;
+  display: none; align-items: center; justify-content: center; background: #f3f5f9;
+}
+.router-reset-create-page.show { display: flex; }
+.router-reset-create-card {
+  background: #fff; border-radius: 16px; box-shadow: 0 20px 60px rgba(0,0,0,0.12);
+  width: 440px; padding: 48px 56px;
+}
+.router-reset-create-brand { font-size: 15px; font-weight: 800; margin-bottom: 28px; }
+.router-reset-create-brand .router-reset-create-asus { color: #0072BC; }
+.router-reset-create-title { font-size: 20px; font-weight: 700; color: #1a1a1a; margin-bottom: 10px; }
+.router-reset-create-desc { font-size: 13px; color: #666; line-height: 1.7; margin-bottom: 24px; }
+.router-reset-create-desc b { color: #1a1a1a; }
 .site-detail-stats {
   display: grid; grid-template-columns: repeat(4,1fr); text-align: center;
   border: 1px solid rgba(0,0,0,0.08); border-radius: 8px; overflow: hidden;
@@ -3829,24 +3895,63 @@ body {
 
     <!-- Demo-only stand-in for actually checking an inbox -- opens automatically
          after "Send verification e-mail" so the tester can click through the
-         link without leaving the app. -->
-    <div class="newsite-overlay" id="router-reset-email-overlay">
-      <div class="router-reset-email-dialog">
-        <button class="pin-binding-close" onclick="closeRouterResetEmailMock()">&times;</button>
-        <div class="router-reset-email-header">
-          <div class="router-reset-email-subject">[ASUS Site Manager] Verify Router Credential Reset</div>
-          <div class="router-reset-email-meta">To: asus1234@gmail.com</div>
+         link without leaving the app. Full-screen generic mail-client mock,
+         not a real Outlook asset. -->
+    <div class="router-reset-email-page" id="page-router-reset-email">
+      <div class="outlook-topbar">
+        <div class="outlook-topbar-logo">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="2" y="4" width="20" height="16" rx="2" fill="#fff" fill-opacity="0.15"/><path d="M3 6l9 6 9-6" stroke="#fff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Outlook
         </div>
-        <div class="router-reset-email-body">
-          Hello,<br><br>
-          A request was received to reset the administrator credentials for:<br>
-          <b id="router-reset-email-device-name">GT-AX86000_Main</b><br><br>
-          Requested by: asus1234@gmail.com<br><br>
-          If this was you, click the button below to continue. This link expires in 15 minutes.<br><br>
-          If you didn't request this, you can safely ignore this email.
+        <div class="outlook-topbar-search">🔍 Search</div>
+        <button class="outlook-topbar-close" onclick="closeRouterResetEmailMock()">✕ Close</button>
+      </div>
+      <div class="outlook-body">
+        <div class="outlook-rail">
+          <div class="outlook-rail-compose">+ New mail</div>
+          <div class="outlook-rail-item active">Inbox</div>
+          <div class="outlook-rail-item">Junk Email</div>
+          <div class="outlook-rail-item">Sent Items</div>
+          <div class="outlook-rail-item">Drafts</div>
+          <div class="outlook-rail-item">Deleted Items</div>
         </div>
-        <div class="router-reset-email-footer">
-          <button class="newsite-confirm" style="width:100%;" onclick="handleRouterResetVerifyClick()">Verify Request</button>
+        <div class="outlook-list">
+          <div class="outlook-list-item active">
+            <div class="outlook-list-item-top"><span class="outlook-list-sender">ASUS Site Manager</span><span class="outlook-list-time">Just now</span></div>
+            <div class="outlook-list-subject">Verify Router Credential Reset</div>
+            <div class="outlook-list-snippet">A request was received to reset the administrator credentials...</div>
+          </div>
+          <div class="outlook-list-item">
+            <div class="outlook-list-item-top"><span class="outlook-list-sender">Microsoft 365</span><span class="outlook-list-time">Yesterday</span></div>
+            <div class="outlook-list-subject">Your monthly summary is ready</div>
+            <div class="outlook-list-snippet">Here's what happened in your mailbox last month...</div>
+          </div>
+          <div class="outlook-list-item">
+            <div class="outlook-list-item-top"><span class="outlook-list-sender">LinkedIn</span><span class="outlook-list-time">2 days ago</span></div>
+            <div class="outlook-list-subject">You have 3 new notifications</div>
+            <div class="outlook-list-snippet">See who's viewed your profile this week...</div>
+          </div>
+        </div>
+        <div class="outlook-reading-pane">
+          <div class="outlook-reading-subject">Verify Router Credential Reset</div>
+          <div class="outlook-reading-meta">
+            <div class="outlook-reading-avatar">A</div>
+            <div>
+              <div class="outlook-reading-from"><b>ASUS Site Manager</b> &lt;no-reply@asus.com&gt;</div>
+              <div class="outlook-reading-to">To: asus1234@gmail.com</div>
+            </div>
+          </div>
+          <div class="outlook-reading-body">
+            Hello,<br><br>
+            A request was received to reset the administrator credentials for:<br>
+            <b id="router-reset-email-device-name">GT-AXE16000_Main</b><br><br>
+            Requested by: asus1234@gmail.com<br><br>
+            If this was you, click the button below to continue. This link expires in 15 minutes.<br><br>
+            If you didn't request this, you can safely ignore this email.
+            <div>
+              <button class="outlook-verify-btn" onclick="handleRouterResetVerifyClick()">Verify Request</button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -3863,11 +3968,17 @@ body {
       </div>
     </div>
 
-    <div class="newsite-overlay" id="router-reset-create-overlay">
-      <div class="newsite-dialog" style="width:400px;">
-        <button class="pin-binding-close" onclick="cancelCreateRouterCredentials()">&times;</button>
-        <div class="newsite-dialog-title">Create New Router Credentials</div>
-        <div class="signin-field" style="margin-top:20px;">
+    <!-- Demo-only full-screen "Create New Router Credentials" -- deliberately
+         no Site Manager background photo (this is a router-local action), but
+         keeps the same brand mark/card styling as the rest of the app.
+         Reached either from the Login=Yes branch above, or after a fresh
+         sign-in via the Login=No branch (see doSignin()/doThirdPartySignin()). -->
+    <div class="router-reset-create-page" id="page-router-reset-create">
+      <div class="router-reset-create-card">
+        <div class="router-reset-create-brand"><span class="router-reset-create-asus">ASUS</span> Site Manager</div>
+        <div class="router-reset-create-title">Create New Router Credentials</div>
+        <div class="router-reset-create-desc">Your identity has been verified. Set a new administrator username and password for <b id="router-reset-create-device-name">GT-AXE16000_Main</b> to finish resetting access to this router.</div>
+        <div class="signin-field">
           <label class="signin-label">Username</label>
           <input class="signin-input" type="text" id="router-reset-username" placeholder="">
         </div>
@@ -3879,10 +3990,8 @@ body {
           <label class="signin-label">Confirm Password</label>
           <input class="signin-input" type="password" id="router-reset-password-confirm" placeholder="">
         </div>
-        <div class="newsite-dialog-btns">
-          <button class="newsite-cancel" onclick="cancelCreateRouterCredentials()">Cancel</button>
-          <button class="newsite-confirm" onclick="applyNewRouterCredentials()">Apply</button>
-        </div>
+        <button class="signin-btn" onclick="applyNewRouterCredentials()">Apply</button>
+        <button class="newsite-cancel" style="width:100%;margin-top:10px;" onclick="cancelCreateRouterCredentials()">Cancel</button>
       </div>
     </div>
 
@@ -4401,12 +4510,12 @@ function openIndexSiteList(empty) {
 }
 
 let toastTimer = null;
-function showToast(message) {
+function showToast(message, duration) {
   const toast = document.getElementById('site-toast');
   toast.textContent = message;
   toast.classList.add('show');
   if (toastTimer) clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => toast.classList.remove('show'), 3500);
+  toastTimer = setTimeout(() => toast.classList.remove('show'), duration || 3500);
 }
 
 function showPinCodeWelcomePage() {
@@ -5450,7 +5559,15 @@ function siteDetailShowTab(tab) {
 
 // ── Reset Router Credentials ────────────────────────────────────────────────
 // Confirm -> (demo) mock verification email -> Login judgment -> Create New
-// Router Credentials form. Entirely demo state, not tied to a specific site.
+// Router Credentials page. Entirely demo state, not tied to a specific site
+// (routerResetDeviceName is captured once at the start so the email/create
+// pages still show the right name even after the Site Detail panel closes).
+let routerResetDeviceName = '';
+// Set when the Login=No branch sends the tester to sign in fresh -- picked up
+// by doSignin()/doThirdPartySignin() to continue into the Create New Router
+// Credentials page afterwards instead of landing on the plain Site List.
+let routerResetSigninPending = false;
+
 function resetRouterCredentialsState() {
   document.getElementById('router-credentials-desc').textContent =
     'For security reasons, the administrator username and password for this router cannot be viewed.';
@@ -5458,6 +5575,7 @@ function resetRouterCredentialsState() {
 }
 
 function openResetRouterCredentialsPopup() {
+  routerResetDeviceName = document.getElementById('site-detail-name').textContent;
   document.getElementById('reset-router-credentials-overlay').classList.add('show');
 }
 function closeResetRouterCredentialsPopup() {
@@ -5472,11 +5590,11 @@ function sendRouterCredentialsVerification() {
 }
 
 function openRouterResetEmailMock() {
-  document.getElementById('router-reset-email-device-name').textContent = document.getElementById('site-detail-name').textContent;
-  document.getElementById('router-reset-email-overlay').classList.add('show');
+  document.getElementById('router-reset-email-device-name').textContent = routerResetDeviceName;
+  document.getElementById('page-router-reset-email').classList.add('show');
 }
 function closeRouterResetEmailMock() {
-  document.getElementById('router-reset-email-overlay').classList.remove('show');
+  document.getElementById('page-router-reset-email').classList.remove('show');
 }
 
 function handleRouterResetVerifyClick() {
@@ -5502,27 +5620,35 @@ function resolveRouterResetLogin(isLoggedIn) {
     openCreateRouterCredentialsForm();
   } else {
     // Not signed in on this platform -- send the tester to that platform's own
-    // sign-in page first, same as the rest of the app does in this situation.
+    // sign-in page first; doSignin()/doThirdPartySignin() route back into the
+    // Create New Router Credentials page once that completes.
     closeSiteDetail();
+    routerResetSigninPending = true;
     document.getElementById('page-login').classList.remove('hidden');
     goSignin();
   }
 }
 
 function openCreateRouterCredentialsForm() {
+  closeSiteDetail();
+  document.getElementById('router-reset-create-device-name').textContent = routerResetDeviceName;
   document.getElementById('router-reset-username').value = '';
   document.getElementById('router-reset-password').value = '';
   document.getElementById('router-reset-password-confirm').value = '';
-  document.getElementById('router-reset-create-overlay').classList.add('show');
+  document.getElementById('page-router-reset-create').classList.add('show');
 }
 function cancelCreateRouterCredentials() {
-  document.getElementById('router-reset-create-overlay').classList.remove('show');
+  document.getElementById('page-router-reset-create').classList.remove('show');
 }
 function applyNewRouterCredentials() {
-  document.getElementById('router-reset-create-overlay').classList.remove('show');
-  closeSiteDetail();
-  resetRouterCredentialsState();
-  showToast('Verification Successful — Now create a new administrator account.');
+  document.getElementById('page-router-reset-create').classList.remove('show');
+  document.getElementById('signup-complete-loading-overlay').classList.add('show');
+  setTimeout(() => {
+    document.getElementById('signup-complete-loading-overlay').classList.remove('show');
+    goPage('sitelist');
+    resetRouterCredentialsState();
+    showToast('Verification Successful — Now create a new administrator account.', 3000);
+  }, 1100);
 }
 
 // ── Site List row "···" menu ────────────────────────────────────────────────
@@ -6216,6 +6342,12 @@ function doSignin() {
     openPinCodeExpiryDecision();
     return;
   }
+  if (routerResetSigninPending) {
+    routerResetSigninPending = false;
+    document.getElementById('page-login').classList.add('hidden');
+    openCreateRouterCredentialsForm();
+    return;
+  }
   signedInProvider = 'ASUS';
   document.getElementById('page-login').classList.add('hidden');
   maybePromptAccountLink();
@@ -6232,7 +6364,12 @@ function doThirdPartySignin(provider) {
   setTimeout(() => {
     document.getElementById('signup-complete-loading-overlay').classList.remove('show');
     document.getElementById('page-login').classList.add('hidden');
-    goPage('sitelist');
+    if (routerResetSigninPending) {
+      routerResetSigninPending = false;
+      openCreateRouterCredentialsForm();
+    } else {
+      goPage('sitelist');
+    }
   }, 1200);
 }
 
