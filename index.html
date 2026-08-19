@@ -5850,13 +5850,9 @@ function openThirdPartyMigrationPopup() {
 function closeThirdPartyMigrationPopup() {
   document.getElementById('signin-thirdparty-migration-overlay').classList.remove('show');
 }
-// Placeholder behavior (text/copy still rough) -- acknowledges which
-// third-party account they used before, then returns to view-signin-classic
-// to continue with ASUS VIP sign-in; the actual account-linking step still
-// happens afterwards via maybePromptAccountLink() / Settings > Accounts.
 function selectThirdPartyMigrationProvider(provider) {
   closeThirdPartyMigrationPopup();
-  showToast('已記錄您先前使用 ' + provider + ' 登入，請以 ASUS VIP 帳號繼續登入。');
+  doThirdPartySignin(provider);
 }
 
 function goRegister() {
