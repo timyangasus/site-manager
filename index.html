@@ -2367,13 +2367,30 @@ body {
         <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#1565C0"/>
       </svg>
     </div>
-    <div class="newsite-dialog-body" style="margin-top:8px;">
-      ASUS Router Portal 僅支援 ASUS VIP 帳號登入。<br><br>
-      如果您過去曾使用 Google、Apple 或 Facebook 等第三方帳號登入 ASUS Router App，且已加入過裝置，無需擔心，您的裝置資訊不會因此遺失。<br><br>
-      完成 ASUS VIP 帳號註冊或登入後，我們會引導您將該第三方帳號「連結」至此 ASUS VIP 帳號——連結後兩者將共用相同的路由器清單與管理權限，不需要重新設定裝置。
+    <div class="newsite-dialog-title">既有 ASUS Router App 用戶</div>
+    <div class="newsite-dialog-body">
+      請選擇您先前用於登入 ASUS Router App 的帳號，我們將協助您確認裝置資料是否可以保留。
+    </div>
+    <div class="signin-method-list" style="margin-bottom:24px;">
+      <button class="signin-method-item" onclick="selectThirdPartyMigrationProvider('Google')">
+        <div class="signin-method-icon signin-method-google">G</div>
+        <span class="signin-method-label">Google</span>
+      </button>
+      <button class="signin-method-item" onclick="selectThirdPartyMigrationProvider('Apple')">
+        <div class="signin-method-icon signin-method-apple">&#63743;</div>
+        <span class="signin-method-label">Apple</span>
+      </button>
+      <button class="signin-method-item" onclick="selectThirdPartyMigrationProvider('Facebook')">
+        <div class="signin-method-icon signin-method-facebook">f</div>
+        <span class="signin-method-label">Facebook</span>
+      </button>
+      <button class="signin-method-item" onclick="selectThirdPartyMigrationProvider('WeChat')">
+        <div class="signin-method-icon signin-method-wechat">W</div>
+        <span class="signin-method-label">WeChat</span>
+      </button>
     </div>
     <div class="newsite-dialog-btns">
-      <button class="newsite-confirm" onclick="confirmThirdPartyMigration()">我了解了</button>
+      <button class="newsite-cancel" style="width:100%;" onclick="closeThirdPartyMigrationPopup()">返回</button>
     </div>
   </div>
 </div>
@@ -5835,10 +5852,13 @@ function openThirdPartyMigrationPopup() {
 function closeThirdPartyMigrationPopup() {
   document.getElementById('signin-thirdparty-migration-overlay').classList.remove('show');
 }
-function confirmThirdPartyMigration() {
-  // Just acknowledges the explanation -- stays on view-signin-classic (where
-  // the "既有ASUS Router App用戶?" button lives), not a signup redirect.
+// Placeholder behavior (text/copy still rough) -- acknowledges which
+// third-party account they used before, then returns to view-signin-classic
+// to continue with ASUS VIP sign-in; the actual account-linking step still
+// happens afterwards via maybePromptAccountLink() / Settings > Accounts.
+function selectThirdPartyMigrationProvider(provider) {
   closeThirdPartyMigrationPopup();
+  showToast('已記錄您先前使用 ' + provider + ' 登入，請以 ASUS VIP 帳號繼續登入。');
 }
 
 function goRegister() {
