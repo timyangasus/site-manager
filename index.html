@@ -1479,13 +1479,10 @@ body {
   content: '✓'; color: #1565C0; font-weight: 700;
 }
 /* Demo-only A/B toggle between the icon-picker sign-in (view-signin) and the
-   classic single-form layout (view-signin-classic) -- not a marketing bullet,
-   so no checkmark, and dimmer/underlined to read as a link, not a feature. */
-.login-layout-toggle {
-  color: #1a3a5c; opacity: 0.7; cursor: pointer;
-  text-decoration: underline; text-underline-offset: 3px;
-}
-.login-layout-toggle:hover { opacity: 1; }
+   classic single-form layout (view-signin-classic) -- same size/color as the
+   marketing bullets beside it, just without their checkmark. */
+.login-layout-toggle { cursor: pointer; }
+.login-layout-toggle:hover { opacity: 0.75; }
 .login-feature-strip span.login-layout-toggle::before { content: none; }
 
 
