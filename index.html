@@ -5852,7 +5852,7 @@ function closeThirdPartyMigrationPopup() {
 }
 function selectThirdPartyMigrationProvider(provider) {
   closeThirdPartyMigrationPopup();
-  doThirdPartySignin(provider);
+  doThirdPartySignin(provider, '您的裝置已成功加入 ASUS Site Manager');
 }
 
 function goRegister() {
@@ -6499,7 +6499,7 @@ function doSignin() {
 // afterwards (that prompt is ASUS-VIP-specific; see doSignin()). Settings >
 // Accounts instead offers the reverse "連結 ASUS VIP 帳號" entry point --
 // see renderAccountLinkSettingsRow().
-function doThirdPartySignin(provider) {
+function doThirdPartySignin(provider, addedDeviceToast) {
   signedInProvider = provider;
   document.getElementById('signup-complete-loading-overlay').classList.add('show');
   setTimeout(() => {
@@ -6510,6 +6510,7 @@ function doThirdPartySignin(provider) {
       openCreateRouterCredentialsForm();
     } else {
       goPage('sitelist');
+      if (addedDeviceToast) showToast(addedDeviceToast);
     }
   }, 1200);
 }
