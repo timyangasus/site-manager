@@ -2067,7 +2067,7 @@ body {
     <span>Whole-Home Mesh Coverage</span>
     <span>AiProtection Pro Security</span>
     <span>Easy Setup via ASUS Router App</span>
-    <span class="login-layout-toggle" id="login-layout-toggle" onclick="toggleSigninLayout()">Try another layout</span>
+    <span class="login-layout-toggle" id="login-layout-toggle" onclick="toggleSigninLayout()">ASUS VIP Primary Login</span>
   </div>
   <div class="login-left">
     <!-- Sign in view (flow 1 home page) -->
@@ -4254,7 +4254,7 @@ document.addEventListener('click', function (e) {
 registerFlow('signin', '1_SIGN_IN', function () {
   document.getElementById('page-login').classList.remove('hidden');
   signinLayoutVariant = 'icons';
-  document.getElementById('login-layout-toggle').textContent = 'Try another layout';
+  document.getElementById('login-layout-toggle').textContent = 'ASUS VIP Primary Login';
   goSignin();
 });
 
@@ -4266,7 +4266,7 @@ registerPage('1_013', 'Sign in with ASUS VIP 頁', 'signin', function () { goSig
 
 registerPage('1_014', 'Sign in 頁（替代版型）', 'signin', function () {
   signinLayoutVariant = 'classic';
-  document.getElementById('login-layout-toggle').textContent = 'Back to icon layout';
+  document.getElementById('login-layout-toggle').textContent = 'ASUS VIP + 3rd-Party Login';
   goSignin();
 }, 'view:signin-classic',
   'Sign in 頁的替代版型：跳過選擇登入方式，直接進入 ASUS VIP 帳號密碼表單（與 1_012 討論比較用）');
@@ -5777,14 +5777,15 @@ function siteRowMenuAction(action) {
 
 // ── Sign in (flow 1 home page) ─────────────────────────────────────────────────
 // Demo-only A/B toggle for the top-level sign-in screen: 'icons' is the
-// icon-picker (view-signin), 'classic' is the direct ASUS VIP form
-// (view-signin-classic) -- see the "Try another layout" link in the feature
-// strip below #page-login's banner photo.
+// icon-picker (view-signin, "ASUS VIP + 3rd-Party Login"), 'classic' is the
+// direct ASUS VIP form (view-signin-classic, "ASUS VIP Primary Login") --
+// the link in the feature strip below #page-login's banner photo always
+// names the OTHER layout, i.e. what clicking it switches you to.
 let signinLayoutVariant = 'icons';
 function toggleSigninLayout() {
   signinLayoutVariant = signinLayoutVariant === 'icons' ? 'classic' : 'icons';
   document.getElementById('login-layout-toggle').textContent =
-    signinLayoutVariant === 'icons' ? 'Try another layout' : 'Back to icon layout';
+    signinLayoutVariant === 'icons' ? 'ASUS VIP Primary Login' : 'ASUS VIP + 3rd-Party Login';
   goSignin();
 }
 
