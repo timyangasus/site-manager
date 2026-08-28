@@ -1956,20 +1956,29 @@ body {
 }
 
 /* ── S2S Group Topology ─────────────────────────────────────────────────────── */
-.s2s-topo-page {
+.s2s-groups-view {
   position: relative;
-  background: #f0f0f0;
+  background: #fff;
   min-height: calc(100vh - 48px);
-  padding: 20px 24px;
+  padding: 20px 24px 32px;
   box-sizing: border-box;
 }
-.s2s-topo-header { display: flex; align-items: center; gap: 5px; margin-bottom: 14px; }
-.s2s-topo-back {
-  display: flex; align-items: center;
-  background: none; border: none; cursor: pointer;
-  font-family: inherit; padding: 0;
+/* Row of site-group thumbnails -- currently ever only one group can exist, so
+   this always renders exactly one (permanently selected) card, but the
+   layout is built to support more without changes once multi-group creation
+   exists. */
+.s2s-groups-row { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 20px; }
+.s2s-group-thumb {
+  position: relative; width: 150px; background: #fff;
+  border: 2px solid #e5e5e5; border-radius: 10px; padding: 12px 12px 14px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06); box-sizing: border-box;
 }
-.s2s-topo-title { font-size: 17px; font-weight: 400; color: #1a1a1a; }
+.s2s-group-thumb.selected { border-color: #1565C0; }
+.s2s-group-thumb-bar { position: absolute; left: 12px; top: 12px; bottom: 14px; width: 4px; border-radius: 2px; background: #f9a825; }
+.s2s-group-thumb-name { font-size: 13px; font-weight: 700; color: #1a1a1a; padding-left: 12px; margin-bottom: 10px; }
+.s2s-group-thumb-img { width: 52px; height: 52px; object-fit: contain; display: block; margin: 0 auto 6px; }
+.s2s-group-thumb-site { font-size: 11px; color: #888; text-align: center; }
+.s2s-groups-divider { border-top: 1px solid #e5e5e5; margin: 0 0 20px; }
 .s2s-topo-group-label { font-size: 12px; color: #888; margin-bottom: 2px; }
 .s2s-topo-group-name { font-size: 22px; font-weight: 700; color: #1a1a1a; line-height: 1.25; }
 .s2s-topo-sub-title { font-size: 15px; color: #888; margin-top: 2px; }
@@ -4859,7 +4868,8 @@ const pageMap = {
   sitelist: 'Routers',
   firmware: 'Firmware Update',
   home: 'Home',
-  history: 'History',
+  schedule: 'History',
+  sitetosite: 'Site to Site',
   notifications: 'Notifications',
   settings: 'Settings',
   floorplanner: 'Floor Planner',
@@ -6045,78 +6055,13 @@ function s2sLeftCardHTML() {
 
 function s2sShowGroupCard() {
   s2sGroupCreated = true;
-  const name = document.getElementById('s2s-groupname').value.trim() || 'New Group';
-  const desc = document.getElementById('s2s-groupdesc').value.trim() || 'Site to Site Group';
-
-  // Make sure we are on the two-column SiteToSiteHome layout (in case we are
-  // coming back from the full-page GroupTopologyPage which replaced #s2s-wrap)
-  s2sEnsureHomeLayout();
-
-  // IntroPanel (left column) stays exactly the same as the empty state — untouched.
-  // Only MainContent (right column) is updated to show the group card list.
-  const main = document.getElementById('s2s-main-content');
-  main.innerHTML = `
-    <div style="font-size:13px;font-weight:700;color:#1a1a1a;margin-bottom:14px;">Site to site group</div>
-    <div style="background:#fff;border-radius:10px;border:1px solid #e0e0e0;padding:14px;overflow:hidden;width:204px;cursor:pointer;" onclick="s2sOpenGroupFromCard()">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-        <div style="width:4px;height:18px;background:#f9a825;border-radius:2px;flex-shrink:0;"></div>
-        <div style="font-size:13px;font-weight:700;color:#1a1a1a;flex:1;">${name}</div>
-        <button style="background:none;border:none;cursor:pointer;color:#aaa;font-size:16px;">⋯</button>
-      </div>
-      <img src="${s2sMainImg}" style="width:68px;height:68px;object-fit:contain;display:block;margin:0 auto 8px;">
-      <div style="font-size:13px;font-weight:600;text-align:center;color:#1a1a1a;">${s2sMainName}</div>
-      <div style="font-size:11px;color:#aaa;text-align:center;margin:2px 0 4px;">${s2sMainMac}</div>
-      <div style="border-top:1px solid #f0f0f0;margin:10px 0 8px;"></div>
-      <div style="display:flex;justify-content:space-around;">
-        <div style="text-align:center;">
-          <div style="font-size:15px;font-weight:700;color:#1a1a1a;">${s2sChecked.size}</div>
-          <div style="font-size:11px;color:#aaa;">Site(s)</div>
-        </div>
-        <div style="text-align:center;">
-          <div style="font-size:15px;font-weight:700;color:#1a1a1a;">Mixed</div>
-          <div style="font-size:11px;color:#aaa;">Region</div>
-        </div>
-      </div>
-    </div>`;
-}
-
-// Restores the two-column SiteToSiteHome skeleton (IntroPanel + MainContent)
-// into #s2s-wrap. Needed because GroupTopologyPage (state 3) completely
-// replaces #s2s-wrap's innerHTML with a full-page layout.
-function s2sEnsureHomeLayout() {
-  const wrap = document.getElementById('s2s-wrap');
-  if (document.getElementById('s2s-home')) return; // already in two-column layout
-  wrap.innerHTML = `
-    <div class="s2s-home" id="s2s-home">
-      <div class="s2s-intro-panel" id="s2s-empty">${s2sLeftCardHTML()}</div>
-      <div class="s2s-main-content" id="s2s-main-content"></div>
-    </div>`;
-}
-
-// Every time the user navigates into the Site to Site tab from the sidebar,
-// it should land on its default view: card list if a group already exists,
-// or the empty intro state if not — never the full-page Group Topology.
-function s2sResetToDefaultView() {
-  if (s2sGroupCreated) {
-    s2sShowGroupCard();
-  } else {
-    s2sEnsureHomeLayout();
-    const el = document.getElementById('s2s-empty');
-    if (el) el.innerHTML = s2sLeftCardHTML();
-  }
-}
-
-
-function s2sOpenGroupFromCard() {
-  const name = document.getElementById('s2s-groupname')?.value.trim() || 'New Group';
-  const desc = document.getElementById('s2s-groupdesc')?.value.trim() || 'Site to Site Group';
+  const groupName = document.getElementById('s2s-groupname').value.trim() || 'New Group';
+  const groupDesc = document.getElementById('s2s-groupdesc').value.trim() || 'Site to Site Group';
   const mainName = s2sMainName || 'Main';
   const mainImg = s2sMainImg || '';
   const mainMac = s2sMainMac || '';
-  s2sOpenGroup(name, desc, mainName, mainImg, mainMac, '192.168.1.1', s2sChecked.size);
-}
+  const mainIp = '192.168.1.1';
 
-function s2sOpenGroup(groupName, groupDesc, mainName, mainImg, mainMac, mainIp, siteCount) {
   // 固定 3 台：1 台 main + 2 台 sub（其中 1 台 offline）
   // 固定 4 台：1 台 main + 3 台 sub（2 台 online、1 台 offline）
   const allSites = [
@@ -6173,10 +6118,16 @@ function s2sOpenGroup(groupName, groupDesc, mainName, mainImg, mainMac, mainIp, 
 
   const wrap = document.getElementById('s2s-wrap');
   wrap.innerHTML = `
-    <div class="s2s-topo-page">
-      <button class="s2s-topo-back" onclick="s2sBackToList()" style="background:none;border:none;cursor:pointer;padding:0;margin-bottom:10px;">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      </button>
+    <div class="s2s-groups-view">
+      <div class="s2s-groups-row">
+        <div class="s2s-group-thumb selected">
+          <div class="s2s-group-thumb-bar"></div>
+          <div class="s2s-group-thumb-name">${groupName}</div>
+          <img class="s2s-group-thumb-img" src="${mainImg}" alt="${mainName}">
+          <div class="s2s-group-thumb-site">${mainName}</div>
+        </div>
+      </div>
+      <div class="s2s-groups-divider"></div>
       <div style="margin-bottom:16px;border-left:4px solid #f9a825;padding-left:14px;">
         <div class="s2s-topo-group-label">Group</div>
         <div class="s2s-topo-group-name">${groupName}</div>
@@ -6220,7 +6171,8 @@ function s2sOpenGroup(groupName, groupDesc, mainName, mainImg, mainMac, mainIp, 
         <!-- Sub nodes -->
         <div class="s2s-sub-nodes">${subCardsHtml}</div>
       </div>
-    </div>`;
+    </div>
+  `;
 
   // After render, sync connector cell heights to actual sub card heights
   requestAnimationFrame(() => {
@@ -6234,11 +6186,31 @@ function s2sOpenGroup(groupName, groupDesc, mainName, mainImg, mainMac, mainIp, 
   });
 }
 
-function s2sBackToList() {
-  s2sShowGroupCard();
+// Restores the two-column SiteToSiteHome skeleton (IntroPanel + MainContent)
+// into #s2s-wrap -- used for the empty/no-group-yet state; once a group
+// exists, s2sShowGroupCard() takes over #s2s-wrap entirely instead.
+function s2sEnsureHomeLayout() {
+  const wrap = document.getElementById('s2s-wrap');
+  if (document.getElementById('s2s-home')) return; // already in two-column layout
+  wrap.innerHTML = `
+    <div class="s2s-home" id="s2s-home">
+      <div class="s2s-intro-panel" id="s2s-empty">${s2sLeftCardHTML()}</div>
+      <div class="s2s-main-content" id="s2s-main-content"></div>
+    </div>`;
 }
 
-
+// Every time the user navigates into the Site to Site tab from the sidebar,
+// it should land on its default view: the group summary + topology if a
+// group already exists, or the empty intro state if not.
+function s2sResetToDefaultView() {
+  if (s2sGroupCreated) {
+    s2sShowGroupCard();
+  } else {
+    s2sEnsureHomeLayout();
+    const el = document.getElementById('s2s-empty');
+    if (el) el.innerHTML = s2sLeftCardHTML();
+  }
+}
 
 function toggleThirdParty(btn) {
   const grid = btn.nextElementSibling;
