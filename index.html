@@ -191,15 +191,16 @@ body {
   margin-bottom: 16px;
 }
 .page-title { font-size: 20px; font-weight: 600; color: #1a1a1a; }
-.add-site-btn {
-  height: 28px; padding: 0 16px; border-radius: 999px;
-  border: 1.5px solid #1565C0; background: transparent;
-  color: #1565C0; font-size: 13px; font-weight: 500;
-  cursor: pointer; font-family: inherit;
-  display: flex; align-items: center; gap: 5px;
-  transition: background 0.12s, color 0.12s;
+/* Shared style for every feature page's top-right "add/create new X" or
+   "refresh" action button -- solid blue pill with a leading icon. */
+.header-action-btn {
+  height: 34px; padding: 0 20px; border-radius: 999px;
+  border: none; background: #1565C0; color: #fff;
+  font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit;
+  display: flex; align-items: center; gap: 6px;
+  transition: background 0.12s;
 }
-.add-site-btn:hover { background: #1565C0; color: #fff; }
+.header-action-btn:hover { background: #1251a3; }
 .card {
   background: rgba(255,255,255,0.92);
   border: 1px solid rgba(0,0,0,0.07);
@@ -274,14 +275,6 @@ body {
 .fw-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 16px; }
 .fw-title  { font-size: 20px; font-weight: 600; color: #1a1a1a; }
 .fw-total  { font-size: 13px; color: #666; margin-top: 3px; }
-.fw-refresh-btn {
-  height: 28px; padding: 0 16px; border-radius: 999px;
-  border: 1.5px solid #1565C0; background: transparent;
-  color: #1565C0; font-size: 13px; font-weight: 500;
-  cursor: pointer; font-family: inherit;
-  transition: background 0.12s, color 0.12s;
-}
-.fw-refresh-btn:hover { background: #1565C0; color: #fff; }
 .fw-table { width: 100%; border-collapse: collapse; font-size: 13px; }
 .fw-table thead tr { border-bottom: 1px solid rgba(0,0,0,0.08); background: rgba(0,0,0,0.025); }
 .fw-table thead th { padding: 7px 12px; text-align: left; font-weight: 600; color: #333; font-size: 12px; white-space: nowrap; }
@@ -397,12 +390,6 @@ body {
 }
 
 .fp-topbar { display: flex; justify-content: flex-end; padding: 12px 32px; border-bottom: 1px solid #eee; }
-.fp-new-project-btn {
-  display: flex; align-items: center; gap: 8px; background: #1565C0; color: #fff;
-  border: none; border-radius: 8px; padding: 12px 20px; font-size: 14px; font-weight: 600;
-  cursor: pointer; font-family: inherit;
-}
-.fp-new-project-btn:hover { background: #0D47A1; }
 .fp-body { padding: 16px 32px 32px; max-width: 1100px; }
 .fp-greeting { font-size: 34px; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
 .fp-subtitle { font-size: 14px; color: #888; margin-bottom: 24px; }
@@ -641,14 +628,6 @@ body {
 .pf-empty-icon { margin-bottom: 20px; opacity: 0.75; }
 .pf-empty-title { font-size: 18px; font-weight: 600; color: #1a1a1a; margin-bottom: 10px; }
 .pf-empty-desc { font-size: 13px; color: #666; line-height: 1.7; max-width: 380px; margin-bottom: 24px; }
-.pf-create-btn {
-  height: 34px; padding: 0 22px; border-radius: 6px;
-  border: none; background: #1565C0; color: #fff;
-  font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit;
-  display: flex; align-items: center; gap: 6px;
-  transition: background 0.12s;
-}
-.pf-create-btn:hover { background: #1251a3; }
 
 /* Profile card grid */
 .pf-grid { display: none; grid-template-columns: repeat(3,1fr); gap: 14px; margin-top: 0; }
@@ -2951,7 +2930,7 @@ body {
           <span style="color:#bbb;margin:0 4px;">|</span>
           <span>6 Total Sites</span>
         </div>
-        <button class="add-site-btn"><span style="font-size:16px;line-height:1;margin-top:-1px;">+</span> Add Site</button>
+        <button class="header-action-btn"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Add Site</button>
       </div>
       <div class="card">
         <table class="site-table">
@@ -3106,7 +3085,7 @@ body {
         <div>
           <div class="fw-total">Total Site(s) : 6</div>
         </div>
-        <button class="fw-refresh-btn" onclick="fwRefresh()">Refresh</button>
+        <button class="header-action-btn" onclick="fwRefresh()"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" width="14" height="14"><path fill="#fff" d="M480-120q-138 0-240.5-91.5T122-440h82q14 104 92.5 172T480-200q117 0 198.5-81.5T760-480q0-117-81.5-198.5T480-760q-69 0-129 32t-101 88h110v80H120v-240h80v94q51-64 124.5-99T480-840q75 0 140.5 28.5t114 77q48.5 48.5 77 114T840-480q0 75-28.5 140.5t-77 114q-48.5 48.5-114 77T480-120Z"/></svg> Refresh</button>
       </div>
       <div class="card">
         <table class="fw-table">
@@ -3223,7 +3202,7 @@ body {
         </div>
         <div class="pf-empty-title">統一排程，一鍵控管所有裝置</div>
         <div class="pf-empty-desc">建立 Profile 來同時管理多台裝置的排程任務。<br>自動 Reboot、LED 控制，集中設定、輕鬆維護。<br>讓裝置管理更有效率，不再需要逐台操作。</div>
-        <button class="pf-create-btn" onclick="pfOpenPanel(-1)">
+        <button class="header-action-btn" onclick="pfOpenPanel(-1)">
           <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
           Create Profile
         </button>
@@ -3231,7 +3210,7 @@ body {
       <div id="pf-grid-wrap" style="display:none;">
         <div class="pf-topbar">
           <div class="pf-topbar-info"><strong id="pf-count">0</strong> Profiles</div>
-          <button class="pf-create-btn" onclick="pfOpenPanel(-1)" style="height:30px;font-size:12px;padding:0 14px;">
+          <button class="header-action-btn" onclick="pfOpenPanel(-1)" style="height:30px;font-size:12px;padding:0 14px;">
             <svg width="12" height="12" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
             Create Profile
           </button>
@@ -3590,7 +3569,7 @@ body {
   <div class="page-title-heading">Floor Planner</div>
   <div id="fp-view-list">
     <div class="fp-topbar">
-      <button class="fp-new-project-btn" onclick="return false;">
+      <button class="header-action-btn" onclick="return false;">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#fff" stroke-width="2.2" stroke-linecap="round"/></svg>
         New Project
       </button>
@@ -6159,7 +6138,7 @@ function s2sShowGroupCard() {
   wrap.innerHTML = `
     <div class="s2s-groups-view">
       <div style="display:flex;justify-content:flex-end;margin-bottom:14px;">
-        <button class="add-site-btn" onclick="s2sShowCreate()"><span style="font-size:16px;line-height:1;margin-top:-1px;">+</span> Create Site to Site Group</button>
+        <button class="header-action-btn" onclick="s2sShowCreate()"><svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v12M1 7h12" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg> Create Site to Site Group</button>
       </div>
       <div class="s2s-groups-row">
         <div class="s2s-group-thumb${isWest ? '' : ' selected'}" onclick="s2sSelectGroup('taipei')">
