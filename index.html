@@ -1129,6 +1129,76 @@ body {
 .site-detail-stats .stat-label { font-size: 12px; color: #8a8f98; margin-bottom: 4px; }
 .site-detail-stats .stat-value { font-size: 14px; font-weight: 600; }
 
+/* ── Client status slide-out (opened by clicking a topology node's client
+   count) -- same slide-in-from-right + dim/blur backdrop mechanism as
+   .site-detail-panel/.site-detail-overlay, styled dark per the reference. ── */
+.client-status-panel {
+  position: fixed; top: 29px; right: -400px; bottom: 0;
+  width: 400px; background: #2b3038; color: #e8e8e8;
+  display: flex; flex-direction: column;
+  transition: right 0.28s cubic-bezier(0.4,0,0.2,1);
+  z-index: 160;
+}
+.client-status-panel.show { right: 0; }
+.client-status-overlay {
+  display: none; position: fixed; inset: 0;
+  background: rgba(0,0,0,0.2); z-index: 150;
+  backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px);
+}
+.client-status-overlay.show { display: block; }
+.cs-header {
+  position: relative; padding: 20px 20px 16px; text-align: center; flex-shrink: 0;
+  background: linear-gradient(180deg, #6b7075 0%, #454a50 100%);
+}
+.cs-header-title { font-size: 19px; font-weight: 800; color: #fff; letter-spacing: 0.3px; }
+.cs-close {
+  position: absolute; top: 14px; right: 14px; width: 26px; height: 26px;
+  background: none; border: none; border-radius: 4px;
+  color: #fff; font-size: 16px; cursor: pointer; opacity: 0.8;
+}
+.cs-close:hover { opacity: 1; background: rgba(255,255,255,0.1); }
+.cs-tabs { display: flex; background: #1f2328; flex-shrink: 0; }
+.cs-tab {
+  flex: 1; text-align: center; padding: 12px 4px; font-size: 12.5px; font-weight: 700;
+  color: #8a9099; cursor: pointer; border-bottom: 3px solid transparent; user-select: none;
+}
+.cs-tab.active { color: #fff; border-bottom-color: #4fc3f7; background: #2b3038; }
+.cs-search-wrap { padding: 12px 16px; background: #2b3038; flex-shrink: 0; }
+.cs-search {
+  width: 100%; box-sizing: border-box; height: 34px; border-radius: 6px;
+  border: 1px solid #454a50; background: #363b42; color: #ddd; padding: 0 12px;
+  font-size: 13px; font-family: inherit;
+}
+.cs-search::placeholder { color: #777; }
+.cs-list { flex: 1; overflow-y: auto; padding: 4px 16px 16px; background: #2b3038; }
+.cs-item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 12px;
+  border: 1px solid #454a50; border-radius: 8px; margin-bottom: 10px;
+  background: #363b42;
+}
+.cs-item-icon {
+  width: 46px; height: 46px; border-radius: 6px; background: #4a4f56;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.cs-item-info { flex: 1; min-width: 0; }
+.cs-item-name { font-size: 14px; font-weight: 600; color: #fff; margin-bottom: 7px; }
+.cs-item-divider { border-top: 1px solid #4a4f56; margin-bottom: 7px; }
+.cs-item-ip { font-size: 12.5px; color: #d8d8d8; }
+.cs-item-mac { font-size: 12.5px; color: #d8d8d8; text-decoration: underline; text-decoration-color: #666; }
+.cs-item-right { flex-shrink: 0; text-align: center; }
+.cs-item-badge {
+  display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 700;
+  color: #1a1a1a; background: #7fd8f2; border-radius: 3px; padding: 1px 5px;
+}
+.cs-empty { text-align: center; color: #8a9099; font-size: 13px; padding: 32px 0; }
+.cs-footer { padding: 14px 16px; background: #1a1d21; flex-shrink: 0; }
+.cs-refresh-btn {
+  width: 100%; height: 40px; border-radius: 6px; border: none;
+  background: #14171a; color: #fff; font-size: 14px; font-weight: 700;
+  cursor: pointer; font-family: inherit; transition: background 0.12s;
+}
+.cs-refresh-btn:hover { background: #0a0b0d; }
+
 /* Inline topology expand row */
 .site-table tbody tr.topo-expand-row td {
   padding: 0; border-bottom: 1px solid rgba(0,0,0,0.045);
@@ -3940,6 +4010,25 @@ body {
       <div class="site-row-menu-item disabled">刪除</div>
     </div>
 
+    <!-- Client status slide-out -- opened by clicking a topology node's own
+         "N clients" text (see drawCards()). Demo client list is generated
+         from CLIENT_DEMO_POOL, sliced to that node's reported client count. -->
+    <div class="client-status-overlay" id="client-status-overlay" onclick="closeClientStatusPanel()"></div>
+    <div class="client-status-panel" id="client-status-panel">
+      <div class="cs-header">
+        <div class="cs-header-title">Client status</div>
+        <button class="cs-close" onclick="closeClientStatusPanel()">✕</button>
+      </div>
+      <div class="cs-tabs" id="cs-tabs"></div>
+      <div class="cs-search-wrap">
+        <input class="cs-search" type="text" placeholder="Search">
+      </div>
+      <div class="cs-list" id="cs-list"></div>
+      <div class="cs-footer">
+        <button class="cs-refresh-btn" onclick="renderClientStatusList()">Refresh</button>
+      </div>
+    </div>
+
     <!-- Reset Router Credentials: confirmation -> (demo) mock verification email
          -> Login judgment -> Create New Router Credentials form. -->
     <div class="newsite-overlay" id="reset-router-credentials-overlay">
@@ -4280,6 +4369,14 @@ registerPage('2_021', 'Sites 列表（空白）', 'main', function () {
   document.querySelector('.content').classList.add('pin-code-lock-scroll');
   markCurrentPage('page:sitelist-empty');
 }, 'page:sitelist-empty', 'Sites 列表（空白）：尚未加入任何站點時的畫面');
+registerPage('2_202', 'Client Status 面板', 'main', function () {
+  document.getElementById('page-login').classList.add('hidden');
+  goPage('sitelist');
+  markCurrentPage('page:client-status');
+  // Topology for site 0 auto-expands via its own setTimeout (see the
+  // .expand-btn auto-click below) -- wait for it before opening on top.
+  setTimeout(() => openClientStatusPanel('ZenWiFi BT8', '192.168.1.2', 8), 200);
+}, 'page:client-status', 'Client Status 面板：點選 topology 節點的「N clients」後顯示的裝置清單面板');
 registerPage('2_030', 'Firmware Update', 'main', function () {
   document.getElementById('page-login').classList.add('hidden');
   goPage('firmware');
@@ -5510,7 +5607,7 @@ function drawCards(nodes, cardX) {
           <div class="topo-node-conn">${connText}</div>
         </div>
         <div class="topo-node-right">
-          <span style="font-size:11px;color:#888;">${isOffline ? '' : (n.clients !== undefined ? n.clients + ' clients' : '')}</span>
+          <span style="font-size:11px;color:#888;${(!isOffline && n.clients) ? 'cursor:pointer;text-decoration:underline;' : ''}" ${(!isOffline && n.clients) ? `onclick="event.stopPropagation(); openClientStatusPanel('${n.name}', '${n.ip}', ${n.clients});"` : ''}>${isOffline ? '' : (n.clients !== undefined ? n.clients + ' clients' : '')}</span>
           <span class="topo-node-ip">${isOffline ? '—' : n.ip}</span>
           ${offlineBadge}
         </div>
@@ -5584,6 +5681,95 @@ function inlineTopoToggle2(btn, idx) {
     wrap.classList.add('open');
     btn.classList.add('topo-active');
   }
+}
+
+// ── Client Status Panel (slide-out shown when a topology node's "N clients"
+// text is clicked) -- demo client list, sliced from a fixed pool to match
+// whichever node's reported client count. ────────────────────────────────────
+const CLIENT_ICONS = {
+  desktop: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="12" rx="1.5" stroke="#c4cad2" stroke-width="1.6"/><path d="M9 20h6M12 16v4" stroke="#c4cad2" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  laptop: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="10" rx="1.2" stroke="#c4cad2" stroke-width="1.6"/><path d="M2 19h20" stroke="#c4cad2" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  phone: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="7" y="2.5" width="10" height="19" rx="2" stroke="#c4cad2" stroke-width="1.6"/><path d="M11 18h2" stroke="#c4cad2" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  tablet: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="5" y="2.5" width="14" height="19" rx="2" stroke="#c4cad2" stroke-width="1.6"/><path d="M11 18.2h2" stroke="#c4cad2" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  printer: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="6" y="3" width="12" height="6" stroke="#c4cad2" stroke-width="1.6"/><rect x="4" y="9" width="16" height="8" rx="1" stroke="#c4cad2" stroke-width="1.6"/><rect x="7" y="14" width="10" height="6" stroke="#c4cad2" stroke-width="1.6"/></svg>',
+  speaker: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="6" y="2.5" width="12" height="19" rx="2" stroke="#c4cad2" stroke-width="1.6"/><circle cx="12" cy="9" r="3" stroke="#c4cad2" stroke-width="1.6"/><circle cx="12" cy="17" r="1.4" stroke="#c4cad2" stroke-width="1.6"/></svg>',
+  tv: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="2.5" y="4" width="19" height="13" rx="1.5" stroke="#c4cad2" stroke-width="1.6"/><path d="M8.5 21h7" stroke="#c4cad2" stroke-width="1.6" stroke-linecap="round"/></svg>',
+  console: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M6 8h12l2 9a2.5 2.5 0 0 1-4.5 1.6L14 17h-4l-1.5 1.6A2.5 2.5 0 0 1 4 17l2-9Z" stroke="#c4cad2" stroke-width="1.6" stroke-linejoin="round"/><path d="M8.5 11v3M7 12.5h3" stroke="#c4cad2" stroke-width="1.4" stroke-linecap="round"/><circle cx="17" cy="11.5" r="0.9" fill="#c4cad2"/><circle cx="15" cy="13.5" r="0.9" fill="#c4cad2"/></svg>',
+};
+const CLIENT_DEMO_POOL = [
+  { name: 'ASUS-PC', wired: true, icon: 'desktop' },
+  { name: 'Xbox-Series-X', wired: true, icon: 'console' },
+  { name: 'ASUS_Phone', wired: false, band: '5 G-1', icon: 'phone' },
+  { name: 'iPad-Air', wired: false, band: '5 G-1', icon: 'tablet' },
+  { name: 'HP-GT5820', wired: false, band: '2.4 G', icon: 'printer' },
+  { name: 'SoundTouch-300', wired: false, band: '2.4 G', icon: 'speaker' },
+  { name: 'Google-Nest-Mini', wired: false, band: '5 G-1', icon: 'speaker' },
+  { name: 'Samsung-TV', wired: false, band: '5 G-2', icon: 'tv' },
+  { name: 'MacBook-Pro', wired: false, band: '5 G-2', icon: 'laptop' },
+  { name: 'Smart-TV', wired: false, band: '2.4 G', icon: 'tv' },
+];
+let clientStatusTab = 'online';
+let clientStatusClients = [];
+
+function clientMacFor(i) {
+  const hex = n => n.toString(16).padStart(2, '0').toUpperCase();
+  return `AC:9E:17:${hex(0x30 + i)}:${hex(0x50 + i)}:${hex(0x70 + i)}`;
+}
+
+function openClientStatusPanel(nodeName, nodeIp, count) {
+  const n = Math.max(0, count || 0);
+  const ipParts = (nodeIp || '192.168.1.1').split('.');
+  clientStatusClients = CLIENT_DEMO_POOL.slice(0, n).map((c, i) => {
+    ipParts[3] = String(101 + i);
+    return { ...c, ip: ipParts.join('.'), mac: clientMacFor(i) };
+  });
+  clientStatusTab = 'online';
+  document.getElementById('client-status-overlay').classList.add('show');
+  document.getElementById('client-status-panel').classList.add('show');
+  renderClientStatusTabs();
+  renderClientStatusList();
+}
+function closeClientStatusPanel() {
+  document.getElementById('client-status-overlay').classList.remove('show');
+  document.getElementById('client-status-panel').classList.remove('show');
+}
+function setClientStatusTab(tab) {
+  clientStatusTab = tab;
+  renderClientStatusTabs();
+  renderClientStatusList();
+}
+function renderClientStatusTabs() {
+  const wired = clientStatusClients.filter(c => c.wired).length;
+  const wireless = clientStatusClients.filter(c => !c.wired).length;
+  document.getElementById('cs-tabs').innerHTML = `
+    <div class="cs-tab ${clientStatusTab === 'online' ? 'active' : ''}" onclick="setClientStatusTab('online')">Online</div>
+    <div class="cs-tab ${clientStatusTab === 'wired' ? 'active' : ''}" onclick="setClientStatusTab('wired')">Wired (${wired})</div>
+    <div class="cs-tab ${clientStatusTab === 'wireless' ? 'active' : ''}" onclick="setClientStatusTab('wireless')">Wireless (${wireless})</div>`;
+}
+function renderClientStatusList() {
+  const list = clientStatusTab === 'wired' ? clientStatusClients.filter(c => c.wired)
+    : clientStatusTab === 'wireless' ? clientStatusClients.filter(c => !c.wired)
+    : clientStatusClients;
+  const listEl = document.getElementById('cs-list');
+  if (!list.length) {
+    listEl.innerHTML = '<div class="cs-empty">No clients</div>';
+    return;
+  }
+  listEl.innerHTML = list.map(c => `
+    <div class="cs-item">
+      <div class="cs-item-icon">${CLIENT_ICONS[c.icon] || CLIENT_ICONS.desktop}</div>
+      <div class="cs-item-info">
+        <div class="cs-item-name">${c.name}</div>
+        <div class="cs-item-divider"></div>
+        <div class="cs-item-ip">${c.ip}</div>
+        <div class="cs-item-mac">${c.mac}</div>
+      </div>
+      <div class="cs-item-right">
+        ${c.wired
+          ? '<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="#7fd8f2" stroke-width="1.6"/><path d="M9 4v4M15 4v4M9 16v4M15 16v4" stroke="#7fd8f2" stroke-width="1.6"/></svg>'
+          : `<svg width="20" height="16" viewBox="0 0 20 16" fill="none"><rect x="0" y="10" width="3" height="6" fill="#7fd8f2"/><rect x="5.5" y="7" width="3" height="9" fill="#7fd8f2"/><rect x="11" y="4" width="3" height="12" fill="#7fd8f2"/><rect x="16.5" y="0" width="3" height="16" fill="#7fd8f2"/></svg><div class="cs-item-badge">${c.band}</div>`}
+      </div>
+    </div>`).join('');
 }
 
 // ── Site Detail Panel (slide-out shown when a Site List row is clicked) ────────
