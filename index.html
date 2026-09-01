@@ -1188,10 +1188,11 @@ body {
 .cs-item-ip { font-size: 12.5px; color: #666; }
 .cs-item-mac { font-size: 12.5px; color: #666; text-decoration: underline; text-decoration-color: #ccc; }
 .cs-item-right { flex-shrink: 0; text-align: center; }
-.cs-item-badge {
-  display: inline-block; margin-top: 4px; font-size: 10px; font-weight: 700;
-  color: #1565C0; background: #E8F0FE; border-radius: 3px; padding: 1px 5px;
+.cs-signal-badge {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 3px;
+  background: #E8F0FE; border-radius: 6px; padding: 6px 10px;
 }
+.cs-signal-band { font-size: 10px; font-weight: 700; color: #1565C0; }
 .cs-empty { text-align: center; color: #8a8f98; font-size: 13px; padding: 32px 0; }
 .cs-footer { padding: 14px 16px; background: #fff; border-top: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; }
 .cs-refresh-btn {
@@ -5704,11 +5705,11 @@ const CLIENT_DEMO_POOL = [
   { name: 'ASUS_Phone', wired: false, band: '5 G-1', icon: 'phone' },
   { name: 'iPad-Air', wired: false, band: '5 G-1', icon: 'tablet' },
   { name: 'HP-GT5820', wired: false, band: '2.4 G', icon: 'printer' },
-  { name: 'SoundTouch-300', wired: false, band: '2.4 G', icon: 'speaker' },
+  { name: 'SoundTouch-300', wired: false, band: '2.4 G', icon: 'speaker', bars: 2 },
   { name: 'Google-Nest-Mini', wired: false, band: '5 G-1', icon: 'speaker' },
   { name: 'Samsung-TV', wired: false, band: '5 G-2', icon: 'tv' },
   { name: 'MacBook-Pro', wired: false, band: '5 G-2', icon: 'laptop' },
-  { name: 'Smart-TV', wired: false, band: '2.4 G', icon: 'tv' },
+  { name: 'Smart-TV', wired: false, band: '2.4 G', icon: 'tv', bars: 2 },
 ];
 let clientStatusTab = 'online';
 let clientStatusClients = [];
@@ -5716,6 +5717,22 @@ let clientStatusClients = [];
 function clientMacFor(i) {
   const hex = n => n.toString(16).padStart(2, '0').toUpperCase();
   return `AC:9E:17:${hex(0x30 + i)}:${hex(0x50 + i)}:${hex(0x70 + i)}`;
+}
+
+// Signal bars + band badge stacked together in one light-blue pill --
+// strongBars (default 4) of the 4 bars are colored blue, the rest gray, so a
+// weak-signal client (bars: 2 in CLIENT_DEMO_POOL) reads as 2 blue + 2 gray.
+function wirelessSignalHtml(strongBars, band) {
+  const heights = [6, 9, 12, 16];
+  const xs = [0, 5.5, 11, 16.5];
+  const ys = [10, 7, 4, 0];
+  const bars = heights.map((h, i) =>
+    `<rect x="${xs[i]}" y="${ys[i]}" width="3" height="${h}" fill="${i < strongBars ? '#1565C0' : '#c3d3ec'}"/>`
+  ).join('');
+  return `<div class="cs-signal-badge">
+    <svg width="20" height="16" viewBox="0 0 20 16" fill="none">${bars}</svg>
+    <div class="cs-signal-band">${band}</div>
+  </div>`;
 }
 
 function openClientStatusPanel(nodeName, nodeIp, count) {
@@ -5769,7 +5786,7 @@ function renderClientStatusList() {
       <div class="cs-item-right">
         ${c.wired
           ? '<svg width="20" height="20" viewBox="0 0 27.12 27.12" fill="#1565C0"><path d="M23.71,0H3.4C1.53,0,0,1.53,0,3.4v20.31c0,1.88,1.53,3.4,3.4,3.4h20.31c1.88,0,3.4-1.53,3.4-3.4V3.4c0-1.88-1.53-3.4-3.4-3.4ZM25.62,23.71c0,1.05-.85,1.9-1.9,1.9H3.4c-1.05,0-1.9-.85-1.9-1.9V3.4c0-1.05.85-1.9,1.9-1.9h20.31c1.05,0,1.9.85,1.9,1.9v20.31Z"/><path d="M22.29,8.26h-3.62v-2.28c0-.41-.34-.75-.75-.75h-8.73c-.41,0-.75.34-.75.75v2.28h-3.62c-.41,0-.75.34-.75.75v12.12c0,.41.34.75.75.75h17.47c.41,0,.75-.34.75-.75v-12.12c0-.41-.34-.75-.75-.75ZM21.54,20.38h-3.11v-5.22c0-.41-.34-.75-.75-.75s-.75.34-.75.75v5.22h-2.24v-5.22c0-.41-.34-.75-.75-.75s-.75.34-.75.75v5.22h-2.24v-5.22c0-.41-.34-.75-.75-.75s-.75.34-.75.75v5.22h-3.88v-10.62h3.62c.41,0,.75-.34.75-.75v-2.28h7.23v2.28c0,.41.34.75.75.75h3.62v10.62Z"/></svg>'
-          : `<svg width="20" height="16" viewBox="0 0 20 16" fill="none"><rect x="0" y="10" width="3" height="6" fill="#1565C0"/><rect x="5.5" y="7" width="3" height="9" fill="#1565C0"/><rect x="11" y="4" width="3" height="12" fill="#1565C0"/><rect x="16.5" y="0" width="3" height="16" fill="#1565C0"/></svg><div class="cs-item-badge">${c.band}</div>`}
+          : wirelessSignalHtml(c.bars || 4, c.band)}
       </div>
     </div>`).join('');
 }
