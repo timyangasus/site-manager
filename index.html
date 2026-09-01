@@ -1435,12 +1435,6 @@ body {
 .login-logo { height: 28px; object-fit: contain; margin-bottom: 48px; }
 .login-earth { width: 240px; object-fit: contain; }
 .login-version { position: absolute; bottom: 24px; right: 32px; font-size: 12px; color: #999; }
-.login-footer { align-self: stretch; margin-top: 32px; font-size: 11px; color: #aaa; }
-/* The sign-up view already has its own equivalent legal fine print further down, so hide the
-   generic fixed-position footer here to avoid it overlapping form fields when scrolled. */
-#view-pincode-signup.active ~ .login-footer { display: none; }
-#view-signin-asus.active ~ .login-footer { display: none; }
-#view-signin-classic.active ~ .login-footer { display: none; }
 
 /* Supplementary marketing copy over the banner photo's empty lower area --
    the photo itself already carries the headline/product copy, this just
@@ -2228,8 +2222,6 @@ body {
 
       <button class="pin-code-signup-submit" onclick="finishPinCodeSignup()">加入帳號</button>
     </div>
-
-    <div class="login-footer">By continuing, you agree to ASUS's Terms of Use and acknowledge you've read our Privacy Policy.</div>
   </div>
 
   <div class="login-right">
