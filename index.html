@@ -1159,6 +1159,13 @@ body {
   color: #8a8f98; border-radius: 4px; transition: background 0.1s;
 }
 .cs-close:hover { background: rgba(0,0,0,0.06); }
+.cs-back {
+  position: absolute; left: 14px; top: 14px; width: 30px; height: 30px;
+  border: none; background: transparent; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: 4px; transition: background 0.1s;
+}
+.cs-back:hover { background: rgba(0,0,0,0.06); }
 .cs-tabs { display: flex; background: #fff; border-bottom: 1px solid rgba(0,0,0,0.08); flex-shrink: 0; }
 .cs-tab {
   flex: 1; text-align: center; padding: 12px 4px; font-size: 12.5px; font-weight: 700;
@@ -1176,8 +1183,9 @@ body {
 .cs-item {
   display: flex; align-items: center; gap: 14px; padding: 14px 12px;
   border: 1px solid #e5e5e5; border-radius: 8px; margin-bottom: 10px;
-  background: #fff;
+  background: #fff; cursor: pointer; transition: border-color 0.12s;
 }
+.cs-item:hover { border-color: #90b4e8; }
 .cs-item-icon {
   width: 46px; height: 46px; border-radius: 6px; background: #f2f2f2;
   display: flex; align-items: center; justify-content: center; flex-shrink: 0;
@@ -1201,6 +1209,54 @@ body {
   cursor: pointer; font-family: inherit; transition: background 0.12s;
 }
 .cs-refresh-btn:hover { background: #1251a3; }
+
+/* Client detail drill-down -- replaces the list/tabs/search inside the same
+   panel (see openClientDetail()/closeClientDetail()), no second overlay. */
+.cs-detail { flex: 1; overflow-y: auto; padding: 20px 24px; background: #fff; }
+.cd-top-row { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+.cd-tags { display: flex; gap: 8px; }
+.cd-tag { background: #1565C0; color: #fff; font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 6px; }
+.cd-topicon-btn {
+  width: 32px; height: 32px; border: 1.5px solid #1565C0; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center; background: #fff; flex-shrink: 0;
+}
+.cd-body { display: flex; gap: 20px; margin-bottom: 8px; }
+.cd-icon-col { flex-shrink: 0; width: 92px; text-align: center; }
+.cd-icon-box {
+  width: 92px; height: 92px; border-radius: 10px; background: #f2f2f2;
+  display: flex; align-items: center; justify-content: center; margin-bottom: 8px;
+}
+.cd-icon-box svg { width: 44px; height: 44px; }
+.cd-icon-links { font-size: 12px; }
+.cd-icon-link { color: #1565C0; cursor: pointer; text-decoration: none; }
+.cd-icon-links-sep { color: #ccc; margin: 0 4px; }
+.cd-fields { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.cd-field-label { font-size: 12.5px; color: #666; margin-bottom: 5px; }
+.cd-field-value {
+  width: 100%; box-sizing: border-box; height: 36px; border-radius: 6px;
+  border: 1px solid #ddd; background: #fff; padding: 0 12px; font-size: 13px;
+  color: #1a1a1a; display: flex; align-items: center; overflow: hidden;
+  white-space: nowrap; text-overflow: ellipsis;
+}
+.cd-field-value.readonly { background: #f7f7f7; color: #555; }
+.cd-divider { border-top: 1px solid rgba(0,0,0,0.08); margin: 18px 0 4px; }
+.cd-toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 14px 0; border-bottom: 1px solid rgba(0,0,0,0.06); }
+.cd-toggle-row:last-child { border-bottom: none; }
+.cd-toggle-row-label { font-size: 14px; color: #1a1a1a; }
+.cs-detail-footer { display: flex; gap: 10px; }
+.cs-detail-footer button { flex: 1; }
+.cs-cancel-btn {
+  height: 38px; border-radius: 999px; border: 1.5px solid #1565C0; background: #fff;
+  color: #1565C0; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: background 0.12s;
+}
+.cs-cancel-btn:hover { background: #EEF3FB; }
+.cs-apply-btn {
+  height: 38px; border-radius: 999px; border: none; background: #1565C0;
+  color: #fff; font-size: 14px; font-weight: 700; cursor: pointer; font-family: inherit;
+  transition: background 0.12s;
+}
+.cs-apply-btn:hover { background: #1251a3; }
 
 /* Inline topology expand row */
 .site-table tbody tr.topo-expand-row td {
@@ -4019,15 +4075,19 @@ body {
     <div class="client-status-overlay" id="client-status-overlay" onclick="closeClientStatusPanel()"></div>
     <div class="client-status-panel" id="client-status-panel">
       <div class="cs-header">
+        <button class="cs-back" id="cs-back-btn" style="display:none;" onclick="closeClientDetail()">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#1a1a1a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
         <div class="cs-header-title">Client status</div>
         <button class="cs-close" onclick="closeClientStatusPanel()">✕</button>
       </div>
       <div class="cs-tabs" id="cs-tabs"></div>
-      <div class="cs-search-wrap">
+      <div class="cs-search-wrap" id="cs-search-wrap">
         <input class="cs-search" type="text" placeholder="Search">
       </div>
       <div class="cs-list" id="cs-list"></div>
-      <div class="cs-footer">
+      <div class="cs-detail" id="cs-detail" style="display:none;"></div>
+      <div class="cs-footer" id="cs-footer">
         <button class="cs-refresh-btn" onclick="renderClientStatusList()">Refresh</button>
       </div>
     </div>
@@ -5711,8 +5771,17 @@ const CLIENT_DEMO_POOL = [
   { name: 'MacBook-Pro', wired: false, band: '5 G-2', icon: 'laptop' },
   { name: 'Smart-TV', wired: false, band: '2.4 G', icon: 'tv', bars: 2 },
 ];
+// Fallback "Device" manufacturer text for the client detail view, keyed by icon
+// type -- demo-only, not real vendor lookup.
+const CLIENT_VENDORS = {
+  desktop: 'ASUSTek COMPUTER INC.', laptop: 'ASUSTek COMPUTER INC.',
+  phone: 'ASUSTek COMPUTER INC.', tablet: 'Apple, Inc.',
+  printer: 'HP Inc.', speaker: 'Bose Corporation',
+  tv: 'Samsung Electronics Co.,Ltd', console: 'Microsoft Corporation',
+};
 let clientStatusTab = 'online';
 let clientStatusClients = [];
+let clientDetailIndex = -1;
 
 function clientMacFor(i) {
   const hex = n => n.toString(16).padStart(2, '0').toUpperCase();
@@ -5740,11 +5809,12 @@ function openClientStatusPanel(nodeName, nodeIp, count) {
   const ipParts = (nodeIp || '192.168.1.1').split('.');
   clientStatusClients = CLIENT_DEMO_POOL.slice(0, n).map((c, i) => {
     ipParts[3] = String(101 + i);
-    return { ...c, ip: ipParts.join('.'), mac: clientMacFor(i) };
+    return { ...c, idx: i, ip: ipParts.join('.'), mac: clientMacFor(i), vendor: c.vendor || CLIENT_VENDORS[c.icon] || 'Unknown' };
   });
   clientStatusTab = 'online';
   document.getElementById('client-status-overlay').classList.add('show');
   document.getElementById('client-status-panel').classList.add('show');
+  closeClientDetail();
   renderClientStatusTabs();
   renderClientStatusList();
 }
@@ -5775,7 +5845,7 @@ function renderClientStatusList() {
     return;
   }
   listEl.innerHTML = list.map(c => `
-    <div class="cs-item">
+    <div class="cs-item" onclick="openClientDetail(${c.idx})">
       <div class="cs-item-icon">${CLIENT_ICONS[c.icon] || CLIENT_ICONS.desktop}</div>
       <div class="cs-item-info">
         <div class="cs-item-name">${c.name}</div>
@@ -5789,6 +5859,95 @@ function renderClientStatusList() {
           : wirelessSignalHtml(c.bars || 4, c.band)}
       </div>
     </div>`).join('');
+}
+
+// Client detail drill-down: swaps the SAME panel's content (list/tabs/search
+// hidden, detail form shown) rather than opening a second overlay -- see
+// discussion on avoiding a popup-on-top-of-slide-out stack.
+function openClientDetail(idx) {
+  clientDetailIndex = idx;
+  document.getElementById('cs-tabs').style.display = 'none';
+  document.getElementById('cs-search-wrap').style.display = 'none';
+  document.getElementById('cs-list').style.display = 'none';
+  document.getElementById('cs-detail').style.display = 'block';
+  document.getElementById('cs-back-btn').style.display = '';
+  document.querySelector('.cs-header-title').style.marginLeft = '30px';
+  renderClientDetail();
+  renderClientDetailFooter();
+}
+function closeClientDetail() {
+  clientDetailIndex = -1;
+  document.getElementById('cs-tabs').style.display = '';
+  document.getElementById('cs-search-wrap').style.display = '';
+  document.getElementById('cs-list').style.display = '';
+  document.getElementById('cs-detail').style.display = 'none';
+  document.getElementById('cs-back-btn').style.display = 'none';
+  document.querySelector('.cs-header-title').style.marginLeft = '';
+  renderClientStatusFooter();
+}
+function renderClientStatusFooter() {
+  document.getElementById('cs-footer').innerHTML =
+    '<button class="cs-refresh-btn" onclick="renderClientStatusList()">Refresh</button>';
+}
+function renderClientDetailFooter() {
+  document.getElementById('cs-footer').innerHTML = `
+    <div class="cs-detail-footer">
+      <button class="cs-cancel-btn" onclick="closeClientDetail()">Cancel</button>
+      <button class="cs-apply-btn" onclick="applyClientDetail()">Apply</button>
+    </div>`;
+}
+function applyClientDetail() {
+  closeClientDetail();
+  showToast('Client settings updated.');
+}
+function renderClientDetail() {
+  const c = clientStatusClients[clientDetailIndex];
+  if (!c) return;
+  document.getElementById('cs-detail').innerHTML = `
+    <div class="cd-top-row">
+      <div class="cd-tags">
+        <span class="cd-tag">DHCP</span>
+        <span class="cd-tag">Logged-in User</span>
+      </div>
+      <div class="cd-topicon-btn">${CLIENT_ICONS[c.icon] || CLIENT_ICONS.desktop}</div>
+    </div>
+    <div class="cd-body">
+      <div class="cd-icon-col">
+        <div class="cd-icon-box">${CLIENT_ICONS[c.icon] || CLIENT_ICONS.desktop}</div>
+        <div class="cd-icon-links"><a class="cd-icon-link" href="#" onclick="return false;">Default</a><span class="cd-icon-links-sep">|</span><a class="cd-icon-link" href="#" onclick="return false;">Change</a></div>
+      </div>
+      <div class="cd-fields">
+        <div>
+          <div class="cd-field-label">Name</div>
+          <div class="cd-field-value">${c.name}</div>
+        </div>
+        <div>
+          <div class="cd-field-label">IP</div>
+          <div class="cd-field-value">${c.ip}</div>
+        </div>
+        <div>
+          <div class="cd-field-label">MAC</div>
+          <div class="cd-field-value readonly">${c.mac}</div>
+        </div>
+        <div>
+          <div class="cd-field-label">Device</div>
+          <div class="cd-field-value readonly">${c.vendor}</div>
+        </div>
+      </div>
+    </div>
+    <div class="cd-divider"></div>
+    <div class="cd-toggle-row">
+      <div class="cd-toggle-row-label">Block Internet Access</div>
+      <div class="pf-card-toggle off" onclick="this.classList.toggle('off')"></div>
+    </div>
+    <div class="cd-toggle-row">
+      <div class="cd-toggle-row-label">Time Scheduling</div>
+      <div class="pf-card-toggle off" onclick="this.classList.toggle('off')"></div>
+    </div>
+    <div class="cd-toggle-row">
+      <div class="cd-toggle-row-label">MAC and IP Address Binding</div>
+      <div class="pf-card-toggle off" onclick="this.classList.toggle('off')"></div>
+    </div>`;
 }
 
 // ── Site Detail Panel (slide-out shown when a Site List row is clicked) ────────
