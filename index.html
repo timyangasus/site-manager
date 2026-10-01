@@ -1649,7 +1649,6 @@ body {
   line-height: 1.6; margin-bottom: 8px; cursor: pointer;
 }
 .pin-code-signup-check input { margin-top: 3px; flex-shrink: 0; }
-.pin-code-signup-check-main { font-size: 13.5px; color: #1a1a1a; font-weight: 500; margin: 4px 0 12px; padding-top: 10px; border-top: 1px solid #eee; }
 .pin-code-signup-check a { color: #1565C0; text-decoration: underline; }
 .pin-code-signup-fineprint { font-size: 11.5px; color: #999; line-height: 1.7; margin: 16px 0 4px; padding-top: 12px; border-top: 1px solid #eee; }
 .pin-code-signup-submit {
@@ -1658,6 +1657,8 @@ body {
   padding: 13px; font-size: 15px; font-weight: 600; font-family: inherit; cursor: pointer;
 }
 .pin-code-signup-submit:hover { background: #0D47A1; }
+.pin-code-signup-submit:disabled { background: #ccc; cursor: not-allowed; }
+.pin-code-signup-submit:disabled:hover { background: #ccc; }
 .signin-title { font-size: 22px; font-weight: 700; color: #1a1a1a; margin-bottom: 28px; text-align: center; }
 .signin-subtitle { font-size: 14px; color: #666; text-align: center; margin-top: -20px; margin-bottom: 32px; }
 .signin-method-list { display: flex; justify-content: space-between; gap: 6px; }
@@ -2342,15 +2343,12 @@ body {
         </select>
       </div>
 
-      <label class="pin-code-signup-check pin-code-signup-check-main"><input type="checkbox" checked> 我同意全部選項和隱私權政策</label>
-      <label class="pin-code-signup-check"><input type="checkbox" checked> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩「<a href="#" onclick="return false;">隱私權政策</a>」</label>
-      <label class="pin-code-signup-check"><input type="checkbox" checked> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩雲端「<a href="#" onclick="return false;">隱私權政策</a>」</label>
-      <label class="pin-code-signup-check"><input type="checkbox" checked> 我願意收到華碩相關新聞、產品及服務更新之訊息或行銷廣告。</label>
-      <label class="pin-code-signup-check"><input type="checkbox" checked> 我願意收到華碩雲端的相關新聞、產品及服務更新之訊息或行銷廣告。</label>
+      <label class="pin-code-signup-check" style="border-top:1px solid #eee;padding-top:14px;"><input type="checkbox" id="pin-code-signup-cb1" onchange="pinCodeSignupCheckRequired()"> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩「<a href="#" onclick="return false;">隱私權政策</a>」</label>
+      <label class="pin-code-signup-check"><input type="checkbox" id="pin-code-signup-cb2" onchange="pinCodeSignupCheckRequired()"> <span class="pin-code-signup-required">*</span> 我已閱讀並同意華碩雲端「<a href="#" onclick="return false;">隱私權政策</a>」</label>
 
       <div class="pin-code-signup-fineprint">*請放心，收集的信息將只用於註冊和管理您的帳號。<br>在您成功註冊為會員後，我們還將協助您註冊成為ASUS Cloud會員（ASUS Cloud由ASUS Cloud公司所有），帳號和密碼不變。</div>
 
-      <button class="pin-code-signup-submit" onclick="finishPinCodeSignup()">加入帳號</button>
+      <button class="pin-code-signup-submit" id="pin-code-signup-submit-btn" onclick="finishPinCodeSignup()" disabled>加入帳號</button>
     </div>
   </div>
 
@@ -4674,6 +4672,14 @@ function startPinCodeSignupFlow() {
     document.getElementById(id).classList.remove('active'));
   document.getElementById('view-pincode-signup').classList.add('active');
   markCurrentPage('pincode:signup');
+  pinCodeSignupCheckRequired();
+}
+
+// 兩個必填同意事項都勾選後才能按「加入帳號」。
+function pinCodeSignupCheckRequired() {
+  const ok = document.getElementById('pin-code-signup-cb1').checked
+    && document.getElementById('pin-code-signup-cb2').checked;
+  document.getElementById('pin-code-signup-submit-btn').disabled = !ok;
 }
 
 function finishPinCodeSignup() {
@@ -6220,6 +6226,7 @@ function goSignup() {
   document.getElementById('view-signin-classic').classList.remove('active');
   document.getElementById('view-pincode-signup').classList.add('active');
   markCurrentPage('pincode:signup');
+  pinCodeSignupCheckRequired();
 }
 
 function openCantSignInPopup() {
