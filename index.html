@@ -1595,42 +1595,6 @@ body {
 .pin-code-signup-view.active { display: block; animation: pin-code-window-open 0.32s ease-out; }
 .pin-code-signup-view { max-width: 680px; margin: 24px 0; }
 .pin-code-signup-title { font-size: 28px; font-weight: 700; color: #1a1a1a; margin-bottom: 16px; text-align: center; }
-.pin-code-signup-subtitle { font-size: 13px; color: #444; text-align: center; line-height: 1.7; margin-bottom: 4px; }
-.pin-code-signup-subtitle a { color: #1565C0; text-decoration: underline; }
-.pin-code-signup-warn { color: #D93025; margin-bottom: 16px; }
-.pin-code-signup-notice {
-  background: #f2f2f2; border-radius: 4px; padding: 14px 18px; margin: 16px 0 24px;
-  font-size: 12.5px; color: #555; line-height: 1.7; text-align: center;
-}
-.pin-code-signup-social-row { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; }
-.pin-code-signup-social-btn {
-  flex: 1 1 140px; display: flex; align-items: center; justify-content: space-between; gap: 8px;
-  border: 1.5px solid #1565C0; border-radius: 8px; background: #fff; color: #1565C0;
-  padding: 10px 14px; font-size: 13px; font-family: inherit; cursor: pointer;
-}
-.pin-code-signup-social-btn:hover { background: #F5F9FF; }
-.pin-code-signup-social-icon {
-  width: 22px; height: 22px; border-radius: 5px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 13px; font-weight: 700; color: #fff; background: #333;
-}
-.pin-code-signup-social-apple { background: #000; font-size: 15px; }
-.pin-code-signup-social-fb { background: #1877F2; }
-.pin-code-signup-social-google { background: #EA4335; }
-.pin-code-signup-social-line { background: #06C755; }
-.pin-code-signup-social-ms {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 2px; background: transparent; padding: 3px;
-}
-.pin-code-signup-social-ms i { display: block; width: 100%; height: 100%; }
-.pin-code-signup-social-ms i:nth-child(1) { background: #F35325; }
-.pin-code-signup-social-ms i:nth-child(2) { background: #81BC06; }
-.pin-code-signup-social-ms i:nth-child(3) { background: #05A6F0; }
-.pin-code-signup-social-ms i:nth-child(4) { background: #FFBA08; }
-.pin-code-signup-divider {
-  display: flex; align-items: center; text-align: center; color: #888; font-size: 13px;
-  margin: 8px 0 20px; gap: 14px;
-}
-.pin-code-signup-divider::before, .pin-code-signup-divider::after { content: ''; flex: 1; height: 1px; background: #ddd; }
 .pin-code-signup-required { color: #D93025; }
 .pin-code-signup-hint { font-size: 11.5px; color: #999; margin-top: 6px; line-height: 1.6; }
 .pin-code-signup-hint a { color: #1565C0; text-decoration: none; }
@@ -2288,20 +2252,6 @@ body {
     <!-- Pin Code binding: not-logged-in -> sign up (mock form; account.asus.com blocks iframe embedding) -->
     <div class="signin-view pin-code-signup-view" id="view-pincode-signup">
       <div class="pin-code-signup-title">馬上加入</div>
-      <div class="pin-code-signup-subtitle">請注意，ASUS帳號與ROG帳號相同。若您有其中一個帳號，可以直接<a href="#" onclick="return false;">登入</a>，無需註冊新帳號。</div>
-      <div class="pin-code-signup-subtitle pin-code-signup-warn">*若申請教育商店會員，需用學校郵件申請</div>
-
-      <div class="pin-code-signup-notice">*提醒：當您選擇使用Apple ID或Facebook帳號進行做會員註冊時，若選擇「隱藏我的電子郵件」選項，可能會導致錯過無法正常接收重要更新通知及會員帳戶概況。</div>
-
-      <div class="pin-code-signup-social-row">
-        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-apple">&#63743;</span></button>
-        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-fb">f</span></button>
-        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-google">G</span></button>
-        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-line">L</span></button>
-        <button class="pin-code-signup-social-btn">Sign up with <span class="pin-code-signup-social-icon pin-code-signup-social-ms"><i></i><i></i><i></i><i></i></span></button>
-      </div>
-
-      <div class="pin-code-signup-divider"><span>或選擇其他方式登入</span></div>
 
       <div class="signin-field">
         <label class="signin-label"><span class="pin-code-signup-required">*</span> 帳號</label>
