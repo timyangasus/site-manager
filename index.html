@@ -3933,8 +3933,8 @@ body {
 <!-- Floor Planner desktop app -- rich toast shown after a Local save, offering a shortcut into ASUS Site Manager -->
 <div class="fpapp-save-toast" id="fpapp-save-toast">
   <div class="fpapp-save-toast-title">Floor Planner 已儲存至本機</div>
-  <div class="fpapp-save-toast-desc">使用 ASUS Site Manager 雲端儲存，可隨時存取並同步管理您的專案。</div>
-  <button class="fpapp-save-toast-btn" onclick="fpAppToastGoSiteManager()">由 ASUS Site Manager 管理</button>
+  <div class="fpapp-save-toast-desc" id="fpapp-save-toast-desc">使用 ASUS Site Manager 雲端儲存，可隨時存取並同步管理您的專案。</div>
+  <button class="fpapp-save-toast-btn" id="fpapp-save-toast-btn" onclick="fpAppToastGoSiteManager()">由 ASUS Site Manager 管理</button>
 </div>
 
 <!-- 4_011 -- toast after a cloud save -->
@@ -5016,6 +5016,12 @@ function fpAppConfirmLocalSave() {
 let fpAppSaveToastTimer = null;
 function showFpAppSaveToast() {
   const toast = document.getElementById('fpapp-save-toast');
+  // 4_011 only: signed out -> no Site Manager wording (signed in keeps the 4_010 text).
+  const plain = fpAppIsV2() && !fpApp2IsSignedIn();
+  document.getElementById('fpapp-save-toast-desc').textContent = plain
+    ? '使用雲端儲存，可隨時存取並同步管理您的專案。'
+    : '使用 ASUS Site Manager 雲端儲存，可隨時存取並同步管理您的專案。';
+  document.getElementById('fpapp-save-toast-btn').textContent = plain ? 'Cloud management' : '由 ASUS Site Manager 管理';
   toast.classList.add('show');
   if (fpAppSaveToastTimer) clearTimeout(fpAppSaveToastTimer);
   fpAppSaveToastTimer = setTimeout(() => toast.classList.remove('show'), 6500);
