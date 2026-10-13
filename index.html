@@ -2858,6 +2858,34 @@ body {
   </div>
 </div>
 
+<!-- 4_011 -- "已登入 ASUS VIP 帳號？" decision, asked FIRST after choosing Cloud management -->
+<div class="pin-flow-decision" id="fpapp2-signed-in-check">
+  <button class="pin-flow-decision-close" onclick="document.getElementById('fpapp2-signed-in-check').classList.remove('show')">&times;</button>
+  <span class="pin-flow-decision-tag">DEMO 流程判斷</span>
+  <div class="pin-flow-decision-title">是否已登入 ASUS VIP 帳號？</div>
+  <div class="pin-flow-decision-options">
+    <button class="pin-flow-decision-option" onclick="fpApp2ChooseSignedIn(true)">已登入</button>
+    <button class="pin-flow-decision-option" onclick="fpApp2ChooseSignedIn(false)">未登入</button>
+  </div>
+</div>
+
+<!-- 4_011 -- cloud "save screen" shown once signed in -->
+<div class="newsite-overlay" id="fpapp2-cloud-save-overlay">
+  <div class="newsite-dialog">
+    <button class="pin-binding-close" onclick="fpApp2CloseCloudSave()">&times;</button>
+    <div class="newsite-dialog-title">Save to Cloud</div>
+    <div class="newsite-dialog-body" style="margin-bottom:16px;">Your floor plan will be saved to your ASUS VIP account (asus1234@gmail.com).</div>
+    <div class="signin-field" style="margin-bottom:24px;">
+      <label class="signin-label">Project name</label>
+      <input class="signin-input" type="text" value="Home">
+    </div>
+    <div class="newsite-dialog-btns">
+      <button class="newsite-cancel" onclick="fpApp2CloseCloudSave()">Cancel</button>
+      <button class="newsite-confirm" onclick="fpApp2ConfirmCloudSave()">Save</button>
+    </div>
+  </div>
+</div>
+
 <!-- Floor Planner desktop app -- importing into Site Manager loading transition -->
 <div class="pin-binding-overlay" id="fpapp-loading-overlay">
   <div class="pin-binding-dialog">
@@ -3912,6 +3940,12 @@ body {
   <button class="fpapp-save-toast-btn" onclick="fpAppToastGoSiteManager()">由 ASUS Site Manager 管理</button>
 </div>
 
+<!-- 4_011 -- toast after a cloud save -->
+<div class="fpapp-save-toast" id="fpapp2-cloud-toast">
+  <div class="fpapp-save-toast-title">Floor Planner 已儲存至雲端</div>
+  <div class="fpapp-save-toast-desc" style="margin-bottom:0;">已透過 ASUS VIP 帳號同步，可隨時存取您的專案。</div>
+</div>
+
 <!-- Account Panel -->
 <div class="account-overlay" id="account-overlay" onclick="closeAccountPanel()"></div>
 <div class="account-panel" id="account-panel">
@@ -4645,6 +4679,14 @@ function pinCodeSignupCheckRequired() {
 }
 
 function finishPinCodeSignup() {
+  if (fpApp2SigninPending) {
+    document.getElementById('signup-complete-loading-overlay').classList.add('show');
+    setTimeout(() => {
+      document.getElementById('signup-complete-loading-overlay').classList.remove('show');
+      fpApp2CompleteSignin();
+    }, 1200);
+    return;
+  }
   if (pinCodeSigninPending) {
     // PIN_CODE_BINDING's 未綁定 path -- completing sign-up finishes the binding
     // directly (no PIN-expiry judgment, unlike the 已綁定 path). Reveal 2_020
@@ -4874,16 +4916,20 @@ function fpAppCloseSaveMenu() {
 document.addEventListener('click', function (e) {
   if (!e.target.closest('.fpapp-save-wrap')) fpAppCloseSaveMenu();
 });
+function fpAppIsV2() {
+  return document.getElementById('page-floorplannerapp').classList.contains('fpapp-v2');
+}
 function fpAppChooseSaveTarget(useSiteManager) {
   fpAppCloseSaveMenu();
+  const v2 = fpAppIsV2();
   recordDemoDecision(0, {
     label: '儲存方式',
-    options: [{ label: 'Local', value: false }, { label: '由 ASUS Site Manager 管理', value: true }],
+    options: [{ label: v2 ? 'Local management' : 'Local', value: false }, { label: v2 ? 'Cloud management' : '由 ASUS Site Manager 管理', value: true }],
     value: useSiteManager,
     resolve: fpAppChooseSaveTarget
   });
   if (useSiteManager) {
-    fpAppOpenSiteManagerIntro();
+    if (v2) fpApp2AskSignedIn(); else fpAppOpenSiteManagerIntro();
   } else {
     document.getElementById('fpapp-local-save-overlay').classList.add('show');
   }
@@ -4893,7 +4939,57 @@ function fpAppCloseSiteManagerIntro() {
 }
 function fpAppConfirmSiteManagerIntro() {
   fpAppCloseSiteManagerIntro();
-  fpAppStartSiteManagerLink();
+  if (fpAppIsV2()) fpApp2StartSignin(); else fpAppStartSiteManagerLink();
+}
+
+// ── 4_011: Cloud management = signed in? -> save screen -> toast; not signed
+// in -> intro popup -> sign-in page (no Site Manager) -> save screen -> toast ──
+let fpApp2SigninPending = false;
+let fpApp2ToastTimer = null;
+function fpApp2AskSignedIn() {
+  closeAllFlowPopups();
+  document.getElementById('fpapp2-signed-in-check').classList.add('show');
+}
+function fpApp2ChooseSignedIn(isSignedIn) {
+  document.getElementById('fpapp2-signed-in-check').classList.remove('show');
+  recordDemoDecision(1, {
+    label: 'VIP 帳號登入',
+    options: [{ label: '已登入', value: true }, { label: '未登入', value: false }],
+    value: isSignedIn,
+    resolve: fpApp2ChooseSignedIn
+  });
+  closeAllFlowPopups();
+  fpApp2CloseCloudSave();
+  fpAppCloseSiteManagerIntro();
+  if (isSignedIn) fpApp2OpenCloudSave(); else fpAppOpenSiteManagerIntro();
+}
+function fpApp2StartSignin() {
+  fpApp2SigninPending = true;
+  document.getElementById('page-floorplannerapp').classList.remove('show');
+  document.getElementById('page-login').classList.remove('hidden');
+  goSignin();
+}
+// Called by doSignin()/doThirdPartySignin()/finishPinCodeSignup() once sign-in
+// or sign-up succeeds while fpApp2SigninPending is set.
+function fpApp2CompleteSignin() {
+  fpApp2SigninPending = false;
+  document.getElementById('page-login').classList.add('hidden');
+  document.getElementById('page-floorplannerapp').classList.add('show');
+  markCurrentPage('floorplannerapp:v2');
+  fpApp2OpenCloudSave();
+}
+function fpApp2OpenCloudSave() {
+  document.getElementById('fpapp2-cloud-save-overlay').classList.add('show');
+}
+function fpApp2CloseCloudSave() {
+  document.getElementById('fpapp2-cloud-save-overlay').classList.remove('show');
+}
+function fpApp2ConfirmCloudSave() {
+  fpApp2CloseCloudSave();
+  const toast = document.getElementById('fpapp2-cloud-toast');
+  toast.classList.add('show');
+  if (fpApp2ToastTimer) clearTimeout(fpApp2ToastTimer);
+  fpApp2ToastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
 }
 function fpAppOpenSiteManagerIntro() {
   document.getElementById('fpapp-sitemanager-intro-overlay').classList.add('show');
@@ -4994,6 +5090,11 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
     if (fpAppSaveToastTimer) { clearTimeout(fpAppSaveToastTimer); fpAppSaveToastTimer = null; }
     document.getElementById('fpapp-save-toast').classList.remove('show');
     fpAppSigninPending = false;
+    fpApp2SigninPending = false;
+    document.getElementById('fpapp2-signed-in-check').classList.remove('show');
+    document.getElementById('fpapp2-cloud-save-overlay').classList.remove('show');
+    document.getElementById('fpapp2-cloud-toast').classList.remove('show');
+    if (fpApp2ToastTimer) { clearTimeout(fpApp2ToastTimer); fpApp2ToastTimer = null; }
   }
 );
 registerPage('4_010', 'Floor Planner Desktop App', 'floorplannerapp', null, 'floorplannerapp:main',
@@ -6836,6 +6937,10 @@ function doSignin() {
     fpAppCompleteLink();
     return;
   }
+  if (fpApp2SigninPending) {
+    fpApp2CompleteSignin();
+    return;
+  }
   if (pinCodeSigninPending) {
     pinCodeSigninPending = false;
     // No 3_020 welcome page here -- the decision panel appears directly over
@@ -6866,6 +6971,10 @@ function doThirdPartySignin(provider, addedDeviceToast) {
   document.getElementById('signup-complete-loading-overlay').classList.add('show');
   setTimeout(() => {
     document.getElementById('signup-complete-loading-overlay').classList.remove('show');
+    if (fpApp2SigninPending) {
+      fpApp2CompleteSignin();
+      return;
+    }
     document.getElementById('page-login').classList.add('hidden');
     if (routerResetSigninPending) {
       routerResetSigninPending = false;
