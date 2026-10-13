@@ -3978,6 +3978,11 @@ body {
   <div class="fpapp-save-toast-desc" style="margin-bottom:0;">已透過 ASUS VIP 帳號同步，可隨時存取您的專案。</div>
 </div>
 
+<!-- 4_011 -- toast after a Local save while signed in -->
+<div class="fpapp-save-toast" id="fpapp2-local-toast">
+  <div class="fpapp-save-toast-title" style="margin-bottom:0;">Floor Planner 已儲存至本機</div>
+</div>
+
 <!-- Account Panel -->
 <div class="account-overlay" id="account-overlay" onclick="closeAccountPanel()"></div>
 <div class="account-panel" id="account-panel">
@@ -5051,12 +5056,16 @@ function fpApp2OpenCloudSave() {
 function fpApp2CloseCloudSave() {
   document.getElementById('fpapp2-cloud-save-overlay').classList.remove('show');
 }
-function fpApp2ConfirmCloudSave() {
-  fpApp2CloseCloudSave();
-  const toast = document.getElementById('fpapp2-cloud-toast');
+function fpApp2ShowToast(id) {
+  ['fpapp2-cloud-toast', 'fpapp2-local-toast'].forEach(t => document.getElementById(t).classList.remove('show'));
+  const toast = document.getElementById(id);
   toast.classList.add('show');
   if (fpApp2ToastTimer) clearTimeout(fpApp2ToastTimer);
   fpApp2ToastTimer = setTimeout(() => toast.classList.remove('show'), 4000);
+}
+function fpApp2ConfirmCloudSave() {
+  fpApp2CloseCloudSave();
+  fpApp2ShowToast('fpapp2-cloud-toast');
 }
 function fpAppOpenSiteManagerIntro() {
   document.getElementById('fpapp-sitemanager-intro-overlay').classList.add('show');
@@ -5066,8 +5075,8 @@ function fpAppCloseLocalSave() {
 }
 function fpAppConfirmLocalSave() {
   fpAppCloseLocalSave();
-  // 4_011: already signed in -> no cloud-management prompt after a Local save.
-  if (fpAppIsV2() && fpApp2IsSignedIn()) return;
+  // 4_011: already signed in -> just a plain "saved" toast, no cloud-management prompt.
+  if (fpAppIsV2() && fpApp2IsSignedIn()) { fpApp2ShowToast('fpapp2-local-toast'); return; }
   showFpAppSaveToast();
 }
 let fpAppSaveToastTimer = null;
@@ -5171,6 +5180,7 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
     document.getElementById('fpapp-account-menu').classList.remove('show');
     document.getElementById('fpapp2-cloud-save-overlay').classList.remove('show');
     document.getElementById('fpapp2-cloud-toast').classList.remove('show');
+    document.getElementById('fpapp2-local-toast').classList.remove('show');
     if (fpApp2ToastTimer) { clearTimeout(fpApp2ToastTimer); fpApp2ToastTimer = null; }
   }
 );
