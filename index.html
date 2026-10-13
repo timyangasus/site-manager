@@ -533,6 +533,13 @@ body {
   display: flex; align-items: center; justify-content: center; cursor: pointer;
 }
 .fpapp-home-btn:hover { background: #333; }
+/* 4_011 variant of the 4_010 desktop app: English save-menu labels + a Sign in
+   button at the header's right. Hidden in 4_010 so that page stays unchanged. */
+.fpapp-signin-btn { display: none; }
+.fpapp-lbl-v2 { display: none; }
+#page-floorplannerapp.fpapp-v2 .fpapp-signin-btn { display: flex; }
+#page-floorplannerapp.fpapp-v2 .fpapp-lbl-v1 { display: none; }
+#page-floorplannerapp.fpapp-v2 .fpapp-lbl-v2 { display: inline; }
 .fpapp-canvas-wrap { position: relative; flex: 1; background: #f4f5f7; overflow: auto; padding-bottom: 160px; box-sizing: border-box; }
 
 /* mock native "Save As" file dialog for the Local save path */
@@ -2601,6 +2608,7 @@ body {
       <button class="fpapp-home-btn" onclick="return false;" title="Home">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 10.5L12 4l8 6.5V20a1 1 0 01-1 1h-4.5a.5.5 0 01-.5-.5V15h-4v5.5a.5.5 0 01-.5.5H5a1 1 0 01-1-1V10.5z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
       </button>
+      <button class="header-action-btn fpapp-signin-btn" onclick="return false;" style="height:30px;font-size:12.5px;padding:0 18px;">Sign in</button>
     </div>
 
     <div class="fp-detail-topbar">
@@ -2622,11 +2630,11 @@ body {
           <div class="fpapp-save-dropdown" id="fpapp-save-dropdown">
             <div class="fpapp-save-dropdown-item" onclick="fpAppChooseSaveTarget(false)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" stroke="#555" stroke-width="1.6"/></svg>
-              Local
+              <span class="fpapp-lbl-v1">Local</span><span class="fpapp-lbl-v2">Local management</span>
             </div>
             <div class="fpapp-save-dropdown-item" onclick="fpAppChooseSaveTarget(true)">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M6 18a4 4 0 01-1-7.9 5 5 0 019.6-2A4.5 4.5 0 0119 15.5a4 4 0 01-4 3.5H6z" stroke="#555" stroke-width="1.6" stroke-linejoin="round"/></svg>
-              由 ASUS Site Manager 管理
+              <span class="fpapp-lbl-v1">由 ASUS Site Manager 管理</span><span class="fpapp-lbl-v2">Cloud management</span>
             </div>
           </div>
         </div>
@@ -4308,6 +4316,7 @@ function resetCurrentDemoFlow() {
 //   3_030  註冊頁「馬上加入」
 //
 //   4_010  Floor Planner Desktop App（獨立桌面應用，非 ASUS Site Manager）
+//   4_011  同 4_010，Save 選單改英文 + 右上角 Sign in 按鈕
 //
 // registerPage(code, label, flow, activate?, signature?): flow is reset via
 // switchDemoFlow() first (so leftover state from wherever you were is cleared
@@ -4976,7 +4985,7 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
     markCurrentPage('floorplannerapp:main');
   },
   function () {
-    document.getElementById('page-floorplannerapp').classList.remove('show');
+    document.getElementById('page-floorplannerapp').classList.remove('show', 'fpapp-v2');
     document.getElementById('fpapp-save-dropdown').classList.remove('show');
     document.getElementById('fpapp-sitemanager-intro-overlay').classList.remove('show');
     document.getElementById('fpapp-local-save-overlay').classList.remove('show');
@@ -4989,6 +4998,11 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
 );
 registerPage('4_010', 'Floor Planner Desktop App', 'floorplannerapp', null, 'floorplannerapp:main',
   'Floor Planner Desktop App：獨立的桌面應用程式，Save 可選擇交給 ASUS Site Manager 管理');
+registerPage('4_011', 'Floor Planner Desktop App（Sign in 版）', 'floorplannerapp', function () {
+  document.getElementById('page-floorplannerapp').classList.add('fpapp-v2');
+  markCurrentPage('floorplannerapp:v2');
+}, 'floorplannerapp:v2',
+  'Floor Planner Desktop App（4_010 的變體）：Save 選單改英文（Local / Cloud management），右上角多一個 Sign in 按鈕');
 
 // ── Page navigation ──────────────────────────────────────────────────────────
 const pageMap = {
