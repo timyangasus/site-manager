@@ -538,6 +538,13 @@ body {
 .fpapp-signin-btn { display: none; }
 .fpapp-lbl-v2 { display: none; }
 #page-floorplannerapp.fpapp-v2 .fpapp-signin-btn { display: flex; }
+.fpapp-avatar {
+  display: none; width: 30px; height: 30px; border-radius: 50%; background: #1565C0; color: #fff;
+  font-weight: 700; font-size: 14px; align-items: center; justify-content: center; user-select: none;
+}
+/* signed in (set by 4_011's sign-in flow): Sign in button -> "A" avatar */
+#page-floorplannerapp.fpapp-v2.fpapp-signed-in .fpapp-signin-btn { display: none; }
+#page-floorplannerapp.fpapp-v2.fpapp-signed-in .fpapp-avatar { display: flex; }
 #page-floorplannerapp.fpapp-v2 .fpapp-lbl-v1 { display: none; }
 #page-floorplannerapp.fpapp-v2 .fpapp-lbl-v2 { display: inline; }
 .fpapp-canvas-wrap { position: relative; flex: 1; background: #f4f5f7; overflow: auto; padding-bottom: 160px; box-sizing: border-box; }
@@ -2608,7 +2615,8 @@ body {
       <button class="fpapp-home-btn" onclick="return false;" title="Home">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 10.5L12 4l8 6.5V20a1 1 0 01-1 1h-4.5a.5.5 0 01-.5-.5V15h-4v5.5a.5.5 0 01-.5.5H5a1 1 0 01-1-1V10.5z" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/></svg>
       </button>
-      <button class="header-action-btn fpapp-signin-btn" onclick="return false;" style="height:30px;font-size:12.5px;padding:0 18px;">Sign in</button>
+      <button class="header-action-btn fpapp-signin-btn" onclick="fpApp2HeaderSignin()" style="height:30px;font-size:12.5px;padding:0 18px;">Sign in</button>
+      <div class="fpapp-avatar" title="asus1234@gmail.com">A</div>
     </div>
 
     <div class="fp-detail-topbar">
@@ -2855,17 +2863,6 @@ body {
   <div class="pin-flow-decision-options">
     <button class="pin-flow-decision-option" onclick="fpAppChooseLoginState(true)">已登入</button>
     <button class="pin-flow-decision-option" onclick="fpAppChooseLoginState(false)">未登入</button>
-  </div>
-</div>
-
-<!-- 4_011 -- "已登入 ASUS VIP 帳號？" decision, asked FIRST after choosing Cloud management -->
-<div class="pin-flow-decision" id="fpapp2-signed-in-check">
-  <button class="pin-flow-decision-close" onclick="document.getElementById('fpapp2-signed-in-check').classList.remove('show')">&times;</button>
-  <span class="pin-flow-decision-tag">DEMO 流程判斷</span>
-  <div class="pin-flow-decision-title">是否已登入 ASUS VIP 帳號？</div>
-  <div class="pin-flow-decision-options">
-    <button class="pin-flow-decision-option" onclick="fpApp2ChooseSignedIn(true)">已登入</button>
-    <button class="pin-flow-decision-option" onclick="fpApp2ChooseSignedIn(false)">未登入</button>
   </div>
 </div>
 
@@ -4929,7 +4926,7 @@ function fpAppChooseSaveTarget(useSiteManager) {
     resolve: fpAppChooseSaveTarget
   });
   if (useSiteManager) {
-    if (v2) fpApp2AskSignedIn(); else fpAppOpenSiteManagerIntro();
+    if (v2) fpApp2ChooseSignedIn(fpApp2IsSignedIn()); else fpAppOpenSiteManagerIntro();
   } else {
     document.getElementById('fpapp-local-save-overlay').classList.add('show');
   }
@@ -4939,32 +4936,45 @@ function fpAppCloseSiteManagerIntro() {
 }
 function fpAppConfirmSiteManagerIntro() {
   fpAppCloseSiteManagerIntro();
-  if (fpAppIsV2()) fpApp2StartSignin(); else fpAppStartSiteManagerLink();
+  if (fpAppIsV2()) fpApp2StartSignin(true); else fpAppStartSiteManagerLink();
 }
 
 // ── 4_011: Cloud management = signed in? -> save screen -> toast; not signed
 // in -> intro popup -> sign-in page (no Site Manager) -> save screen -> toast ──
 let fpApp2SigninPending = false;
+let fpApp2SaveAfterSignin = false;
 let fpApp2ToastTimer = null;
-function fpApp2AskSignedIn() {
-  closeAllFlowPopups();
-  document.getElementById('fpapp2-signed-in-check').classList.add('show');
+// The header shows "Sign in" = signed out, "A" avatar = signed in; the page's
+// fpapp-signed-in class is the single source of truth, and the demo-bar
+// 已登入/未登入 decision is kept in sync with it (either can flip the other).
+function fpApp2IsSignedIn() {
+  return document.getElementById('page-floorplannerapp').classList.contains('fpapp-signed-in');
 }
-function fpApp2ChooseSignedIn(isSignedIn) {
-  document.getElementById('fpapp2-signed-in-check').classList.remove('show');
+function fpApp2SetSignedIn(isSignedIn) {
+  document.getElementById('page-floorplannerapp').classList.toggle('fpapp-signed-in', isSignedIn);
   recordDemoDecision(1, {
     label: 'VIP 帳號登入',
     options: [{ label: '已登入', value: true }, { label: '未登入', value: false }],
     value: isSignedIn,
     resolve: fpApp2ChooseSignedIn
   });
+}
+// Cloud management (and the demo-bar decision): signed in -> save screen,
+// otherwise the intro popup -> sign-in page.
+function fpApp2ChooseSignedIn(isSignedIn) {
+  fpApp2SetSignedIn(isSignedIn);
   closeAllFlowPopups();
   fpApp2CloseCloudSave();
   fpAppCloseSiteManagerIntro();
   if (isSignedIn) fpApp2OpenCloudSave(); else fpAppOpenSiteManagerIntro();
 }
-function fpApp2StartSignin() {
+// Header "Sign in" button: straight to the sign-in page, no save afterwards.
+function fpApp2HeaderSignin() {
+  fpApp2StartSignin(false);
+}
+function fpApp2StartSignin(thenSave) {
   fpApp2SigninPending = true;
+  fpApp2SaveAfterSignin = thenSave;
   document.getElementById('page-floorplannerapp').classList.remove('show');
   document.getElementById('page-login').classList.remove('hidden');
   goSignin();
@@ -4976,7 +4986,9 @@ function fpApp2CompleteSignin() {
   document.getElementById('page-login').classList.add('hidden');
   document.getElementById('page-floorplannerapp').classList.add('show');
   markCurrentPage('floorplannerapp:v2');
-  fpApp2OpenCloudSave();
+  fpApp2SetSignedIn(true);
+  if (fpApp2SaveAfterSignin) fpApp2OpenCloudSave();
+  fpApp2SaveAfterSignin = false;
 }
 function fpApp2OpenCloudSave() {
   document.getElementById('fpapp2-cloud-save-overlay').classList.add('show');
@@ -5081,7 +5093,7 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
     markCurrentPage('floorplannerapp:main');
   },
   function () {
-    document.getElementById('page-floorplannerapp').classList.remove('show', 'fpapp-v2');
+    document.getElementById('page-floorplannerapp').classList.remove('show', 'fpapp-v2', 'fpapp-signed-in');
     document.getElementById('fpapp-save-dropdown').classList.remove('show');
     document.getElementById('fpapp-sitemanager-intro-overlay').classList.remove('show');
     document.getElementById('fpapp-local-save-overlay').classList.remove('show');
@@ -5091,7 +5103,7 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
     document.getElementById('fpapp-save-toast').classList.remove('show');
     fpAppSigninPending = false;
     fpApp2SigninPending = false;
-    document.getElementById('fpapp2-signed-in-check').classList.remove('show');
+    fpApp2SaveAfterSignin = false;
     document.getElementById('fpapp2-cloud-save-overlay').classList.remove('show');
     document.getElementById('fpapp2-cloud-toast').classList.remove('show');
     if (fpApp2ToastTimer) { clearTimeout(fpApp2ToastTimer); fpApp2ToastTimer = null; }
