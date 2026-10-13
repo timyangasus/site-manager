@@ -5066,13 +5066,15 @@ function fpAppCloseLocalSave() {
 }
 function fpAppConfirmLocalSave() {
   fpAppCloseLocalSave();
+  // 4_011: already signed in -> no cloud-management prompt after a Local save.
+  if (fpAppIsV2() && fpApp2IsSignedIn()) return;
   showFpAppSaveToast();
 }
 let fpAppSaveToastTimer = null;
 function showFpAppSaveToast() {
   const toast = document.getElementById('fpapp-save-toast');
-  // 4_011 only: signed out -> no Site Manager wording (signed in keeps the 4_010 text).
-  const plain = fpAppIsV2() && !fpApp2IsSignedIn();
+  // 4_011 (only reached signed out): no Site Manager wording; 4_010 keeps its text.
+  const plain = fpAppIsV2();
   document.getElementById('fpapp-save-toast-desc').textContent = plain
     ? '使用雲端儲存，可隨時存取並同步管理您的專案。'
     : '使用 ASUS Site Manager 雲端儲存，可隨時存取並同步管理您的專案。';
