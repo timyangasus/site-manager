@@ -4936,7 +4936,7 @@ function fpAppCloseSiteManagerIntro() {
 }
 function fpAppConfirmSiteManagerIntro() {
   fpAppCloseSiteManagerIntro();
-  if (fpAppIsV2()) fpApp2StartSignin(true); else fpAppStartSiteManagerLink();
+  fpAppStartSiteManagerLink();
 }
 
 // ── 4_011: Cloud management = signed in? -> save screen -> toast; not signed
@@ -4960,13 +4960,12 @@ function fpApp2SetSignedIn(isSignedIn) {
   });
 }
 // Cloud management (and the demo-bar decision): signed in -> save screen,
-// otherwise the intro popup -> sign-in page.
+// otherwise straight to the sign-in page (no intro popup).
 function fpApp2ChooseSignedIn(isSignedIn) {
   fpApp2SetSignedIn(isSignedIn);
   closeAllFlowPopups();
   fpApp2CloseCloudSave();
-  fpAppCloseSiteManagerIntro();
-  if (isSignedIn) fpApp2OpenCloudSave(); else fpAppOpenSiteManagerIntro();
+  if (isSignedIn) fpApp2OpenCloudSave(); else fpApp2StartSignin(true);
 }
 // Header "Sign in" button: straight to the sign-in page, no save afterwards.
 function fpApp2HeaderSignin() {
