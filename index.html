@@ -1613,6 +1613,16 @@ body {
    classic single-form layout (view-signin-classic) -- same size/color as the
    marketing bullets beside it, just without their checkmark. */
 .login-layout-toggle { cursor: pointer; }
+/* Back to the Floor Planner desktop app (4_011) -- only while sign-in was
+   launched from there (fpApp2StartSignin() sets .fpapp2-from-app). */
+.fpapp2-signin-back {
+  display: none; position: absolute; top: 24px; left: 24px; z-index: 2;
+  align-items: center; gap: 6px; height: 34px; padding: 0 16px 0 12px; border-radius: 999px;
+  border: none; background: rgba(255,255,255,0.92); color: #1565C0; font-size: 13px; font-weight: 600;
+  font-family: inherit; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.12); transition: background 0.12s;
+}
+.fpapp2-signin-back:hover { background: #fff; }
+#page-login.fpapp2-from-app .fpapp2-signin-back { display: flex; }
 .login-layout-toggle:hover { opacity: 0.75; }
 .login-feature-strip span.login-layout-toggle::before { content: none; }
 
@@ -2168,6 +2178,10 @@ body {
 
 <!-- ── Login / Landing page ── -->
 <div id="page-login">
+  <button class="fpapp2-signin-back" onclick="fpApp2BackToApp()">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#1565C0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    Back to Floor Planner
+  </button>
   <div class="login-feature-strip">
     <span>Whole-Home Mesh Coverage</span>
     <span>AiProtection Pro Security</span>
@@ -5007,12 +5021,23 @@ function fpApp2StartSignin(thenSave) {
   fpApp2SaveAfterSignin = thenSave;
   document.getElementById('page-floorplannerapp').classList.remove('show');
   document.getElementById('page-login').classList.remove('hidden');
+  document.getElementById('page-login').classList.add('fpapp2-from-app');
   goSignin();
+}
+// Back from the sign-in page without signing in: return to the app, still signed out.
+function fpApp2BackToApp() {
+  fpApp2SigninPending = false;
+  fpApp2SaveAfterSignin = false;
+  document.getElementById('page-login').classList.remove('fpapp2-from-app');
+  document.getElementById('page-login').classList.add('hidden');
+  document.getElementById('page-floorplannerapp').classList.add('show');
+  markCurrentPage('floorplannerapp:v2');
 }
 // Called by doSignin()/doThirdPartySignin()/finishPinCodeSignup() once sign-in
 // or sign-up succeeds while fpApp2SigninPending is set.
 function fpApp2CompleteSignin() {
   fpApp2SigninPending = false;
+  document.getElementById('page-login').classList.remove('fpapp2-from-app');
   document.getElementById('page-login').classList.add('hidden');
   document.getElementById('page-floorplannerapp').classList.add('show');
   markCurrentPage('floorplannerapp:v2');
@@ -5140,6 +5165,7 @@ registerFlow('floorplannerapp', '4_FLOOR_PLANNER_APP',
     fpAppSigninPending = false;
     fpApp2SigninPending = false;
     fpApp2SaveAfterSignin = false;
+    document.getElementById('page-login').classList.remove('fpapp2-from-app');
     document.getElementById('fpapp-account-menu').classList.remove('show');
     document.getElementById('fpapp2-cloud-save-overlay').classList.remove('show');
     document.getElementById('fpapp2-cloud-toast').classList.remove('show');
