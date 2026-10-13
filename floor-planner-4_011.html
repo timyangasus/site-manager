@@ -275,6 +275,10 @@ body {
   padding: 9px 18px; font-size: 12.5px; font-weight: 600; cursor: pointer; font-family: inherit;
 }
 .fpapp-save-toast-btn:hover { background: #1251A3; }
+.fpapp-toast-close { display: none; position: absolute; top: 8px; right: 10px; width: 24px; height: 24px; border: none; border-radius: 4px; background: transparent; color: rgba(255,255,255,0.7); font-size: 18px; line-height: 1; cursor: pointer; }
+.fpapp-toast-close:hover { color: #fff; background: rgba(255,255,255,0.12); }
+.fpapp-save-toast.fpapp-toast-closable .fpapp-toast-close { display: block; }
+.fpapp-save-toast.fpapp-toast-closable { padding-right: 40px; }
 @keyframes pin-code-window-open {
   from { opacity: 0; transform: scale(0.9) translateY(10px); }
   to { opacity: 1; transform: scale(1) translateY(0); }
@@ -1021,19 +1025,22 @@ body {
 
 <!-- Floor Planner desktop app -- rich toast shown after a Local save, offering a shortcut into ASUS Site Manager -->
 <div class="fpapp-save-toast" id="fpapp-save-toast">
+  <button class="fpapp-toast-close" onclick="fpApp2CloseToast(this)" title="Close">&times;</button>
   <div class="fpapp-save-toast-title">Floor Planner 已儲存至本機</div>
   <div class="fpapp-save-toast-desc" id="fpapp-save-toast-desc">使用 ASUS Site Manager 雲端儲存，可隨時存取並同步管理您的專案。</div>
   <button class="fpapp-save-toast-btn" id="fpapp-save-toast-btn" onclick="fpAppToastGoSiteManager()">由 ASUS Site Manager 管理</button>
 </div>
 
 <!-- 4_011 -- toast after a cloud save -->
-<div class="fpapp-save-toast" id="fpapp2-cloud-toast">
+<div class="fpapp-save-toast fpapp-toast-closable" id="fpapp2-cloud-toast">
+  <button class="fpapp-toast-close" onclick="fpApp2CloseToast(this)" title="Close">&times;</button>
   <div class="fpapp-save-toast-title">Floor Planner 已儲存至雲端</div>
   <div class="fpapp-save-toast-desc" style="margin-bottom:0;">已透過 ASUS VIP 帳號同步，可隨時存取您的專案。</div>
 </div>
 
 <!-- 4_011 -- toast after a Local save while signed in -->
-<div class="fpapp-save-toast" id="fpapp2-local-toast">
+<div class="fpapp-save-toast fpapp-toast-closable" id="fpapp2-local-toast">
+  <button class="fpapp-toast-close" onclick="fpApp2CloseToast(this)" title="Close">&times;</button>
   <div class="fpapp-save-toast-title" style="margin-bottom:0;">Floor Planner 已儲存至本機</div>
 </div>
 
@@ -1085,6 +1092,7 @@ function showFpAppSaveToast() {
   const toast = document.getElementById('fpapp-save-toast');
   document.getElementById('fpapp-save-toast-desc').textContent = '使用雲端儲存，可隨時存取並同步管理您的專案。';
   document.getElementById('fpapp-save-toast-btn').textContent = 'Cloud management';
+  toast.classList.add('fpapp-toast-closable');
   toast.classList.add('show');
   if (fpAppSaveToastTimer) clearTimeout(fpAppSaveToastTimer);
   fpAppSaveToastTimer = setTimeout(() => toast.classList.remove('show'), 6500);
@@ -1284,6 +1292,11 @@ function fpApp2OpenCloudSave() {
 }
 function fpApp2CloseCloudSave() {
   document.getElementById('fpapp2-cloud-save-overlay').classList.remove('show');
+}
+function fpApp2CloseToast(btn) {
+  btn.closest('.fpapp-save-toast').classList.remove('show');
+  if (fpApp2ToastTimer) { clearTimeout(fpApp2ToastTimer); fpApp2ToastTimer = null; }
+  if (fpAppSaveToastTimer) { clearTimeout(fpAppSaveToastTimer); fpAppSaveToastTimer = null; }
 }
 function fpApp2ShowToast(id) {
   ['fpapp2-cloud-toast', 'fpapp2-local-toast'].forEach(t => document.getElementById(t).classList.remove('show'));
